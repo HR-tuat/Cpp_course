@@ -6,11 +6,15 @@
   <meta name="description" content="演習の難易度設計。Level 1（文法確認）からLevel 6（設計）まで。">
   <title>演習問題の段階 | マイコンのためのC++講座</title>
   <script>
-    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
     try {
       var t = localStorage.getItem('cpp-course:theme');
       if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
-    } catch (e) {}
+      var a = localStorage.getItem('cpp-course:audience');
+      document.documentElement.dataset.audience = a === 'teacher' ? 'teacher' : 'student';
+    } catch (e) {
+      document.documentElement.dataset.audience = 'student';
+    }
   </script>
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="../styles/layout.css">
@@ -25,6 +29,10 @@
       <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
     </button>
     <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="audience-toggle" type="button" title="表示を切り替える">
+      <span class="sr-only">表示対象</span>
+      <span class="audience-toggle-label">受講者</span>
+    </button>
     <button class="theme-toggle" type="button" title="配色を切り替える">
       <span class="theme-toggle-label">テーマ</span>
     </button>
@@ -95,9 +103,10 @@ led.on();</code></pre></figure>
 
         <h2 id="level-6-設計">Level 6：設計</h2>
 
-        <p>「この機能はどのクラスに置くべきか」を受講者自身に考えさせる。</p>
+        <p data-for="student">「この機能はどのクラスに置くべきか」を自分で考える段階。</p>
+        <p data-for="teacher">「この機能はどのクラスに置くべきか」を受講者自身に考えさせる。</p>
 
-        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>Level 6には唯一の正解がない。受講者が出した案に対し、「変更が起きたときにどこを直すことになるか」を問い返すとよい。</p></aside>
+        <aside class="callout callout-tip" data-for="teacher"><p class="callout-title">講師向け</p><p>Level 6には唯一の正解がない。受講者が出した案に対し、「変更が起きたときにどこを直すことになるか」を問い返すとよい。</p></aside>
 
         <h2 id="演習の雛形">演習の雛形</h2>
 

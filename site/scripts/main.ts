@@ -6,6 +6,8 @@ import { renderNav, renderPager } from './components/nav';
 import { enhanceCodeBlocks } from './components/codeBlock';
 import { renderToc } from './components/toc';
 import { setupChecklist } from './features/checklist';
+import { setupAudience } from './features/audience';
+import { type Audience } from './data/lessons';
 
 const THEME_KEY = 'cpp-course:theme';
 
@@ -43,11 +45,16 @@ function setupTheme(): void {
   });
 }
 
+/** 表示対象者で中身が変わるもの。切り替えボタンからも同じ関数を呼ぶ */
+function renderForAudience(audience: Audience): void {
+  renderNav(audience);
+  renderPager(audience);
+  renderToc(audience);
+}
+
 function init(): void {
   setupTheme();
-  renderNav();
-  renderPager();
-  renderToc();
+  renderForAudience(setupAudience(renderForAudience));
   enhanceCodeBlocks();
   setupChecklist();
 }

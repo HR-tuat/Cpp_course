@@ -6,6 +6,9 @@
 
 export type GroupId = 'guide' | 'lessons' | 'tasks';
 
+/** ページを見せる相手。受講者向けと講師向けでサイドバーの中身を変える */
+export type Audience = 'student' | 'teacher';
+
 export interface PageMeta {
   /** 各HTMLの <body data-page="..."> と一致させる */
   id: string;
@@ -16,7 +19,18 @@ export interface PageMeta {
   /** ページタイトル */
   title: string;
   group: GroupId;
+  /**
+   * 特定の対象者にだけ見せるページはここで指定する。
+   * 省略した場合は受講者・講師の両方に表示する（共有ページ）。
+   * 大半のページは共有なので、省略を既定にしている。
+   */
+  audience?: Audience;
 }
+
+export const AUDIENCE_TITLES: Record<Audience, string> = {
+  student: '受講者',
+  teacher: '講師',
+};
 
 export const GROUP_TITLES: Record<GroupId, string> = {
   guide: 'はじめに',
@@ -26,10 +40,11 @@ export const GROUP_TITLES: Record<GroupId, string> = {
 
 export const PAGES: PageMeta[] = [
   { id: 'home', path: 'index.html', label: '—', title: '講座概要', group: 'guide' },
+  { id: 'guide-for-students', path: 'guide/for-students.html', label: '—', title: '受講者の進め方', group: 'guide', audience: 'student' },
   { id: 'guide-policy', path: 'guide/policy.html', label: '1章', title: '講座の基本方針', group: 'guide' },
   { id: 'guide-environment', path: 'guide/environment.html', label: '2章', title: '開発環境', group: 'guide' },
   { id: 'guide-schedule', path: 'guide/schedule.html', label: '20章', title: '12週間の授業計画', group: 'guide' },
-  { id: 'guide-teaching-notes', path: 'guide/teaching-notes.html', label: '23章', title: '教える際の重要ポイント', group: 'guide' },
+  { id: 'guide-teaching-notes', path: 'guide/teaching-notes.html', label: '23章', title: '教える際の重要ポイント', group: 'guide', audience: 'teacher' },
 
   { id: 'lesson-00', path: 'lessons/00-intro.html', label: '第0回', title: 'プログラミングとマイコン', group: 'lessons' },
   { id: 'lesson-01', path: 'lessons/01-variables.html', label: '第1回', title: '変数・型・演算子', group: 'lessons' },
@@ -57,6 +72,11 @@ export const PAGES: PageMeta[] = [
 
 /** 前へ / 次へ はPAGESの並び順をそのまま使う */
 export const READING_ORDER: PageMeta[] = PAGES;
+
+/** そのページを対象者に見せてよいか。audience 未指定のページは常に見せる */
+export function visibleTo(page: PageMeta, audience: Audience): boolean {
+  return page.audience === undefined || page.audience === audience;
+}
 
 export function findPage(id: string): PageMeta | undefined {
   return PAGES.find((page) => page.id === id);

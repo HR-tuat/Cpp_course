@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="受講者向けの進め方。毎回の流れ、演習との付き合い方、つまずいたときの手順。">
+  <title>受講者の進め方 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      var a = localStorage.getItem('cpp-course:audience');
+      document.documentElement.dataset.audience = a === 'teacher' ? 'teacher' : 'student';
+    } catch (e) {
+      document.documentElement.dataset.audience = 'student';
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="guide-for-students" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="audience-toggle" type="button" title="表示を切り替える">
+      <span class="sr-only">表示対象</span>
+      <span class="audience-toggle-label">受講者</span>
+    </button>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">受講者向け</p>
+          <h1>受講者の進め方</h1>
+          <p class="lead">このサイトをどう使うか。毎回の流れ、演習との付き合い方、つまずいたときにどこへ戻るか。</p>
+        </header>
+
+        <h2 id="このサイトの読み方">このサイトの読み方</h2>
+
+        <p>左のサイドバーが講座の全体像である。上から順に読めば進度に沿う。</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>場所</th><th>何があるか</th></tr></thead>
+            <tbody>
+            <tr><td><a href="../index.html">講座概要</a></td><td>最終的に何ができるようになるか</td></tr>
+            <tr><td><a href="policy.html">講座の基本方針</a></td><td>なぜこの順番で学ぶのか</td></tr>
+            <tr><td><a href="environment.html">開発環境</a></td><td>手元に用意するもの</td></tr>
+            <tr><td>各回の教材</td><td>第0回〜第15回の本文とコード例</td></tr>
+            <tr><td><a href="../exercises/index.html">演習問題の段階</a></td><td>演習がどう難しくなっていくか</td></tr>
+            <tr><td><a href="../checklist.html">到達度チェック</a></td><td>自分が何を使えるようになったか</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="毎回の流れ">毎回の流れ</h2>
+
+        <p>1回あたり90〜120分程度で、次の流れで進む。</p>
+
+        <figure class="diagram"><pre>前回の復習
+    ↓
+新しい概念の説明
+    ↓
+小さなコード例
+    ↓
+マイコンでの例
+    ↓
+演習（ここが本体）
+    ↓
+次回までの課題</pre></figure>
+
+        <p>説明を聞く時間より、自分でコードを書く時間のほうが長い。毎回必ず手を動かす。</p>
+
+        <h2 id="コードは暗記しない">コードは暗記しない</h2>
+
+        <p>この講座で覚えてほしいのは書き方ではない。たとえば、</p>
+
+        <pre><code class="language-cpp">class Motor
+{
+};</code></pre>
+
+        <p>という形を暗記しても意味がない。大事なのは、</p>
+
+        <p>「なぜモータをクラスにするのか」</p>
+
+        <p>を自分の言葉で説明できることである。各回の本文は「前の回で困ったことを、この回の機能が解決する」という並びになっている。困った経験のほうを覚えておくとよい。</p>
+
+        <h2 id="演習の進め方">演習の進め方</h2>
+
+        <p>演習はLevel 1（文法確認）からLevel 6（設計）まで段階的に上がる。詳しくは<a href="../exercises/index.html">演習問題の段階</a>を見ること。</p>
+
+        <p>Level 5あたりまでは正解の形がある。Level 6には唯一の正解がない。自分で決めた構成について、</p>
+
+        <p>「あとで機能を追加するとき、どこを直すことになるか」</p>
+
+        <p>を説明できれば十分である。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例が公開されている回は、各回のページと<a href="../solutions/index.html">解答例の一覧</a>から開ける。先に自分で書いてから見ること。動くコードを写しても、次の回で同じところで詰まる。</p></aside>
+
+        <h2 id="つまずいたとき">つまずいたとき</h2>
+
+        <p>次の順に戻ると、たいていは自力で解決できる。</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>順</th><th>やること</th></tr></thead>
+            <tbody>
+            <tr><td class="align-right">1</td><td>エラーメッセージの<strong>1行目</strong>を読む。ファイル名と行番号が書いてある</td></tr>
+            <tr><td class="align-right">2</td><td>直前に書き足した数行を消して、通る状態まで戻す</td></tr>
+            <tr><td class="align-right">3</td><td>その機能を最初に扱った回のページに戻って、コード例と見比べる</td></tr>
+            <tr><td class="align-right">4</td><td>それでも分からなければ、エラーメッセージごと講師に聞く</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>「動かない」とだけ伝えても原因は絞れない。<strong>何をしたら</strong><strong>何が起きたか</strong>と、エラーメッセージをそのまま見せること。</p></aside>
+
+        <h2 id="到達度チェックの使い方">到達度チェックの使い方</h2>
+
+        <p><a href="../checklist.html">到達度チェック</a>は、自分が何を使えるようになったかを確認するためのものである。チェック状態はブラウザに保存されるので、各回のあとに開いて、埋まっていない項目を確認するとよい。</p>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>チェック状態は、そのブラウザの中だけに保存される。別の端末や別のブラウザでは引き継がれない。</p></aside>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

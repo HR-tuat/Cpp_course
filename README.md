@@ -12,7 +12,7 @@ C++のクラスと複数ファイルで設計・実装できるようになる�
 ├── .github/workflows/deploy.yml  # push → npm ci → vite build → Pages公開
 ├── site/                         # Webサイト（Viteのroot）
 │   ├── index.html                # 講座概要・対象・到達目標
-│   ├── guide/                    # 基本方針・開発環境・授業計画・指導上の注意
+│   ├── guide/                    # 基本方針・開発環境・授業計画・指導上の注意・受講者の進め方
 │   ├── lessons/                  # 第0回〜第15回
 │   ├── exercises/                # 演習問題の段階（Level 1〜6）
 │   ├── final-project/            # 最終課題

@@ -2,7 +2,15 @@
  * サイドバーと「前へ / 次へ」を lessons.ts から生成する。
  */
 
-import { GROUP_TITLES, PAGES, READING_ORDER, type GroupId, type PageMeta } from '../data/lessons';
+import {
+  GROUP_TITLES,
+  PAGES,
+  READING_ORDER,
+  visibleTo,
+  type Audience,
+  type GroupId,
+  type PageMeta,
+} from '../data/lessons';
 
 /**
  * ページごとに階層の深さが違うため、サイトルートまでの相対パスを
@@ -20,8 +28,11 @@ export function currentPageId(): string {
   return document.body.dataset.page ?? '';
 }
 
-function groupMarkup(group: GroupId, currentId: string): string {
-  const items = PAGES.filter((page) => page.group === group)
+function groupMarkup(group: GroupId, currentId: string, audience: Audience): string {
+  const pages = PAGES.filter((page) => page.group === group && visibleTo(page, audience));
+  if (pages.length === 0) return '';
+
+  const items = pages
     .map((page) => {
       const active = page.id === currentId ? ' aria-current="page"' : '';
       return `<li><a href="${href(page)}"${active}><span class="nav-num">${page.label}</span><span>${page.title}</span></a></li>`;
@@ -34,13 +45,13 @@ function groupMarkup(group: GroupId, currentId: string): string {
 </div>`;
 }
 
-export function renderNav(): void {
+export function renderNav(audience: Audience): void {
   const host = document.querySelector<HTMLElement>('[data-nav]');
   if (!host) return;
 
   const currentId = currentPageId();
   const groups: GroupId[] = ['guide', 'lessons', 'tasks'];
-  host.innerHTML = groups.map((group) => groupMarkup(group, currentId)).join('\n');
+  host.innerHTML = groups.map((group) => groupMarkup(group, currentId, audience)).join('\n');
 
   setupToggle(host);
 }
@@ -68,7 +79,7 @@ function setupToggle(sidebar: HTMLElement): void {
   });
 }
 
-export function renderPager(): void {
+export function renderPager(audience: Audience): void {
   const host = document.querySelector<HTMLElement>('[data-pager]');
   if (!host) return;
 
@@ -86,11 +97,14 @@ export function renderPager(): void {
     return;
   }
 
-  const index = READING_ORDER.findIndex((page) => page.id === current);
+  // 対象者の違うページを挟まないよう、経路そのものを絞ってから前後を取る
+  const order = READING_ORDER.filter((page) => visibleTo(page, audience));
+
+  const index = order.findIndex((page) => page.id === current);
   if (index < 0) return;
 
-  const prev = READING_ORDER[index - 1];
-  const next = READING_ORDER[index + 1];
+  const prev = order[index - 1];
+  const next = order[index + 1];
   const parts: string[] = [];
 
   if (prev) {

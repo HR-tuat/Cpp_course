@@ -112,6 +112,26 @@ OS設定と手動切り替えで食い違う）。同じ二重定義が `styles/
 壊れるため、`SOLUTIONS` 側だけで管理し、`renderPager()` が `solution-` 接頭辞を見て
 講義への戻り導線だけを出している。
 
+### 受講者向け / 講師向けの出し分け
+
+1つのサイトを「表示対象者」で切り替えている。切り替えはヘッダの`.audience-toggle`で、
+localStorage（`cpp-course:audience`）に保存する。既定は`student`。
+
+- **ページ単位** … `lessons.ts`の`PageMeta.audience`。**省略したら両方に表示**される（共有ページ）。
+  大半のページは共有なので、省略を既定にしてある。サイドバーと前へ/次へはこの値で絞られる。
+- **ブロック単位** … 本文中の`data-for="teacher"` / `data-for="student"`。
+  `components.css`で**既定非表示、一致したときだけ表示**にしている（JSが動かないときに
+  講師向けの記述が漏れない向きに倒すため）。`toc.ts`は非表示ブロックの見出しを目次から除く。
+
+**これはアクセス制御ではない。** 静的ホストでは配信済みのページはURLを知れば読める。
+本当に見せたくないものは、解答例と同じく`vite.config.ts`でビルド対象から外すこと。
+
+講師向けページのURLを直接開いたときは、そのページに合わせて自動で切り替わる
+（`audience.ts`）。そうしないと、サイドバーに現在地がなく前へ/次へも出ない行き止まりになる。
+
+各HTMLの`<head>`のインラインスクリプトが、テーマと同じく描画前に
+`documentElement.dataset.audience`を入れている（ちらつき防止）ので消さない。
+
 ### 到達度チェックの永続化
 
 `checklist.html` の各 `data-check="..."` が localStorage のキーになる（`cpp-course:checklist:v1`）。
