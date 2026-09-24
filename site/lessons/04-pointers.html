@@ -10,8 +10,10 @@
     try {
       var t = localStorage.getItem('cpp-course:theme');
       if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      var k = localStorage.getItem('cpp-course:teacher-key');
       var a = localStorage.getItem('cpp-course:audience');
-      document.documentElement.dataset.audience = a === 'teacher' ? 'teacher' : 'student';
+      if (k) document.documentElement.dataset.teacher = '';
+      document.documentElement.dataset.audience = k && a === 'teacher' ? 'teacher' : 'student';
     } catch (e) {
       document.documentElement.dataset.audience = 'student';
     }

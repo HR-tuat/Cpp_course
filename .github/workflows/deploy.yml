@@ -35,6 +35,10 @@ jobs:
 
       - name: Build
         run: npx vite build
+        env:
+          # 講師モードを解錠する合言葉。未設定でもビルドは通るが、
+          # コード内の既定値のままになるので必ずリポジトリのSecretsに登録する
+          VITE_TEACHER_KEY: ${{ secrets.TEACHER_KEY }}
 
       - uses: actions/configure-pages@v5
 
