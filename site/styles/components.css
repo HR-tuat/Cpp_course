@@ -306,7 +306,7 @@ figure.diagram figcaption {
 
 /* --- 解答例 --------------------------------------------------------------- */
 
-/* 未公開の回ではJSが何も入れないため、枠ごと消す */
+/* 対応する演習がない回では中身が空になるので、枠ごと消す */
 .solution-slot:empty {
   display: none;
 }
@@ -340,6 +340,17 @@ figure.diagram figcaption {
   font-weight: 700;
 }
 
+/* 未公開の回。講師にだけ出るので、公開済みと色で区別する */
+.solution-link-teacher,
+.solution-link-teacher:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.solution-link-teacher .solution-link-label {
+  color: var(--accent);
+}
+
 .solution-pending {
   color: var(--text-faint);
 }
@@ -366,6 +377,12 @@ figure.diagram figcaption {
   border: 1px solid var(--tip);
 }
 
+.badge-teacher {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+}
+
 .badge-closed {
   color: var(--text-faint);
   background: var(--bg-subtle);
@@ -385,8 +402,8 @@ figure.diagram figcaption {
  *
  * data-audience がまだ入っていないときはすべて隠す。JSもインラインスクリプトも
  * 動かない環境で、受講者に講師向けの記述が漏れない向きに倒すため。
- * ただし配信自体はされているので、本当に見せたくないものは解答例と同じく
- * vite.config.ts でビルドから外すこと。
+ * ただし配信自体はされているので、本当に見せたくないものは
+ * vite.config.ts の htmlEntries() でビルドから外すしかない。
  */
 :root:not([data-audience]) [data-for] {
   display: none;

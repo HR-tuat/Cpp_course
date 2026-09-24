@@ -8,13 +8,11 @@ const projectRoot = fileURLToPath(new URL('.', import.meta.url));
 const siteRoot = resolve(projectRoot, 'site');
 
 /**
- * 未公開の解答例（published: false）はビルド対象から外す。
- * dist に出力されないため、URLを直接叩いても 404 になる。
- * 「JSで隠す」だけでは静的ホストでは見えてしまうので、ここで落とすことが重要。
+ * 解答例は**公開・未公開を問わずすべてビルドする**。
+ * 未公開の回は講師表示のときだけリンクが出るが、ファイル自体は配信されるので
+ * **URLを知っていれば受講者でも読める**。それを了承した上での選択である
+ * （2026-09-25）。本当に出したくない回が出てきたら、ここで rollup の入力から落とすこと。
  */
-const unpublished = new Set(
-  SOLUTIONS.filter((solution) => !solution.published).map((solution) => solution.path),
-);
 
 /** site/ 以下のHTMLをすべて探し、rollupの入力にする（複数ページビルド） */
 function htmlEntries(dir: string, found: Record<string, string> = {}): Record<string, string> {
@@ -29,7 +27,6 @@ function htmlEntries(dir: string, found: Record<string, string> = {}): Record<st
 
     if (entry.isFile() && entry.name.endsWith('.html')) {
       const sitePath = relative(siteRoot, full).split(sep).join('/');
-      if (unpublished.has(sitePath)) continue;
 
       // "index", "guide/policy", "lessons/00-intro" のようなキーにする
       found[sitePath.replace(/\.html$/, '')] = full;
@@ -48,20 +45,28 @@ function htmlEntries(dir: string, found: Record<string, string> = {}): Record<st
  * curl や表示ソースでそのまま検証できる。
  */
 function solutionsHtml(): Plugin {
-  const link = (base: string, path: string, title: string): string =>
-    `<a class="solution-link" href="${base}${path}">
-            <span class="solution-link-label">解答例</span>
+  const link = (base: string, path: string, title: string, teacherOnly: boolean): string => {
+    const cls = teacherOnly ? 'solution-link solution-link-teacher' : 'solution-link';
+    const label = teacherOnly ? '解答例（講師のみ）' : '解答例';
+
+    return `<a class="${cls}" href="${base}${path}">
+            <span class="solution-link-label">${label}</span>
             <span class="solution-link-title">${title}</span>
           </a>`;
+  };
 
   const table = (base: string): string => {
     const rows = SOLUTIONS.map((s) => {
+      // 未公開の回は両方の表記を書き出し、data-for でCSSが選ぶ。
+      // ビルド時に静的に出すので、JS描画に戻してはいけないのは従来どおり。
       const cell = s.published
         ? `<a href="${base}${s.path}">${s.title}</a>`
-        : `<span class="solution-pending">${s.title}</span>`;
+        : `<a href="${base}${s.path}" data-for="teacher">${s.title}</a>`
+          + `<span class="solution-pending" data-for="student">${s.title}</span>`;
       const status = s.published
         ? '<span class="badge badge-open">公開中</span>'
-        : '<span class="badge badge-closed">未公開</span>';
+        : '<span class="badge badge-teacher" data-for="teacher">講師のみ</span>'
+          + '<span class="badge badge-closed" data-for="student">未公開</span>';
       return `<tr><td>${s.label}</td><td>${cell}</td><td>${status}</td></tr>`;
     }).join('\n            ');
 
@@ -75,7 +80,8 @@ function solutionsHtml(): Plugin {
             </tbody>
           </table>
         </div>
-        <p class="solution-count">公開中: ${count} / ${SOLUTIONS.length} 回</p>`;
+        <p class="solution-count" data-for="student">公開中: ${count} / ${SOLUTIONS.length} 回</p>
+        <p class="solution-count" data-for="teacher">受講者に公開中: ${count} / ${SOLUTIONS.length} 回（講師表示では全${SOLUTIONS.length}回を開ける）</p>`;
   };
 
   return {
@@ -90,11 +96,16 @@ function solutionsHtml(): Plugin {
           html = html.replace('<div data-solution-index></div>', () => table(base));
         }
 
-        const solution = SOLUTIONS.find((s) => s.lessonId === pageId && s.published);
-        html = html.replace(
-          '<div class="solution-slot" data-solution></div>',
-          () => (solution ? `<div class="solution-slot">${link(base, solution.path, solution.title)}</div>` : ''),
-        );
+        // 未公開の回は、枠ごと data-for="teacher" にして受講者側には余白も残さない
+        const solution = SOLUTIONS.find((s) => s.lessonId === pageId);
+        html = html.replace('<div class="solution-slot" data-solution></div>', () => {
+          if (!solution) return '';
+
+          const anchor = link(base, solution.path, solution.title, !solution.published);
+          return solution.published
+            ? `<div class="solution-slot">${anchor}</div>`
+            : `<div class="solution-slot" data-for="teacher">${anchor}</div>`;
+        });
 
         return html;
       },

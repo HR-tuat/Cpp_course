@@ -10,7 +10,7 @@
  * これは本当のロックではない。合言葉はJSバンドルに含まれるし、localStorageは
  * DevToolsから直接書き換えられる。「受講者がうっかり講師モードに入らない」ための
  * 掛け金であって、読ませないための仕組みではない。本当に見せたくないものは、
- * 解答例と同じく vite.config.ts でビルド対象から外すこと。
+ * vite.config.ts の htmlEntries() でビルド対象から外すしかない。
  */
 
 import { AUDIENCE_TITLES, PAGES, visibleTo, type Audience } from '../data/lessons';
