@@ -53,7 +53,8 @@
 
         <h2 id="配列">配列</h2>
 
-        <figure class="code"><pre><code class="language-cpp">int values[5];
+        <figure class="code"><pre><code class="language-cpp">// 5つの整数を格納する配列
+int values[5];
 
 values[0] = 10;
 values[1] = 20;</code></pre></figure>
@@ -62,9 +63,11 @@ values[1] = 20;</code></pre></figure>
 
         <h2 id="配列とループ">配列とループ</h2>
 
-        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 5; i++) {
+        <figure class="code"><pre><code class="language-cpp">// values[0]~values[4]を表示する
+for (int i = 0; i &lt; 5; i++) {
     Serial.println(values[i]);
 }</code></pre></figure>
+        <p>配列の要素をループで処理する際、添字の範囲を注意する。</p>
 
         <h2 id="メモリ">メモリ</h2>
 
@@ -80,13 +83,27 @@ values[1] = 20;</code></pre></figure>
 
 int* ptr = &amp;value;</code></pre></figure>
 
-        <p><code>&amp;value</code>は<code>value</code>のアドレス。<code>int*</code>は「intを指すポインタ」という型である。</p>
+        <p><code>&amp;value</code>は<code>value</code>のアドレス。<code>int*</code>は「intを指すポインタ」という型である。<code>ptr</code>は<code>value</code>のアドレスを保持するポインタである。</p>
 
         <h2 id="デリファレンス">デリファレンス</h2>
 
         <figure class="code"><pre><code class="language-cpp">*ptr = 20;</code></pre></figure>
 
         <p><code>ptr</code>が指している場所の値を変更する。この行のあと<code>value</code>は<code>20</code>になっている。</p>
+
+        <h2 id="ポインタのインクリメント">ポインタのインクリメント</h2>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>意味</th></tr></thead>
+          <tbody>
+          <tr><td><code>ptr++</code></td><td>ポインタを1つ進める</td></tr>
+          <tr><td><code>*ptr++</code></td><td>指している値を取得してからポインタを1つ進める</td></tr>
+          <tr><td><code>(*ptr)++</code></td><td>指している値を1つ増やす</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>ポインタのインクリメントは、ポインタが指すメモリの位置を1つ進める操作である。これは、配列の要素を順に処理する際に便利である。しかし、<code>()</code>の位置や<code>*</code>の有無によって動作が変わるため、注意が必要である。</p></aside>
 
         <h2 id="参照">参照</h2>
 
@@ -95,6 +112,15 @@ int* ptr = &amp;value;</code></pre></figure>
 int&amp; ref = value;</code></pre></figure>
 
         <p><code>ref</code>は<code>value</code>の別名として扱える。<code>ref = 20;</code>と書けば<code>value</code>が変わる。</p>
+
+        <aside class="callout callout-note"><p class="callout-title">ポイント</p><p>参照は、元の変数の別名として扱われるため、元の変数を直接操作することができる。ポインタとは異なり、参照は一度初期化されたら再代入することはできない。</p></aside>
+
+        <aside class="callout callout-tip"><p class="callout-title">Tip: 左辺値参照と右辺値参照</p><p>左辺値参照は、既存の変数を参照するためのものである。右辺値参照は、一時的な値を参照するためのものである。データをコピーすることなく効率的に渡すことが可能となる。</p><figure class="code"><pre><code class="language-cpp">int val = 10;
+int&amp; lref1 = val;  // OK
+int&amp; lref2 = 10;   // NG (右辺値を左辺値参照に代入することはできない)
+
+int&amp;&amp; rref1 = val; // NG (左辺値を右辺値参照に代入することはできない)
+int&amp;&amp; rref2 = 10;  // OK</code></pre></figure></aside>
 
         <h2 id="ポインタと参照の比較">ポインタと参照の比較</h2>
 
@@ -110,7 +136,7 @@ int&amp; ref = value;</code></pre></figure>
         </table>
       </div>
 
-        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「値を書き換えたいだけなら参照」「指す先を差し替えたい・無効を表したいならポインタ」と使い分ける、と伝えると判断しやすい。</p></aside>
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「値を書き換えたいだけなら参照」「指す先を差し替えたい・無効を表したいならポインタ」と使い分ける<span data-for="teacher">、と伝えると判断しやすい</span>。</p></aside>
 
         <section class="exercise"><h3 class="exercise-title">演習</h3><ul>
         <li>配列の最大値を求める</li>

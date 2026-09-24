@@ -104,6 +104,16 @@ Motor motor2;</code></pre></figure>
         <figure class="code"><pre><code class="language-cpp">public:
     void setSpeed(int speed);</code></pre></figure>
 
+        <h2 id="アクセス制御">アクセス制御</h2>
+
+        <p>クラスのメンバにはアクセス制御が適用される。詳細は<a href="08-encapsulation.html">第8回カプセル化</a>を参照。</p>
+
+        <ul>
+        <li><code>public</code>: 公開。外部からアクセス可能</li>
+        <li><code>private</code>: 非公開。クラス内部でのみアクセス可能</li>
+        <li><code>protected</code>: 限定公開。派生クラスからはアクセス可能</li>
+        </ul>
+
         <h2 id="this">this</h2>
 
         <figure class="code"><pre><code class="language-cpp">void Motor::setSpeed(int speed) {

@@ -101,8 +101,12 @@ int doubleValue(int value, bool flag) {
             <thead><tr><th>タグ</th><th>書く内容</th></tr></thead>
             <tbody>
             <tr><td><code>@brief</code></td><td>その関数が何をするか。1行で書く</td></tr>
-            <tr><td><code>@param</code></td><td>引数ひとつにつき1行。引数名のあとに説明を続ける</td></tr>
+            <tr><td><code>@details</code></td><td>その関数の詳細な説明を書く。複数行にわたっても良い</td></tr>
+            <tr><td><code>@param</code></td><td>引数ひとつにつき1行。引数名のあとに説明を続ける。<code>[in]</code>は入力、<code>[out]</code>は出力、<code>[in,out]</code>は入力と出力の両方</td></tr>
             <tr><td><code>@return</code></td><td>返す値。<code>void</code>の関数には書かない</td></tr>
+            <tr><td><code>@note</code></td><td>注意事項。関数の使用方法や注意点を記述する</td></tr>
+            <tr><td><code>@todo</code></td><td>今後実装する予定の機能や改善点を記述する</td></tr>
+            <tr><td><code>@file</code></td><td>ファイル名。関数が属するファイルを指定する</td></tr>
             </tbody>
           </table>
         </div>
@@ -142,7 +146,7 @@ int doubleValue(int value, bool flag) {
         <li>後のカプセル化につながる</li>
       </ul>
 
-        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「どこからでも触れる」ことは便利さであると同時に危険さでもある、という感覚をここで持たせておくと、第8回のカプセル化が自然に理解できる。</p></aside>
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「どこからでも触れる」ことは便利さであると同時に危険さでもある、という感覚をここで持<span data-for="student">っ</span><span data-for="teacher">たせ</span>ておくと、第8回のカプセル化が自然に理解できる。</p></aside>
 
         <section class="exercise"><h3 class="exercise-title">演習：次の関数を作成する</h3><figure class="code"><pre><code class="language-cpp">void motorStop();
 void motorSetSpeed(int speed);
