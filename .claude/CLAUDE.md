@@ -119,9 +119,15 @@ localStorage（`cpp-course:audience`）に保存する。既定は`student`。
 
 - **ページ単位** … `lessons.ts`の`PageMeta.audience`。**省略したら両方に表示**される（共有ページ）。
   大半のページは共有なので、省略を既定にしてある。サイドバーと前へ/次へはこの値で絞られる。
-- **ブロック単位** … 本文中の`data-for="teacher"` / `data-for="student"`。
-  `components.css`で**既定非表示、一致したときだけ表示**にしている（JSが動かないときに
-  講師向けの記述が漏れない向きに倒すため）。`toc.ts`は非表示ブロックの見出しを目次から除く。
+- **ブロック・文単位** … 本文中の`data-for="teacher"` / `data-for="student"`。
+  同じ位置に両方置けば文章の書き分けになる（`exercises/index.html`のLevel 6が例）。
+
+  `components.css`は**隠す側だけ**を書いていて、**一致した要素の`display`には触らない**。
+  おかげで`p` / `section`でも`span` / `code`でも`tr` / `li`でもそのまま使える。
+  **一致した側に`display: block`を当てる実装に戻さないこと**（インラインが改行し、
+  `.card-grid`のgridや`.check`のflexが崩れる）。
+  `data-audience`が入る前は全部隠すので、JSが動かないときに講師向けの記述は漏れない。
+  `toc.ts`は非表示ブロックの見出しを目次から除く。
 
 **これはアクセス制御ではない。** 静的ホストでは配信済みのページはURLを知れば読める。
 本当に見せたくないものは、解答例と同じく`vite.config.ts`でビルド対象から外すこと。
