@@ -1,11 +1,15 @@
 /**
- * 表示対象者（受講者 / 講師）の切り替え。
+ * 表示対象者（受講者 / 講師）の切り替えと、講師モードの解錠。
  *
  * サイドバーと前へ/次へはこの値でページを絞り、本文中の [data-for] ブロックは
  * CSSで出し分ける。既定は受講者側。
  *
- * これはアクセス制御ではない。静的ホストでは配信したものはURLを知れば読めるため、
- * 「誰に向けた導線を出すか」を切り替えているだけである。本当に見せたくないものは
+ * 講師モードは合言葉つきのURL（ ?teacher=<合言葉> ）を一度開くと解錠され、
+ * 以降はヘッダに切り替えボタンが出る。解錠していないブラウザにはボタン自体が出ない。
+ *
+ * これは本当のロックではない。合言葉はJSバンドルに含まれるし、localStorageは
+ * DevToolsから直接書き換えられる。「受講者がうっかり講師モードに入らない」ための
+ * 掛け金であって、読ませないための仕組みではない。本当に見せたくないものは、
  * 解答例と同じく vite.config.ts でビルド対象から外すこと。
  */
 
@@ -13,27 +17,63 @@ import { AUDIENCE_TITLES, PAGES, visibleTo, type Audience } from '../data/lesson
 import { currentPageId, siteBase } from '../components/nav';
 
 const AUDIENCE_KEY = 'cpp-course:audience';
+const UNLOCK_KEY = 'cpp-course:teacher-key';
+const URL_PARAM = 'teacher';
 
-function stored(): Audience | null {
+/**
+ * ビルド時に VITE_TEACHER_KEY から埋め込まれる合言葉。
+ * 未設定のときは開発用の既定値になるので、公開ビルドでは必ず設定すること。
+ */
+const TEACHER_KEY = import.meta.env.VITE_TEACHER_KEY || 'sensei';
+
+function read(key: string): string | null {
   try {
-    const value = window.localStorage.getItem(AUDIENCE_KEY);
-    return value === 'student' || value === 'teacher' ? value : null;
+    return window.localStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
-function save(audience: Audience): void {
+function write(key: string, value: string | null): void {
   try {
-    window.localStorage.setItem(AUDIENCE_KEY, audience);
+    if (value === null) window.localStorage.removeItem(key);
+    else window.localStorage.setItem(key, value);
   } catch {
-    /* 保存できなくても表示は切り替える */
+    /* 保存できなくても、そのページの表示は成立させる */
   }
+}
+
+function storedAudience(): Audience | null {
+  const value = read(AUDIENCE_KEY);
+  return value === 'student' || value === 'teacher' ? value : null;
+}
+
+/**
+ * URLに合言葉が付いていたら取り込み、アドレスバーからは消す。
+ * 残したままだと、講師が画面を共有したときやURLをコピーしたときに漏れる。
+ */
+function consumeKeyFromUrl(): void {
+  const url = new URL(window.location.href);
+  const given = url.searchParams.get(URL_PARAM);
+  if (given === null) return;
+
+  url.searchParams.delete(URL_PARAM);
+  window.history.replaceState(null, '', url.toString());
+
+  if (given === TEACHER_KEY) write(UNLOCK_KEY, given);
+}
+
+/**
+ * 解錠済みか。合言葉そのものを保存して突き合わせているので、
+ * 合言葉を変えれば古い解錠は自動的に無効になる。
+ */
+function unlocked(): boolean {
+  return read(UNLOCK_KEY) === TEACHER_KEY;
 }
 
 /**
  * 各HTMLの<head>のインラインスクリプトが描画前に同じ値を入れている（ちらつき防止）。
- * ここで入れ直すのは、切り替えボタンを押したときと、保存に失敗する環境のため。
+ * ここで入れ直すのは、切り替えボタンを押したときと、合言葉が変わっていたときのため。
  */
 function apply(audience: Audience): void {
   document.documentElement.dataset.audience = audience;
@@ -55,24 +95,37 @@ function currentPage() {
 /**
  * 表示対象者を決めて適用する。
  *
- * 講師向けページのURLを直接開いたときは、そのページに合わせて切り替える。
- * そうしないとサイドバーに現在地が無く、前へ/次へも出ない状態になる。
+ * 解錠済みの場合にかぎり、講師向けページのURLを直接開いたときはそのページに
+ * 合わせて切り替える。そうしないとサイドバーに現在地が無く、前へ/次へも出ない
+ * 行き止まりになる。未解錠のブラウザは常に受講者表示のままにする。
  */
 export function setupAudience(onChange: (audience: Audience) => void): Audience {
-  const page = currentPage();
-  let audience: Audience = stored() ?? 'student';
+  consumeKeyFromUrl();
 
-  if (page?.audience && page.audience !== audience) {
-    audience = page.audience;
-    save(audience);
+  const isUnlocked = unlocked();
+  if (!isUnlocked) write(UNLOCK_KEY, null);
+
+  // CSSはこの属性を見て切り替えボタンを出す
+  document.documentElement.toggleAttribute('data-teacher', isUnlocked);
+
+  let audience: Audience = 'student';
+  if (isUnlocked) {
+    const page = currentPage();
+    audience = storedAudience() ?? 'student';
+
+    if (page?.audience && page.audience !== audience) {
+      audience = page.audience;
+      write(AUDIENCE_KEY, audience);
+    }
   }
 
   apply(audience);
+  if (!isUnlocked) return audience;
 
   const button = document.querySelector<HTMLButtonElement>('.audience-toggle');
   button?.addEventListener('click', () => {
     const next: Audience = audience === 'student' ? 'teacher' : 'student';
-    save(next);
+    write(AUDIENCE_KEY, next);
 
     // 切り替えた先に現在のページが無い場合は、行き止まりになるのでトップへ戻す
     const here = currentPage();

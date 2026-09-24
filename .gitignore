@@ -12,6 +12,10 @@ dist/
 .pioenvs/
 .piolibdeps/
 
+# 環境変数（講師モードの合言葉など）
+.env
+.env.local
+
 # エディタ・OS
 .vscode/
 .DS_Store
