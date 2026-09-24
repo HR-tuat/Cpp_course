@@ -2,8 +2,7 @@
 
 #include "Sensor.h"
 
-class GPS : public Sensor
-{
+class GPS : public Sensor {
 public:
     GPS();
 

@@ -57,8 +57,7 @@
 
         <figure class="code"><figcaption>include/Sensor.h</figcaption><pre><code class="language-cpp">#pragma once
 
-class Sensor
-{
+class Sensor {
 public:
     virtual ~Sensor() = default;
 
@@ -86,8 +85,7 @@ note:     virtual void Sensor::update()</code></pre></figure>
 
 #include "Sensor.h"
 
-class ToF : public Sensor
-{
+class ToF : public Sensor {
 public:
     ToF(int pin);
 
@@ -106,24 +104,20 @@ private:
 #include "ToF.h"
 
 ToF::ToF(int pin)
-    : pin(pin), distanceMm(0)
-{
+    : pin(pin), distanceMm(0) {
 }
 
-void ToF::update()
-{
+void ToF::update() {
     // 実機では距離センサから読む
     distanceMm = analogRead(pin);
 }
 
-void ToF::print() const
-{
+void ToF::print() const {
     Serial.print("ToF distance=");
     Serial.println(distanceMm);
 }
 
-int ToF::getDistanceMm() const
-{
+int ToF::getDistanceMm() const {
     return distanceMm;
 }</code></pre></figure>
 

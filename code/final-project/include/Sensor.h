@@ -1,7 +1,6 @@
 #pragma once
 
-class Sensor
-{
+class Sensor {
 public:
     virtual ~Sensor() = default;
 

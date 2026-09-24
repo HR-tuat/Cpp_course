@@ -1,7 +1,6 @@
 #pragma once
 
-class Motor
-{
+class Motor {
 public:
     Motor(int pin);
 

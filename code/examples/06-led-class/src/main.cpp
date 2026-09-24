@@ -3,40 +3,31 @@
 
 #include <Arduino.h>
 
-class LED
-{
+class LED {
 public:
     LED(int pin)
-        : pin(pin), state(false)
-    {
+        : pin(pin), state(false) {
     }
 
-    void begin()
-    {
+    void begin() {
         pinMode(pin, OUTPUT);
         off();
     }
 
-    void on()
-    {
+    void on() {
         state = true;
         digitalWrite(pin, HIGH);
     }
 
-    void off()
-    {
+    void off() {
         state = false;
         digitalWrite(pin, LOW);
     }
 
-    void toggle()
-    {
-        if (state)
-        {
+    void toggle() {
+        if (state) {
             off();
-        }
-        else
-        {
+        } else {
             on();
         }
     }
@@ -50,14 +41,12 @@ private:
 LED led1(2);
 LED led2(4);
 
-void setup()
-{
+void setup() {
     led1.begin();
     led2.begin();
 }
 
-void loop()
-{
+void loop() {
     led1.toggle();
     delay(500);
 

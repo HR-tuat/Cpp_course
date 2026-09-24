@@ -71,8 +71,7 @@
 
         <p>判断の根拠は「<strong>そのデータを変更する処理はどこにあるか</strong>」である。状態を変えるのは「距離が近いから止まろう」という制御判断であり、それは<code>Controller</code>の仕事。データは、それを変更する処理と同じクラスに置く。</p>
 
-        <figure class="code"><pre><code class="language-cpp">class Controller
-{
+        <figure class="code"><pre><code class="language-cpp">class Controller {
 public:
     void update();
     RobotState getState() const;   // 外からは読むだけ
@@ -98,8 +97,7 @@ private:
         <p><code>DistanceSensor</code>に<code>isNear()</code>を持たせたくなるが、勧められない。</p>
 
         <figure class="code"><pre><code class="language-cpp">// 考えどころ
-class DistanceSensor
-{
+class DistanceSensor {
 public:
     bool isNear() const;   // 「近い」の基準は誰が決める？
 };</code></pre></figure>
@@ -107,15 +105,11 @@ public:
         <p>「近い」の基準は用途によって変わる。小型ロボットなら100mm、大型なら1000mmかもしれない。センサは「何mmか」だけを答え、それを近いと見なすかは<code>Controller</code>が決める。</p>
 
         <figure class="code"><pre><code class="language-cpp">// 推奨
-void Controller::update()
-{
-    if (distance.getDistanceMm() &lt; STOP_DISTANCE_MM)
-    {
+void Controller::update() {
+    if (distance.getDistanceMm() &lt; STOP_DISTANCE_MM) {
         state = RobotState::STOP;
         motor.stop();
-    }
-    else
-    {
+    } else {
         state = RobotState::MOVE;
         motor.setSpeed(CRUISE_SPEED);
     }
@@ -151,10 +145,8 @@ void Controller::update()
 
         <p><code>FlightController</code>に残るのは「各部品を順番に動かす」ことだけになる。</p>
 
-        <figure class="code"><pre><code class="language-cpp">void FlightController::update()
-{
-    for (int i = 0; i &lt; SENSOR_COUNT; i++)
-    {
+        <figure class="code"><pre><code class="language-cpp">void FlightController::update() {
+    for (int i = 0; i &lt; SENSOR_COUNT; i++) {
         sensors[i]-&gt;update();
     }
 

@@ -2,8 +2,7 @@
 
 #pragma once
 
-class LED
-{
+class LED {
 public:
     LED(int pin);
 

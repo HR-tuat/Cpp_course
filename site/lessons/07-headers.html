@@ -74,8 +74,7 @@ Motor.cpp</pre></figure>
 
         <h2 id="宣言と定義">宣言と定義</h2>
 
-        <figure class="code"><figcaption>LED.h</figcaption><pre><code class="language-cpp">class LED
-{
+        <figure class="code"><figcaption>LED.h</figcaption><pre><code class="language-cpp">class LED {
 public:
     LED(int pin);
 
@@ -89,16 +88,13 @@ private:
         <figure class="code"><figcaption>LED.cpp</figcaption><pre><code class="language-cpp">#include "LED.h"
 
 LED::LED(int pin)
-    : pin(pin)
-{
+    : pin(pin) {
 }
 
-void LED::on()
-{
+void LED::on() {
 }
 
-void LED::off()
-{
+void LED::off() {
 }</code></pre></figure>
 
         <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>.cpp</code>側でメンバ関数を書くときは<code>LED::</code>が必要。これを忘れて「ただの関数」を定義してしまうミスが多い。</p></aside>

@@ -55,13 +55,11 @@
 
         <h2 id="基本-500ms周期で点滅">基本：500ms周期で点滅</h2>
 
-        <figure class="code"><pre><code class="language-cpp">void setup()
-{
+        <figure class="code"><pre><code class="language-cpp">void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void loop()
-{
+void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(500);
 
@@ -75,8 +73,7 @@ void loop()
 
         <figure class="code"><pre><code class="language-cpp">const int BLINK_MS = 100;   // ここだけ変えれば速度が変わる
 
-void loop()
-{
+void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(BLINK_MS);
 
@@ -89,21 +86,16 @@ void loop()
         <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
 const int BUTTON_PIN = 4;
 
-void setup()
-{
+void setup() {
     pinMode(LED_PIN, OUTPUT);
     pinMode(BUTTON_PIN, INPUT_PULLUP);
 }
 
-void loop()
-{
+void loop() {
     // INPUT_PULLUP では、押したときに LOW になる
-    if (digitalRead(BUTTON_PIN) == LOW)
-    {
+    if (digitalRead(BUTTON_PIN) == LOW) {
         digitalWrite(LED_PIN, HIGH);
-    }
-    else
-    {
+    } else {
         digitalWrite(LED_PIN, LOW);
     }
 }</code></pre></figure>

@@ -5,36 +5,28 @@
 #include "LED.h"
 
 LED::LED(int pin)
-    : pin(pin), state(false)
-{
+    : pin(pin), state(false) {
 }
 
-void LED::begin()
-{
+void LED::begin() {
     pinMode(pin, OUTPUT);
     off();
 }
 
-void LED::on()
-{
+void LED::on() {
     state = true;
     digitalWrite(pin, HIGH);
 }
 
-void LED::off()
-{
+void LED::off() {
     state = false;
     digitalWrite(pin, LOW);
 }
 
-void LED::toggle()
-{
-    if (state)
-    {
+void LED::toggle() {
+    if (state) {
         off();
-    }
-    else
-    {
+    } else {
         on();
     }
 }

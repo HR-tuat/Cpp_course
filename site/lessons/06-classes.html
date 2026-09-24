@@ -55,8 +55,7 @@
 
         <figure class="code"><pre><code class="language-cpp">int motorSpeed;
 
-void setMotorSpeed(int speed)
-{
+void setMotorSpeed(int speed) {
     motorSpeed = speed;
 }</code></pre></figure>
 
@@ -70,8 +69,7 @@ void setMotorSpeed(int speed)
 
         <h2 id="クラス化">クラス化</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Motor
-{
+        <figure class="code"><pre><code class="language-cpp">class Motor {
 public:
     void setSpeed(int speed);
 
@@ -108,8 +106,7 @@ Motor motor2;</code></pre></figure>
 
         <h2 id="this">this</h2>
 
-        <figure class="code"><pre><code class="language-cpp">void Motor::setSpeed(int speed)
-{
+        <figure class="code"><pre><code class="language-cpp">void Motor::setSpeed(int speed) {
     this-&gt;speed = speed;
 }</code></pre></figure>
 
@@ -117,8 +114,7 @@ Motor motor2;</code></pre></figure>
 
         <h2 id="コンストラクタ">コンストラクタ</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Motor
-{
+        <figure class="code"><pre><code class="language-cpp">class Motor {
 public:
     Motor(int pin);
 
@@ -126,8 +122,7 @@ private:
     int pin;
 };</code></pre></figure>
 
-        <figure class="code"><pre><code class="language-cpp">Motor::Motor(int pin)
-{
+        <figure class="code"><pre><code class="language-cpp">Motor::Motor(int pin) {
     this-&gt;pin = pin;
 }</code></pre></figure>
 
@@ -140,8 +135,7 @@ private:
         <h2 id="メンバ初期化リスト">メンバ初期化リスト</h2>
 
         <figure class="code"><pre><code class="language-cpp">Motor::Motor(int pin)
-    : pin(pin)
-{
+    : pin(pin) {
 }</code></pre></figure>
 
         <p>こちらを推奨する。</p>

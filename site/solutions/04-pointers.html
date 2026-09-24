@@ -55,14 +55,11 @@
 
         <h2 id="1-配列の最大値を求める">1. 配列の最大値を求める</h2>
 
-        <figure class="code"><pre><code class="language-cpp">int findMax(const int values[], int count)
-{
+        <figure class="code"><pre><code class="language-cpp">int findMax(const int values[], int count) {
     int max = values[0];
 
-    for (int i = 1; i &lt; count; i++)
-    {
-        if (values[i] &gt; max)
-        {
+    for (int i = 1; i &lt; count; i++) {
+        if (values[i] &gt; max) {
             max = values[i];
         }
     }
@@ -70,8 +67,7 @@
     return max;
 }
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 
     int values[5] = {12, 45, 7, 38, 21};
@@ -79,8 +75,7 @@ void setup()
     Serial.println(findMax(values, 5));   // 45
 }
 
-void loop()
-{
+void loop() {
 }</code></pre></figure>
 
         <ul>
@@ -93,13 +88,11 @@ void loop()
 
         <h2 id="2-ポインタを使って関数から変数を変更">2. ポインタを使って関数から変数を変更</h2>
 
-        <figure class="code"><pre><code class="language-cpp">void addOne(int* value)
-{
+        <figure class="code"><pre><code class="language-cpp">void addOne(int* value) {
     *value = *value + 1;
 }
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 
     int count = 10;
@@ -110,13 +103,11 @@ void setup()
 
         <h2 id="3-参照を使って関数から変数を変更">3. 参照を使って関数から変数を変更</h2>
 
-        <figure class="code"><pre><code class="language-cpp">void addOneRef(int&amp; value)
-{
+        <figure class="code"><pre><code class="language-cpp">void addOneRef(int&amp; value) {
     value = value + 1;
 }
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 
     int count = 10;
@@ -127,8 +118,7 @@ void setup()
 
         <h2 id="値渡しとの違い">値渡しとの違い</h2>
 
-        <figure class="code"><pre><code class="language-cpp">void addOneWrong(int value)
-{
+        <figure class="code"><pre><code class="language-cpp">void addOneWrong(int value) {
     value = value + 1;   // コピーを書き換えているだけ
 }
 

@@ -53,8 +53,7 @@
 
         <h2 id="enum">enum</h2>
 
-        <figure class="code"><pre><code class="language-cpp">enum Mode
-{
+        <figure class="code"><pre><code class="language-cpp">enum Mode {
     MANUAL,
     AUTO,
     ERROR
@@ -62,8 +61,7 @@
 
         <h2 id="enum-class">enum class</h2>
 
-        <figure class="code"><pre><code class="language-cpp">enum class Mode
-{
+        <figure class="code"><pre><code class="language-cpp">enum class Mode {
     MANUAL,
     AUTO,
     ERROR
@@ -77,8 +75,7 @@
 
         <h2 id="switchとの組み合わせ">switchとの組み合わせ</h2>
 
-        <figure class="code"><pre><code class="language-cpp">switch (mode)
-{
+        <figure class="code"><pre><code class="language-cpp">switch (mode) {
 case Mode::MANUAL:
     break;
 
@@ -95,8 +92,7 @@ case Mode::ERROR:
 
         <p>例えば飛行制御なら、</p>
 
-        <figure class="code"><pre><code class="language-cpp">enum class FlightMode
-{
+        <figure class="code"><pre><code class="language-cpp">enum class FlightMode {
     MANUAL,
     LEVEL_TURN,
     CLIMBING_TURN,
@@ -106,8 +102,7 @@ case Mode::ERROR:
 
         <p>のように状態を管理できる。<code>int mode = 3;</code>のような書き方と比べ、何を表しているかがコード上で明確になる。</p>
 
-        <section class="exercise"><h3 class="exercise-title">演習：簡単なロボットの状態を作る</h3><figure class="code"><pre><code class="language-cpp">enum class RobotState
-{
+        <section class="exercise"><h3 class="exercise-title">演習：簡単なロボットの状態を作る</h3><figure class="code"><pre><code class="language-cpp">enum class RobotState {
     STOP,
     MOVE,
     ERROR

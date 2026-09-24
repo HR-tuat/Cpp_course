@@ -53,8 +53,7 @@
 
         <h2 id="public">public</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Motor
-{
+        <figure class="code"><pre><code class="language-cpp">class Motor {
 public:
     void setSpeed(int speed);
 };</code></pre></figure>
@@ -63,8 +62,7 @@ public:
 
         <h2 id="private">private</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Motor
-{
+        <figure class="code"><pre><code class="language-cpp">class Motor {
 private:
     int speed;
 };</code></pre></figure>
@@ -73,8 +71,7 @@ private:
 
         <h2 id="protected">protected</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class Sensor {
 protected:
     int value;
 };</code></pre></figure>
@@ -96,8 +93,7 @@ protected:
 
         <h2 id="getter-setter">getter / setter</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Motor
-{
+        <figure class="code"><pre><code class="language-cpp">class Motor {
 public:
     void setSpeed(int speed);
     int getSpeed() const;
@@ -114,15 +110,12 @@ private:
 
         <p>のような不正な値を外部から設定される可能性がある。そこで、</p>
 
-        <figure class="code"><pre><code class="language-cpp">void Motor::setSpeed(int speed)
-{
-    if (speed &lt; 0)
-    {
+        <figure class="code"><pre><code class="language-cpp">void Motor::setSpeed(int speed) {
+    if (speed &lt; 0) {
         speed = 0;
     }
 
-    if (speed &gt; 100)
-    {
+    if (speed &gt; 100) {
         speed = 100;
     }
 

@@ -57,8 +57,7 @@
 
         <figure class="code"><figcaption>include/Sensor.h</figcaption><pre><code class="language-cpp">#pragma once
 
-class Sensor
-{
+class Sensor {
 public:
     virtual ~Sensor() = default;
 
@@ -69,8 +68,7 @@ public:
 
 #include "Sensor.h"
 
-void Sensor::update()
-{
+void Sensor::update() {
     Serial.println("Sensor::update");
 }</code></pre></figure>
 
@@ -78,8 +76,7 @@ void Sensor::update()
 
 #include "Sensor.h"
 
-class IMU : public Sensor
-{
+class IMU : public Sensor {
 public:
     void update() override;
 };</code></pre></figure>
@@ -88,8 +85,7 @@ public:
 
 #include "IMU.h"
 
-void IMU::update()
-{
+void IMU::update() {
     Serial.println("IMU::update");
 }</code></pre></figure>
 
@@ -104,8 +100,7 @@ void IMU::update()
 IMU imu;
 GPS gps;
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 
     Sensor* sensor = &amp;imu;
@@ -115,8 +110,7 @@ void setup()
     sensor-&gt;update();       // GPS::update
 }
 
-void loop()
-{
+void loop() {
 }</code></pre></figure>
 
         <h2 id="virtualを外すとどうなるか">virtualを外すとどうなるか</h2>
@@ -137,8 +131,7 @@ void loop()
 
         <h2 id="overrideを必ず付ける">overrideを必ず付ける</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor {
 public:
     void updata() override;   // 綴りミス → コンパイルエラーになる
 };</code></pre></figure>

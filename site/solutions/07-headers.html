@@ -70,8 +70,7 @@ src/
 
         <figure class="code"><figcaption>include/LED.h</figcaption><pre><code class="language-cpp">#pragma once
 
-class LED
-{
+class LED {
 public:
     LED(int pin);
 
@@ -90,36 +89,28 @@ private:
 #include "LED.h"
 
 LED::LED(int pin)
-    : pin(pin), state(false)
-{
+    : pin(pin), state(false) {
 }
 
-void LED::begin()
-{
+void LED::begin() {
     pinMode(pin, OUTPUT);
     off();
 }
 
-void LED::on()
-{
+void LED::on() {
     state = true;
     digitalWrite(pin, HIGH);
 }
 
-void LED::off()
-{
+void LED::off() {
     state = false;
     digitalWrite(pin, LOW);
 }
 
-void LED::toggle()
-{
-    if (state)
-    {
+void LED::toggle() {
+    if (state) {
         off();
-    }
-    else
-    {
+    } else {
         on();
     }
 }</code></pre></figure>
@@ -128,8 +119,7 @@ void LED::toggle()
 
         <figure class="code"><figcaption>include/Button.h</figcaption><pre><code class="language-cpp">#pragma once
 
-class Button
-{
+class Button {
 public:
     Button(int pin);
 
@@ -145,17 +135,14 @@ private:
 #include "Button.h"
 
 Button::Button(int pin)
-    : pin(pin)
-{
+    : pin(pin) {
 }
 
-void Button::begin()
-{
+void Button::begin() {
     pinMode(pin, INPUT_PULLUP);
 }
 
-bool Button::isPressed() const
-{
+bool Button::isPressed() const {
     return digitalRead(pin) == LOW;
 }</code></pre></figure>
 
@@ -171,22 +158,17 @@ LED led(2);
 Button button(4);
 Motor motor(5);
 
-void setup()
-{
+void setup() {
     led.begin();
     button.begin();
     motor.begin();
 }
 
-void loop()
-{
-    if (button.isPressed())
-    {
+void loop() {
+    if (button.isPressed()) {
         led.on();
         motor.setSpeed(50);
-    }
-    else
-    {
+    } else {
         led.off();
         motor.stop();
     }

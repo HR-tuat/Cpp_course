@@ -6,13 +6,11 @@
 
 LED led(2);
 
-void setup()
-{
+void setup() {
     led.begin();
 }
 
-void loop()
-{
+void loop() {
     led.toggle();
     delay(500);
 }

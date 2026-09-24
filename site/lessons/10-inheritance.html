@@ -53,14 +53,12 @@
 
         <h2 id="継承なし">継承なし</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class IMU
-{
+        <figure class="code"><pre><code class="language-cpp">class IMU {
 public:
     void update();
 };
 
-class GPS
-{
+class GPS {
 public:
     void update();
 };</code></pre></figure>
@@ -69,18 +67,15 @@ public:
 
         <h2 id="共通部分をsensorへ">共通部分をSensorへ</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class Sensor {
 public:
     void update();
 };</code></pre></figure>
 
-        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor {
 };</code></pre></figure>
 
-        <figure class="code"><pre><code class="language-cpp">class GPS : public Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class GPS : public Sensor {
 };</code></pre></figure>
 
         <h2 id="is-a-の関係">「is-a」の関係</h2>
@@ -94,8 +89,7 @@ GPS is a Sensor</pre></figure>
 
         <h2 id="protected">protected</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class Sensor {
 protected:
     int value;
 };</code></pre></figure>

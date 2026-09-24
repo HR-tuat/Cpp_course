@@ -65,15 +65,12 @@ const int PWM_MAX = 255;
 
 int motorSpeed = 0;   // 現在の速度を覚えておく
 
-void motorSetSpeed(int speed)
-{
-    if (speed &lt; MIN_SPEED)
-    {
+void motorSetSpeed(int speed) {
+    if (speed &lt; MIN_SPEED) {
         speed = MIN_SPEED;
     }
 
-    if (speed &gt; MAX_SPEED)
-    {
+    if (speed &gt; MAX_SPEED) {
         speed = MAX_SPEED;
     }
 
@@ -81,37 +78,29 @@ void motorSetSpeed(int speed)
     analogWrite(MOTOR_PIN, speed * PWM_MAX / MAX_SPEED);
 }
 
-void motorStop()
-{
+void motorStop() {
     motorSetSpeed(0);
 }
 
-bool isButtonPressed()
-{
+bool isButtonPressed() {
     return digitalRead(BUTTON_PIN) == LOW;
 }
 
-int readSensor()
-{
+int readSensor() {
     return analogRead(SENSOR_PIN);
 }
 
-void setup()
-{
+void setup() {
     pinMode(MOTOR_PIN, OUTPUT);
     pinMode(BUTTON_PIN, INPUT_PULLUP);
 
     motorStop();
 }
 
-void loop()
-{
-    if (isButtonPressed())
-    {
+void loop() {
+    if (isButtonPressed()) {
         motorSetSpeed(50);
-    }
-    else
-    {
+    } else {
         motorStop();
     }
 }</code></pre></figure>

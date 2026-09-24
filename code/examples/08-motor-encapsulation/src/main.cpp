@@ -4,8 +4,7 @@
 
 Motor motor(5);
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
     motor.begin();
 
@@ -17,6 +16,5 @@ void setup()
     Serial.println(motor.getSpeed()); // 100
 }
 
-void loop()
-{
+void loop() {
 }

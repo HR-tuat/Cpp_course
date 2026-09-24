@@ -1,7 +1,6 @@
 #pragma once
 
-class LED
-{
+class LED {
 public:
     // TODO: ピン番号を受け取るコンストラクタを宣言する
 

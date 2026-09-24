@@ -3,15 +3,13 @@
 #include "DistanceSensor.h"
 #include "Motor.h"
 
-enum class RobotState
-{
+enum class RobotState {
     STOP,
     MOVE,
     ERROR
 };
 
-class Controller
-{
+class Controller {
 public:
     Controller(Motor& motor, DistanceSensor& distance);
 

@@ -13,15 +13,12 @@ GPS gps;
 Sensor* sensors[] = {&imu, &gps};
 const int SENSOR_COUNT = sizeof(sensors) / sizeof(sensors[0]);
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 }
 
-void loop()
-{
-    for (int i = 0; i < SENSOR_COUNT; i++)
-    {
+void loop() {
+    for (int i = 0; i < SENSOR_COUNT; i++) {
         sensors[i]->update();
         sensors[i]->print();
     }
