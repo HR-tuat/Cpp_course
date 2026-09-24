@@ -26,7 +26,7 @@ export interface SolutionMeta {
 }
 
 export const SOLUTIONS: SolutionMeta[] = [
-  { lessonId: 'lesson-00', path: 'solutions/00-intro.html', label: '第0回', title: 'LEDを点滅させる', published: true },
+  { lessonId: 'lesson-00', path: 'solutions/00-intro.html', label: '第0回', title: 'LEDを点滅させる', published: false },
   { lessonId: 'lesson-01', path: 'solutions/01-variables.html', label: '第1回', title: '温度が30度以上ならLEDを点灯する', published: false },
   { lessonId: 'lesson-02', path: 'solutions/02-control.html', label: '第2回', title: '繰り返しと条件分岐', published: false },
   { lessonId: 'lesson-03', path: 'solutions/03-functions.html', label: '第3回', title: 'モータとセンサの関数', published: false },
