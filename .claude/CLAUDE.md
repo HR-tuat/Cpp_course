@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-「マイコンのためのC++講座」の教材サイト。GitHub Pages（<https://hr-tuat.github.io/>）で公開する。
+「マイコンのためのC++講座」の教材サイト。GitHub Pages（<https://hr-tuat.github.io/Cpp_course/>）で公開する。
 ページ本文・コメント・コミットメッセージはすべて日本語で書く。
 
 ## コマンド
@@ -30,8 +30,12 @@ pio device monitor
 ### Viteのrootは `site/`（リポジトリ直下ではない）
 
 `vite.config.ts` は `site/` を再帰的に走査し、見つけた `.html` をすべてrollupの入力にする。
-**ページを増やしてもビルド設定の変更は不要**。出力先は `<repo>/dist/`、`base` は `/`
-（ユーザーサイトのためルート配信。プロジェクトページに変える場合のみ `/<リポジトリ名>/` にする）。
+**ページを増やしてもビルド設定の変更は不要**。出力先は `<repo>/dist/`。
+
+`base` は `/Cpp_course/`。プロジェクトページ（`hr-tuat.github.io/Cpp_course/`）で配信するため、
+**リポジトリ名を変えたら `vite.config.ts` の `base` も必ず合わせる**。ここがずれると
+`/assets/main-*.css` などが全て404になり、素のHTMLだけが表示される。
+ユーザーサイト（`<ユーザー名>.github.io`）に移す場合のみ `/` に戻す。
 
 ### ナビゲーションの単一情報源は `site/scripts/data/lessons.ts`
 

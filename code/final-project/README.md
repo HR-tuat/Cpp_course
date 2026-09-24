@@ -1,7 +1,7 @@
 # 最終課題：簡易自律ロボット
 
 `include/` と `src/` の雛形を埋めて完成させる。詳しい要件はサイトの
-[最終課題](https://hr-tuat.github.io/final-project/) を参照。
+[最終課題](https://hr-tuat.github.io/Cpp_course/final-project/) を参照。
 
 ## 必須要件
 
