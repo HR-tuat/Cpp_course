@@ -133,7 +133,8 @@ localStorage（`cpp-course:audience`）に保存する。既定は`student`。
 クエリは`history.replaceState()`で**アドレスバーから消す**（画面共有やURLコピーで漏れないため）。
 
 合言葉は`VITE_TEACHER_KEY`からビルド時に埋め込む。GitHub ActionsはリポジトリのSecretsの
-`TEACHER_KEY`を`deploy.yml`経由で渡す。**未設定なら`audience.ts`の既定値（`sensei`）のまま**になる。
+`TEACHER_KEY`を`deploy.yml`経由で渡す。**未設定なら`audience.ts`の既定値（`cpp`）のまま**になる（READMEにそのURLを載せてあるので、
+変えるならREADMEも直す）。
 保存しているのが合言葉そのものなので、**合言葉を変えれば古い解錠は自動的に無効になる**。
 
 **これは鍵ではなく掛け金である。** 合言葉はJSバンドルに平文で入っているし、localStorageは
