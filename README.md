@@ -46,6 +46,9 @@ npm run preview    # ビルド結果を確認
 
 ## ページを追加するとき
 
+HTMLの書き方、受講者 / 講師の出し分け、本文で使う部品は
+**[`docs/html-guide.md`](docs/html-guide.md)** にまとめてある。
+
 1. `site/` 以下にHTMLを置く（`<body data-page="...">` を付ける）
 2. `site/scripts/data/lessons.ts` の `PAGES` に1行追加する
 
