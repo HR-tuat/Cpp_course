@@ -78,6 +78,50 @@ int add(int a, int b)
 
         <p>引数を付けることで、同じ処理を違う値に対して使い回せる。</p>
 
+        <h2 id="コメントの書き方">コメントの書き方</h2>
+
+        <p>関数には、何をする関数なのかをコメントで書いておく。この講座では次の形に統一する。</p>
+
+        <figure class="code"><pre><code class="language-cpp">/**
+ * @brief 倍化関数
+ * @param value 値
+ * @param flag 有効化フラグ
+ * @return 倍化した値(有効時)
+ */
+int doubleValue(int value, bool flag) {
+    if (flag) {
+        return value * 2;
+    } else {
+        return value;
+    }
+}</code></pre></figure>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>タグ</th><th>書く内容</th></tr></thead>
+            <tbody>
+            <tr><td><code>@brief</code></td><td>その関数が何をするか。1行で書く</td></tr>
+            <tr><td><code>@param</code></td><td>引数ひとつにつき1行。引数名のあとに説明を続ける</td></tr>
+            <tr><td><code>@return</code></td><td>返す値。<code>void</code>の関数には書かない</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>先頭が<code>/**</code>で始まるのが目印である。アスタリスクが1つの<code>/*</code>だとこの形式として扱われない。</p>
+
+        <p>処理の途中に短い説明を入れるときは<code>//</code>を使う。</p>
+
+        <figure class="code"><pre><code class="language-cpp">void loop() {
+    // ボタンが押されている間だけ点灯する
+    if (digitalRead(BUTTON_PIN) == LOW) {
+        digitalWrite(LED_BUILTIN, HIGH);
+    } else {
+        digitalWrite(LED_BUILTIN, LOW);
+    }
+}</code></pre></figure>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>コードを読めば分かることを繰り返さない。「<code>i</code>を1増やす」のようなコメントは要らない。書く価値があるのは「なぜそうしているか」のほうである。</p></aside>
+
         <h2 id="ローカル変数">ローカル変数</h2>
 
         <figure class="code"><pre><code class="language-cpp">void function() {
