@@ -68,6 +68,8 @@
 
         <p>コピーを避けながら変更しないことを表現できる。オブジェクトを引数に渡すときの基本形として覚えておくとよい。</p>
 
+        <aside class="callout callout-info"><p class="callout-title">ポイント</p><p>値渡しではなく参照渡しである理由は、メモリのコピーを避けるためである。大きなオブジェクトを渡す際には、参照渡しの方が効率的である。</p></aside>
+
         <h2 id="名前空間">名前空間</h2>
 
         <figure class="code"><pre><code class="language-cpp">namespace Motor {
@@ -78,7 +80,7 @@
 
         <figure class="code"><pre><code class="language-cpp">Motor::start();</code></pre></figure>
 
-        <p>名前の衝突を避け、どのまとまりに属する機能なのかを示せる。</p>
+        <p>名前(変数・関数名)の衝突を避け、どのまとまりに属する機能なのかを示せる。<code>Motor::start()</code>と<code>Sensor::start()</code>はそれぞれ異なる名前空間に属するため、名前の衝突を避けられる。</p>
 
         <h2 id="関数オーバーロード">関数オーバーロード</h2>
 
