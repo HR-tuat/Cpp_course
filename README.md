@@ -53,6 +53,21 @@ npm run preview    # ビルド結果を確認
 それ以外に手を入れる必要はない。ビルド対象のHTMLは `vite.config.ts` が
 `site/` を走査して自動で拾う。
 
+## 解答例の公開（段階公開）
+
+各回の演習の解答例は `site/solutions/` にあり、**その回の授業が終わったあとに公開する**運用。
+
+公開するには `site/scripts/data/solutions.ts` の該当する回の `published` を `true` にして
+`main` に push する。それだけでよい。
+
+```ts
+{ lessonId: 'lesson-03', path: 'solutions/03-functions.html', ..., published: true },
+```
+
+`published: false` の回は **`vite.config.ts` がビルド対象から除外する**ため、`dist` に出力されず、
+URLを直接叩いても 404 になる。JSで隠しているのではないので、静的ホストでも確実に非公開になる。
+非公開に戻したいときは `false` に戻して push すれば、次のデプロイで消える。
+
 ## 受講者向けコード
 
 `code/` 以下の各ディレクトリは独立したPlatformIOプロジェクト。

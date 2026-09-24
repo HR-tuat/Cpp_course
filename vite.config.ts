@@ -2,9 +2,19 @@ import { readdirSync } from 'node:fs';
 import { resolve, relative, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+import { SOLUTIONS } from './site/scripts/data/solutions';
 
 const projectRoot = fileURLToPath(new URL('.', import.meta.url));
 const siteRoot = resolve(projectRoot, 'site');
+
+/**
+ * 未公開の解答例（published: false）はビルド対象から外す。
+ * dist に出力されないため、URLを直接叩いても 404 になる。
+ * 「JSで隠す」だけでは静的ホストでは見えてしまうので、ここで落とすことが重要。
+ */
+const unpublished = new Set(
+  SOLUTIONS.filter((solution) => !solution.published).map((solution) => solution.path),
+);
 
 /** site/ 以下のHTMLをすべて探し、rollupの入力にする（複数ページビルド） */
 function htmlEntries(dir: string, found: Record<string, string> = {}): Record<string, string> {
@@ -18,9 +28,11 @@ function htmlEntries(dir: string, found: Record<string, string> = {}): Record<st
     }
 
     if (entry.isFile() && entry.name.endsWith('.html')) {
+      const sitePath = relative(siteRoot, full).split(sep).join('/');
+      if (unpublished.has(sitePath)) continue;
+
       // "index", "guide/policy", "lessons/00-intro" のようなキーにする
-      const name = relative(siteRoot, full).replace(/\.html$/, '').split(sep).join('/');
-      found[name] = full;
+      found[sitePath.replace(/\.html$/, '')] = full;
     }
   }
 

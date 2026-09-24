@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第5回 演習の解答例。constによる定数化、namespace、関数オーバーロード。">
+  <title>第5回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-05" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第5回 解答例</p>
+          <h1>const・名前空間・オーバーロード</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="1-constでマジックナンバーを排除する">1. constでマジックナンバーを排除する</h2>
+
+        <p>修正前：</p>
+
+        <figure class="code"><pre><code class="language-cpp">if (analogRead(34) &gt; 2000)
+{
+    analogWrite(5, 128);
+}</code></pre></figure>
+
+        <p>修正後：</p>
+
+        <figure class="code"><pre><code class="language-cpp">const int SENSOR_PIN = 34;
+const int MOTOR_PIN = 5;
+const int SENSOR_THRESHOLD = 2000;
+const int MOTOR_HALF = 128;
+
+if (analogRead(SENSOR_PIN) &gt; SENSOR_THRESHOLD)
+{
+    analogWrite(MOTOR_PIN, MOTOR_HALF);
+}</code></pre></figure>
+
+        <p><code>34</code>や<code>2000</code>が何の数字なのかが名前から分かる。配線を変えたときも1か所直せばよい。</p>
+
+        <h2 id="2-名前空間にまとめる">2. 名前空間にまとめる</h2>
+
+        <figure class="code"><figcaption>Sensor.h</figcaption><pre><code class="language-cpp">namespace Sensor
+{
+const int PIN = 34;
+const int THRESHOLD = 2000;
+
+void begin();
+int read();
+bool isNear();
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>Sensor.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "Sensor.h"
+
+namespace Sensor
+{
+void begin()
+{
+    pinMode(PIN, INPUT);
+}
+
+int read()
+{
+    return analogRead(PIN);
+}
+
+bool isNear()
+{
+    return read() &gt; THRESHOLD;
+}
+}</code></pre></figure>
+
+        <p>使う側：</p>
+
+        <figure class="code"><pre><code class="language-cpp">Sensor::begin();
+
+if (Sensor::isNear())
+{
+    // ...
+}</code></pre></figure>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p><code>Sensor::read()</code>と書けば、どのまとまりの機能かが一目で分かる。ただし名前空間はデータを隠せない。隠すにはクラス（第6〜8回）が必要。</p></aside>
+
+        <h2 id="3-関数オーバーロード">3. 関数オーバーロード</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int add(int a, int b)
+{
+    return a + b;
+}
+
+float add(float a, float b)
+{
+    return a + b;
+}
+
+void setup()
+{
+    Serial.begin(115200);
+
+    Serial.println(add(1, 2));          // int版が呼ばれる → 3
+    Serial.println(add(1.5f, 2.5f));    // float版が呼ばれる → 4.00
+}</code></pre></figure>
+
+        <p>引数の型で呼び分けられる。呼ぶ側は<code>add</code>という1つの名前を覚えればよい。</p>
+
+        <p>→ <a href="../lessons/05-cpp-basics.html">第5回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

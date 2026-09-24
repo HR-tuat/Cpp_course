@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第6回 演習の解答例。クラス、コンストラクタ、メンバ初期化リスト。">
+  <title>第6回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-06" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第6回 解答例</p>
+          <h1>LEDクラスを作る</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="解答">解答</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+class LED
+{
+public:
+    LED(int pin)
+        : pin(pin), state(false)
+    {
+    }
+
+    void begin()
+    {
+        pinMode(pin, OUTPUT);
+        off();
+    }
+
+    void on()
+    {
+        state = true;
+        digitalWrite(pin, HIGH);
+    }
+
+    void off()
+    {
+        state = false;
+        digitalWrite(pin, LOW);
+    }
+
+    void toggle()
+    {
+        if (state)
+        {
+            off();
+        }
+        else
+        {
+            on();
+        }
+    }
+
+private:
+    int pin;
+    bool state;
+};
+
+LED led1(2);
+LED led2(4);
+
+void setup()
+{
+    led1.begin();
+    led2.begin();
+}
+
+void loop()
+{
+    led1.toggle();
+    delay(500);
+
+    led2.toggle();
+    delay(500);
+}</code></pre></figure>
+
+        <h2 id="pinmode-をどこで呼ぶか">pinMode()をどこで呼ぶか</h2>
+
+        <p>これが今回いちばん考えどころになる。候補は2つある。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>書く場所</th><th>利点</th><th>問題</th></tr></thead>
+          <tbody>
+          <tr><td>コンストラクタ</td><td>呼び忘れがない</td><td>オブジェクトが作られる時点でハードウェアがまだ初期化されていない場合がある</td></tr>
+          <tr><td><code>begin()</code>を用意する</td><td><code>setup()</code>の中で確実に呼べる</td><td>呼び忘れる可能性がある</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>Arduinoでは、グローバル変数のコンストラクタが<code>setup()</code>より前に動く。この時点でのハードウェア操作は安全とは限らないため、<code>begin()</code>を分ける書き方を勧める。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>多くのArduinoライブラリが<code>begin()</code>を持っているのは同じ理由による。<code>Serial.begin()</code>もその一例。</p></aside>
+
+        <h2 id="ポイント">ポイント</h2>
+
+        <ul>
+        <li><code>state</code>を持つことで<code>toggle()</code>が書ける。データと処理が同じ場所にある利点</li>
+        <li><code>led1</code>と<code>led2</code>はそれぞれ独立した<code>pin</code>と<code>state</code>を持つ</li>
+        <li>メンバ初期化リスト<code>: pin(pin), state(false)</code>を使う</li>
+        <li>クラス定義の末尾の<code>;</code>を忘れない</li>
+      </ul>
+
+        <p>→ <a href="../lessons/06-classes.html">第6回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

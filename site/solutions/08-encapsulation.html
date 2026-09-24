@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第8回 演習の解答例。privateへの移行と、setSpeedでの範囲制限。">
+  <title>第8回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-08" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第8回 解答例</p>
+          <h1>カプセル化する</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="motorクラス">Motorクラス</h2>
+
+        <figure class="code"><figcaption>include/Motor.h</figcaption><pre><code class="language-cpp">#pragma once
+
+class Motor
+{
+public:
+    Motor(int pin);
+
+    void begin();
+
+    void setSpeed(int speed);
+    int getSpeed() const;
+
+    void stop();
+
+private:
+    void apply();       // 内部だけで使うので private
+
+    int pin;
+    int speed;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/Motor.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "Motor.h"
+
+namespace
+{
+const int MIN_SPEED = 0;
+const int MAX_SPEED = 100;
+const int PWM_MAX = 255;
+}
+
+Motor::Motor(int pin)
+    : pin(pin), speed(0)
+{
+}
+
+void Motor::begin()
+{
+    pinMode(pin, OUTPUT);
+    stop();
+}
+
+void Motor::setSpeed(int speed)
+{
+    if (speed &lt; MIN_SPEED)
+    {
+        speed = MIN_SPEED;
+    }
+
+    if (speed &gt; MAX_SPEED)
+    {
+        speed = MAX_SPEED;
+    }
+
+    this-&gt;speed = speed;
+    apply();
+}
+
+int Motor::getSpeed() const
+{
+    return speed;
+}
+
+void Motor::stop()
+{
+    setSpeed(MIN_SPEED);
+}
+
+void Motor::apply()
+{
+    analogWrite(pin, speed * PWM_MAX / MAX_SPEED);
+}</code></pre></figure>
+
+        <h2 id="動作確認">動作確認</h2>
+
+        <figure class="code"><pre><code class="language-cpp">Motor motor(5);
+
+void setup()
+{
+    Serial.begin(115200);
+    motor.begin();
+
+    motor.setSpeed(-100000);
+    Serial.println(motor.getSpeed());   // 0
+
+    motor.setSpeed(500);
+    Serial.println(motor.getSpeed());   // 100
+
+    motor.setSpeed(60);
+    Serial.println(motor.getSpeed());   // 60
+}</code></pre></figure>
+
+        <p>外部から何を渡しても、<code>speed</code>は必ず0〜100に収まる。これがカプセル化の効果である。</p>
+
+        <h2 id="外部に本当に必要な操作-を考える">「外部に本当に必要な操作」を考える</h2>
+
+        <p><code>Motor</code>の場合、外から必要なのは次の3つだけで足りる。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>操作</th><th>公開</th><th>理由</th></tr></thead>
+          <tbody>
+          <tr><td><code>setSpeed()</code></td><td>public</td><td>速度を指示したい</td></tr>
+          <tr><td><code>stop()</code></td><td>public</td><td>止めたい。よく使うので専用に用意する</td></tr>
+          <tr><td><code>getSpeed()</code></td><td>public</td><td>現在値を知りたい</td></tr>
+          <tr><td><code>apply()</code></td><td>private</td><td>PWMへの変換は内部都合。外は知る必要がない</td></tr>
+          <tr><td><code>pin</code> / <code>speed</code></td><td>private</td><td>直接書き換えられると制限を回避できてしまう</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p><code>apply()</code>をprivateにしておくと、後でPWMをやめて別の制御方式に変えても、使う側のコードは一切直さずに済む。これが「実装を隠す」ということ。</p></aside>
+
+        <h2 id="やりがちな誤り">やりがちな誤り</h2>
+
+        <p>全メンバにgetter/setterを機械的に付けるのはカプセル化ではない。</p>
+
+        <figure class="code"><pre><code class="language-cpp">// 意味のないカプセル化
+void setSpeed(int speed) { this-&gt;speed = speed; }   // 制限がない
+int getPin() const { return pin; }                  // 外は pin を知る必要がない</code></pre></figure>
+
+        <p><code>setSpeed()</code>に制限がなければ、privateにした意味がない。<code>getPin()</code>は内部の都合を漏らしているだけで、誰も使わない。</p>
+
+        <p>→ <a href="../lessons/08-encapsulation.html">第8回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

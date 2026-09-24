@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第12回 解答例。抽象クラス化と、新しいセンサの追加。">
+  <title>第12回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-12" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第12回 解答例</p>
+          <h1>純粋仮想関数とToFの追加</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="sensorを抽象クラスにする">Sensorを抽象クラスにする</h2>
+
+        <figure class="code"><figcaption>include/Sensor.h</figcaption><pre><code class="language-cpp">#pragma once
+
+class Sensor
+{
+public:
+    virtual ~Sensor() = default;
+
+    virtual void update() = 0;      // 実装を持たない
+    virtual void print() const = 0;
+};</code></pre></figure>
+
+        <p><code>= 0</code>を付けると<code>Sensor.cpp</code>は不要になる。<code>Sensor</code>は「約束ごと」だけを表す。</p>
+
+        <h2 id="直接オブジェクトを作れないことを確認する">直接オブジェクトを作れないことを確認する</h2>
+
+        <figure class="code"><pre><code class="language-cpp">Sensor sensor;   // コンパイルエラー</code></pre></figure>
+
+        <p>エラーメッセージの例：</p>
+
+        <figure class="code"><pre><code class="language-text">error: cannot declare variable 'sensor' to be of abstract type 'Sensor'
+note:   because the following virtual functions are pure within 'Sensor':
+note:     virtual void Sensor::update()</code></pre></figure>
+
+        <p>「<code>Sensor</code>は抽象型なので変数を作れない。<code>update()</code>が純粋仮想のままだから」と書かれている。エラーメッセージを読む練習になる。</p>
+
+        <h2 id="tofを追加する">ToFを追加する</h2>
+
+        <figure class="code"><figcaption>include/ToF.h</figcaption><pre><code class="language-cpp">#pragma once
+
+#include "Sensor.h"
+
+class ToF : public Sensor
+{
+public:
+    ToF(int pin);
+
+    void update() override;
+    void print() const override;
+
+    int getDistanceMm() const;
+
+private:
+    int pin;
+    int distanceMm;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/ToF.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "ToF.h"
+
+ToF::ToF(int pin)
+    : pin(pin), distanceMm(0)
+{
+}
+
+void ToF::update()
+{
+    // 実機では距離センサから読む
+    distanceMm = analogRead(pin);
+}
+
+void ToF::print() const
+{
+    Serial.print("ToF distance=");
+    Serial.println(distanceMm);
+}
+
+int ToF::getDistanceMm() const
+{
+    return distanceMm;
+}</code></pre></figure>
+
+        <h2 id="継承と抽象クラスの使い分け">継承と抽象クラスの使い分け</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>やりたいこと</th><th>使うもの</th><th>例</th></tr></thead>
+          <tbody>
+          <tr><td>共通の<strong>実装</strong>をまとめたい</td><td>普通の継承</td><td><code>Device</code>のピン番号と<code>begin()</code></td></tr>
+          <tr><td>共通の<strong>約束ごと</strong>を決めたい</td><td>抽象クラス</td><td><code>Sensor</code>は必ず<code>update()</code>を持つ</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p><code>Sensor</code>を継承した時点で<code>update()</code>の実装が強制される。後から誰かが新しいセンサを追加するときも、実装漏れがコンパイル時に分かる。これが抽象クラスのいちばんの価値。</p></aside>
+
+        <p>→ <a href="../lessons/12-abstract.html">第12回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

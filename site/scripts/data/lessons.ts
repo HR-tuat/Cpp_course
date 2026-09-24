@@ -50,6 +50,7 @@ export const PAGES: PageMeta[] = [
 
   { id: 'exercises', path: 'exercises/index.html', label: '22章', title: '演習問題の段階', group: 'tasks' },
   { id: 'final-project', path: 'final-project/index.html', label: '19章', title: '最終課題', group: 'tasks' },
+  { id: 'solutions', path: 'solutions/index.html', label: '解答例', title: '演習の解答例', group: 'tasks' },
   { id: 'checklist', path: 'checklist.html', label: '24章', title: '到達度チェック', group: 'tasks' },
   { id: 'advanced', path: 'advanced.html', label: '26章', title: '発展内容', group: 'tasks' },
 ];

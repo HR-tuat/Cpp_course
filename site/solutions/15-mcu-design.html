@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第15回 解答例。5つのクラスを分割実装し、最終課題の下書きにする。">
+  <title>第15回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-15" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第15回 解答例</p>
+          <h1>マイコン向け設計をまとめる</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="ファイル構成">ファイル構成</h2>
+
+        <figure class="diagram"><pre>include/
+├── Sensor.h          抽象クラス（約束ごと）
+├── IMU.h             Sensorを継承
+├── LED.h
+├── Motor.h
+└── FlightMode.h      enum class
+
+src/
+├── IMU.cpp
+├── LED.cpp
+├── Motor.cpp
+└── main.cpp</pre></figure>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>Sensor.h</code>に対応する<code>Sensor.cpp</code>がないのは、純粋仮想関数だけを持つためである。<code>FlightMode.h</code>も同様に、enumの定義だけなら<code>.cpp</code>は不要。</p></aside>
+
+        <h2 id="sensor-flightmode">Sensor / FlightMode</h2>
+
+        <figure class="code"><figcaption>include/Sensor.h</figcaption><pre><code class="language-cpp">#pragma once
+
+class Sensor
+{
+public:
+    virtual ~Sensor() = default;
+
+    virtual void update() = 0;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>include/FlightMode.h</figcaption><pre><code class="language-cpp">#pragma once
+
+enum class FlightMode
+{
+    MANUAL,
+    AUTO,
+    LANDING
+};</code></pre></figure>
+
+        <h2 id="imu">IMU</h2>
+
+        <figure class="code"><figcaption>include/IMU.h</figcaption><pre><code class="language-cpp">#pragma once
+
+#include "Sensor.h"
+
+class IMU : public Sensor
+{
+public:
+    IMU();
+
+    void update() override;
+
+    float getRoll() const;
+    float getPitch() const;
+    float getYaw() const;
+
+private:
+    float roll;
+    float pitch;
+    float yaw;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/IMU.cpp</figcaption><pre><code class="language-cpp">#include "IMU.h"
+
+IMU::IMU()
+    : roll(0.0f), pitch(0.0f), yaw(0.0f)
+{
+}
+
+void IMU::update()
+{
+    // 実機では姿勢センサから読み取る
+}
+
+float IMU::getRoll() const
+{
+    return roll;
+}
+
+float IMU::getPitch() const
+{
+    return pitch;
+}
+
+float IMU::getYaw() const
+{
+    return yaw;
+}</code></pre></figure>
+
+        <h2 id="main-cpp">main.cpp</h2>
+
+        <figure class="code"><figcaption>src/main.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "FlightMode.h"
+#include "IMU.h"
+#include "LED.h"
+#include "Motor.h"
+#include "Sensor.h"
+
+LED led(2);
+Motor motor(5);
+IMU imu;
+
+Sensor* sensors[] = {&amp;imu};
+const int SENSOR_COUNT = sizeof(sensors) / sizeof(sensors[0]);
+
+FlightMode mode = FlightMode::MANUAL;
+
+void setup()
+{
+    Serial.begin(115200);
+
+    led.begin();
+    motor.begin();
+}
+
+void loop()
+{
+    for (int i = 0; i &lt; SENSOR_COUNT; i++)
+    {
+        sensors[i]-&gt;update();
+    }
+
+    switch (mode)
+    {
+    case FlightMode::MANUAL:
+        led.off();
+        break;
+
+    case FlightMode::AUTO:
+        led.on();
+        motor.setSpeed(50);
+        break;
+
+    case FlightMode::LANDING:
+        led.toggle();
+        motor.stop();
+        break;
+    }
+
+    delay(50);
+}</code></pre></figure>
+
+        <h2 id="main-cppが長くなってきたら">main.cppが長くなってきたら</h2>
+
+        <p>上の<code>main.cpp</code>には、まだ「モードごとの制御判断」が残っている。これを<code>Controller</code>クラスに移し、さらに全体を<code>Robot</code>がまとめると、<code>main.cpp</code>は次の形まで短くなる。</p>
+
+        <figure class="code"><pre><code class="language-cpp">#include "Robot.h"
+
+Robot robot;
+
+void setup()
+{
+    robot.initialize();
+}
+
+void loop()
+{
+    robot.update();
+}</code></pre></figure>
+
+        <p>これが<a href="../final-project/index.html">最終課題</a>で目指す形である。</p>
+
+        <h2 id="使った機能の確認">使った機能の確認</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>要素</th><th>使っている機能</th><th>学んだ回</th></tr></thead>
+          <tbody>
+          <tr><td><code>LED</code> / <code>Motor</code></td><td>クラス・カプセル化・<code>.h</code> / <code>.cpp</code>分割</td><td>第6〜8回</td></tr>
+          <tr><td><code>Sensor</code></td><td>抽象クラス・純粋仮想関数</td><td>第12回</td></tr>
+          <tr><td><code>IMU</code></td><td>継承・<code>override</code></td><td>第10〜11回</td></tr>
+          <tr><td><code>sensors[]</code></td><td>ポリモーフィズム</td><td>第13回</td></tr>
+          <tr><td><code>FlightMode</code></td><td><code>enum class</code>による状態管理</td><td>第9回</td></tr>
+          <tr><td>全体の構成</td><td>1クラス1責務</td><td>第14回</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>ここまで書けていれば、<a href="../checklist.html">到達度チェック</a>の「設計」の項目はほぼ埋まるはずである。</p>
+
+        <p>→ <a href="../lessons/15-mcu-design.html">第15回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

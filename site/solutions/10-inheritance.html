@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第10回 演習の解答例。共通部分の抽出とis-aの判断。">
+  <title>第10回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-10" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第10回 解答例</p>
+          <h1>Deviceクラス構造を考える</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="共通部分を見つける">共通部分を見つける</h2>
+
+        <p><code>LED</code> / <code>Motor</code> / <code>Servo</code>に共通するものを書き出すと、次の2つが残る。</p>
+
+        <ul>
+        <li>ピン番号を持つ</li>
+        <li>使う前に初期化（<code>begin()</code>）が必要</li>
+      </ul>
+
+        <p>個別の機能（<code>on()</code> / <code>setSpeed()</code> / <code>setAngle()</code>）は共通ではないので、親クラスには置かない。</p>
+
+        <h2 id="device">Device</h2>
+
+        <figure class="code"><figcaption>include/Device.h</figcaption><pre><code class="language-cpp">#pragma once
+
+class Device
+{
+public:
+    Device(int pin);
+
+    void begin();
+
+    int getPin() const;
+
+protected:
+    int pin;        // 派生クラスから使いたいので protected
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/Device.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "Device.h"
+
+Device::Device(int pin)
+    : pin(pin)
+{
+}
+
+void Device::begin()
+{
+    pinMode(pin, OUTPUT);
+}
+
+int Device::getPin() const
+{
+    return pin;
+}</code></pre></figure>
+
+        <h2 id="派生クラス">派生クラス</h2>
+
+        <figure class="code"><figcaption>include/LED.h</figcaption><pre><code class="language-cpp">#pragma once
+
+#include "Device.h"
+
+class LED : public Device
+{
+public:
+    LED(int pin);
+
+    void on();
+    void off();
+    void toggle();
+
+private:
+    bool state;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/LED.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "LED.h"
+
+LED::LED(int pin)
+    : Device(pin), state(false)     // 親のコンストラクタを先に呼ぶ
+{
+}
+
+void LED::on()
+{
+    state = true;
+    digitalWrite(pin, HIGH);        // 親の protected メンバを使える
+}
+
+void LED::off()
+{
+    state = false;
+    digitalWrite(pin, LOW);
+}
+
+void LED::toggle()
+{
+    if (state)
+    {
+        off();
+    }
+    else
+    {
+        on();
+    }
+}</code></pre></figure>
+
+        <h2 id="is-aで確認する">is-aで確認する</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>関係</th><th>自然に言えるか</th><th>判断</th></tr></thead>
+          <tbody>
+          <tr><td>LED is a Device</td><td>言える</td><td>継承してよい</td></tr>
+          <tr><td>Motor is a Device</td><td>言える</td><td>継承してよい</td></tr>
+          <tr><td>Servo is a Device</td><td>言える</td><td>継承してよい</td></tr>
+          <tr><td>Robot is a Motor</td><td><strong>言えない</strong></td><td>継承しない</td></tr>
+          <tr><td>Robot has a Motor</td><td>言える</td><td>メンバとして持つ</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>Robot</code>が<code>Motor</code>を継承すると、<code>robot.setSpeed(50)</code>が書けてしまう。ロボット全体に「速度」を設定するのは意味が通らない。持つ（has-a）関係はメンバ変数で表す。</p></aside>
+
+        <h2 id="この設計の限界">この設計の限界</h2>
+
+        <p><code>Device</code>は共通の実装をまとめただけで、「すべてのDeviceが必ず持つべき操作」を強制してはいない。「共通の約束ごと」を決めたい場合は、第12回の抽象クラスを使う。</p>
+
+        <p>→ <a href="../lessons/10-inheritance.html">第10回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第4回 演習の解答例。配列の最大値、ポインタと参照による変更。">
+  <title>第4回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-04" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第4回 解答例</p>
+          <h1>配列・ポインタ・参照</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="1-配列の最大値を求める">1. 配列の最大値を求める</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int findMax(const int values[], int count)
+{
+    int max = values[0];
+
+    for (int i = 1; i &lt; count; i++)
+    {
+        if (values[i] &gt; max)
+        {
+            max = values[i];
+        }
+    }
+
+    return max;
+}
+
+void setup()
+{
+    Serial.begin(115200);
+
+    int values[5] = {12, 45, 7, 38, 21};
+
+    Serial.println(findMax(values, 5));   // 45
+}
+
+void loop()
+{
+}</code></pre></figure>
+
+        <ul>
+        <li>初期値は<code>0</code>ではなく<code>values[0]</code>にする。全要素が負の数でも正しく動く</li>
+        <li>ループは<code>i = 1</code>から始めてよい（<code>values[0]</code>は既に見ている）</li>
+        <li>変更しない配列は<code>const</code>を付けておくと意図が伝わる</li>
+      </ul>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>配列を関数に渡すと要素数の情報は失われるため、<code>count</code>を一緒に渡す必要がある。渡し忘れて範囲外アクセスを起こすのはよくある事故。</p></aside>
+
+        <h2 id="2-ポインタを使って関数から変数を変更">2. ポインタを使って関数から変数を変更</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void addOne(int* value)
+{
+    *value = *value + 1;
+}
+
+void setup()
+{
+    Serial.begin(115200);
+
+    int count = 10;
+    addOne(&amp;count);
+
+    Serial.println(count);   // 11
+}</code></pre></figure>
+
+        <h2 id="3-参照を使って関数から変数を変更">3. 参照を使って関数から変数を変更</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void addOneRef(int&amp; value)
+{
+    value = value + 1;
+}
+
+void setup()
+{
+    Serial.begin(115200);
+
+    int count = 10;
+    addOneRef(count);        // &amp; は不要
+
+    Serial.println(count);   // 11
+}</code></pre></figure>
+
+        <h2 id="値渡しとの違い">値渡しとの違い</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void addOneWrong(int value)
+{
+    value = value + 1;   // コピーを書き換えているだけ
+}
+
+int count = 10;
+addOneWrong(count);
+// count は 10 のまま</code></pre></figure>
+
+        <p>引数はコピーが渡される。呼び出し元の変数を変えたいなら、ポインタか参照を使う。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>書き方</th><th>呼び出し側</th><th>呼び出し元が変わるか</th></tr></thead>
+          <tbody>
+          <tr><td><code>void f(int v)</code></td><td><code>f(count)</code></td><td>変わらない</td></tr>
+          <tr><td><code>void f(int* v)</code></td><td><code>f(&amp;count)</code></td><td>変わる</td></tr>
+          <tr><td><code>void f(int&amp; v)</code></td><td><code>f(count)</code></td><td>変わる</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>→ <a href="../lessons/04-pointers.html">第4回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>
