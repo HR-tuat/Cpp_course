@@ -5,6 +5,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 「マイコンのためのC++講座」の教材サイト。GitHub Pages（<https://hr-tuat.github.io/Cpp_course/>）で公開する。
 ページ本文・コメント・コミットメッセージはすべて日本語で書く。
 
+## 変更の出し方
+
+**`main` へ直接コミット・push しない。必ず作業ブランチを切ってPRを作成し、マージは作業者に委ねる。**
+
+```bash
+git checkout -b <branch>
+git add -A && git commit
+git push -u origin <branch>
+gh pr create --base main --title "..." --body "..."
+```
+
+急ぎの修正でも例外にしない（公開サイトが壊れている状況でもPR経由で対応した実績がある）。
+`main` への push はデプロイを走らせるため、マージの判断は必ず人が行う。
+
+作業前に `git pull` すること。GitHub上で直接編集されている場合があり、手元が古いまま
+ビルドすると、公開済みの内容と食い違って原因の分からない不具合に見える。
+
 ## コマンド
 
 ```bash
@@ -84,8 +101,12 @@ OS設定と手動切り替えで食い違う）。同じ二重定義が `styles/
 `site/scripts/data/solutions.ts` の `published` が公開スイッチ。`false` の回は
 **`vite.config.ts` が rollup の入力から落とす**ため `dist` に出力されない。
 静的ホストでは配信したものは必ず読まれるので、**JSやCSSで隠す実装に変えてはいけない**。
-`solutionLink.ts` がリンクを出し分けているのは404へのリンクを見せないための配慮であって、
-非公開の保証ではない。
+
+解答例へのリンク（一覧表と講義ページの演習ボックス）は、`vite.config.ts` の
+`solutionsHtml()` プラグインが**ビルド時にHTMLへ直接書き出す**。`data-solution-index` を
+表に、`data-solution` をリンクに置換している。以前はクライアントのJSで描画していたが、
+環境によってリンクが表示されない問題が出たため静的生成に変えた。**JS描画に戻さないこと。**
+静的な内容であり、表示ソースや `curl` でそのまま検証できる利点もある。
 
 解答例ページは `PAGES`（`lessons.ts`）には載せない。未公開の回が混ざると前へ/次への経路が
 壊れるため、`SOLUTIONS` 側だけで管理し、`renderPager()` が `solution-` 接頭辞を見て
