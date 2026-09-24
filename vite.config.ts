@@ -29,9 +29,10 @@ function htmlEntries(dir: string, found: Record<string, string> = {}): Record<st
 
 export default defineConfig({
   root: siteRoot,
-  // HR-tuat.github.io（ユーザーサイト）はルート配信のため "/"。
-  // プロジェクトページとして公開する場合は "/<リポジトリ名>/" に変更する。
-  base: '/',
+  // プロジェクトページ（HR-tuat/Cpp_course）のため "/<リポジトリ名>/"。
+  // リポジトリ名を変えたらここも合わせる。ユーザーサイト（<ユーザー名>.github.io）
+  // に戻す場合のみ "/" にする。
+  base: '/Cpp_course/',
   publicDir: resolve(siteRoot, 'public'),
   build: {
     outDir: resolve(projectRoot, 'dist'),
