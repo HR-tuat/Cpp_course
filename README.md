@@ -75,7 +75,7 @@ https://hr-tuat.github.io/Cpp_course/?teacher=cpp
 **これは鍵ではない。** 合言葉はJSバンドルに平文で入っているし、このREADMEにも書いてある。
 講師向けページ自体も配信されていて、URLを知っていれば読める。
 受講者がうっかり切り替えないための掛け金でしかない。
-**読まれて困るものは、解答例と同じくビルドから外すこと。**
+**読まれて困るものは、`vite.config.ts` の `htmlEntries()` でビルドから外すしかない。**
 
 合言葉を変えたいときは `VITE_TEACHER_KEY` で上書きできる（GitHub Actions は
 リポジトリの Secrets の `TEACHER_KEY` を渡す）。登録すると `?teacher=cpp` では入れなくなるので、
@@ -92,9 +92,20 @@ https://hr-tuat.github.io/Cpp_course/?teacher=cpp
 { lessonId: 'lesson-03', path: 'solutions/03-functions.html', ..., published: true },
 ```
 
-`published: false` の回は **`vite.config.ts` がビルド対象から除外する**ため、`dist` に出力されず、
-URLを直接叩いても 404 になる。JSで隠しているのではないので、静的ホストでも確実に非公開になる。
-非公開に戻したいときは `false` に戻して push すれば、次のデプロイで消える。
+`published` は、**受講者にリンクを見せるか**の切り替えである。
+
+| `published` | 受講者 | 講師 |
+| --- | --- | --- |
+| `true` | リンクが出る | リンクが出る |
+| `false` | 「未公開」表示だけ | 「講師のみ」リンクが出る |
+
+講師が授業前に全回の解答を確かめられるよう、[講師モード](#講師モード)では
+未公開の回にもリンクが出る。
+
+> **注意。** 未公開の回も含めて、**解答例は全回が `dist` に出力されている**。
+> リンクを出していないだけなので、`solutions/05-cpp-basics.html` のようなURLを
+> 直接叩けば受講者でも読める。確実に伏せたい回がある場合は、
+> `vite.config.ts` の `htmlEntries()` でビルド対象から落とす必要がある。
 
 ## 受講者向けコード
 
