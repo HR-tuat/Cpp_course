@@ -21,10 +21,11 @@ const UNLOCK_KEY = 'cpp-course:teacher-key';
 const URL_PARAM = 'teacher';
 
 /**
- * ビルド時に VITE_TEACHER_KEY から埋め込まれる合言葉。
- * 未設定のときは開発用の既定値になるので、公開ビルドでは必ず設定すること。
+ * 合言葉。既定値は README にも書いてあるので、受講者にも見える前提。
+ * 伸ばしたくなったら VITE_TEACHER_KEY で上書きできるが、
+ * そのときは README のURLも直すこと。
  */
-const TEACHER_KEY = import.meta.env.VITE_TEACHER_KEY || 'sensei';
+const TEACHER_KEY = import.meta.env.VITE_TEACHER_KEY || 'cpp';
 
 function read(key: string): string | null {
   try {
