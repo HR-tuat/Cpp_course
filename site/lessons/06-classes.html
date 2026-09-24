@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="クラス、オブジェクト、メンバ変数・メンバ関数、this、コンストラクタ、メンバ初期化リスト。">
+  <title>第6回 クラスとオブジェクト | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-06" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第6回</p>
+          <h1>クラスとオブジェクト</h1>
+          <p class="lead">C++の中心的な考え方であるクラスを理解する。</p>
+        </header>
+
+        <h2 id="クラスを使わない場合">クラスを使わない場合</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int motorSpeed;
+
+void setMotorSpeed(int speed)
+{
+    motorSpeed = speed;
+}</code></pre></figure>
+
+        <p>問題：</p>
+
+        <ul>
+        <li>関連するデータと処理が離れている</li>
+        <li>グローバル変数が増える</li>
+        <li>モータが複数あると管理しづらい</li>
+      </ul>
+
+        <h2 id="クラス化">クラス化</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Motor
+{
+public:
+    void setSpeed(int speed);
+
+private:
+    int speed;
+};</code></pre></figure>
+
+        <p>データと処理をまとめる。これがクラスの一番の役割である。</p>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>クラス定義の末尾には<code>;</code>が必要。忘れると分かりにくいコンパイルエラーになる。</p></aside>
+
+        <h2 id="オブジェクト">オブジェクト</h2>
+
+        <figure class="code"><pre><code class="language-cpp">Motor motor1;
+Motor motor2;</code></pre></figure>
+
+        <p>同じクラスから複数のオブジェクトを作れる。<code>motor1</code>と<code>motor2</code>はそれぞれ独立した<code>speed</code>を持つ。</p>
+
+        <figure class="diagram"><pre>   class Motor      ← 設計図
+        │
+   ┌────┴────┐
+   ↓         ↓
+ motor1    motor2   ← 実体（オブジェクト）</pre></figure>
+
+        <h2 id="メンバ変数">メンバ変数</h2>
+
+        <figure class="code"><pre><code class="language-cpp">private:
+    int speed;</code></pre></figure>
+
+        <h2 id="メンバ関数">メンバ関数</h2>
+
+        <figure class="code"><pre><code class="language-cpp">public:
+    void setSpeed(int speed);</code></pre></figure>
+
+        <h2 id="this">this</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void Motor::setSpeed(int speed)
+{
+    this-&gt;speed = speed;
+}</code></pre></figure>
+
+        <p>引数<code>speed</code>とメンバ変数<code>speed</code>を区別する。</p>
+
+        <h2 id="コンストラクタ">コンストラクタ</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Motor
+{
+public:
+    Motor(int pin);
+
+private:
+    int pin;
+};</code></pre></figure>
+
+        <figure class="code"><pre><code class="language-cpp">Motor::Motor(int pin)
+{
+    this-&gt;pin = pin;
+}</code></pre></figure>
+
+        <p>使用：</p>
+
+        <figure class="code"><pre><code class="language-cpp">Motor motor(5);</code></pre></figure>
+
+        <p>コンストラクタは、オブジェクトが作られるときに必ず1回呼ばれる。「初期化を忘れさせない」ための仕組みである。</p>
+
+        <h2 id="メンバ初期化リスト">メンバ初期化リスト</h2>
+
+        <figure class="code"><pre><code class="language-cpp">Motor::Motor(int pin)
+    : pin(pin)
+{
+}</code></pre></figure>
+
+        <p>こちらを推奨する。</p>
+
+        <section class="exercise"><h3 class="exercise-title">演習：LEDクラスを作る</h3><p>必要な機能：</p><figure class="code"><pre><code class="language-cpp">LED led(5);
+
+led.on();
+led.off();</code></pre></figure><ul>
+        <li>コンストラクタでピン番号を受け取り、メンバ初期化リストで初期化する</li>
+        <li><code>on()</code> / <code>off()</code>の中で<code>digitalWrite()</code>を呼ぶ</li>
+        <li><code>pinMode()</code>をどこで呼ぶべきかを考える</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

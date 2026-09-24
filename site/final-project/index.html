@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="簡易自律ロボットの設計と実装。クラス構成、ファイル構成、必須要件。">
+  <title>最終課題 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="final-project" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">19・25章</p>
+          <h1>最終課題</h1>
+          <p class="lead">学習した機能を組み合わせ、実際のマイコンプログラムを設計する。</p>
+        </header>
+
+        <h2 id="目的">目的</h2>
+
+        <p>これまで学習した機能を組み合わせ、実際のマイコンプログラムを設計する。</p>
+
+        <h2 id="課題例">課題例</h2>
+
+        <p>「簡易自律ロボット」を作る。</p>
+
+        <h3 id="必要な機能">必要な機能</h3>
+
+        <ul>
+        <li>LED</li>
+        <li>モータ</li>
+        <li>距離センサ</li>
+        <li>状態管理</li>
+        <li>センサの抽象化</li>
+      </ul>
+
+        <h2 id="クラス構成例">クラス構成例</h2>
+
+        <figure class="diagram"><pre>Robot
+│
+├── Sensor
+│   ├── DistanceSensor
+│   └── IMU
+│
+├── Motor
+│
+└── Controller</pre></figure>
+
+        <h2 id="ファイル構成">ファイル構成</h2>
+
+        <figure class="diagram"><pre>src/
+├── main.cpp
+├── Robot.cpp
+├── Motor.cpp
+├── Controller.cpp
+├── IMU.cpp
+└── DistanceSensor.cpp
+
+include/
+├── Robot.h
+├── Motor.h
+├── Controller.h
+├── Sensor.h
+├── IMU.h
+└── DistanceSensor.h</pre></figure>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>Sensor.h</code>に対応する<code>Sensor.cpp</code>がないのは、<code>Sensor</code>が純粋仮想関数だけを持つ抽象クラスだからである。</p></aside>
+
+        <h2 id="必須要件">必須要件</h2>
+
+        <h3 id="クラス">クラス</h3>
+
+        <p>最低でも以下を使用する。</p>
+
+        <figure class="diagram"><pre>Robot
+Motor
+Controller
+Sensor
+IMU
+DistanceSensor</pre></figure>
+
+        <h3 id="カプセル化">カプセル化</h3>
+
+        <p>内部データは原則として<code>private</code>にする。</p>
+
+        <h3 id="継承">継承</h3>
+
+        <figure class="diagram"><pre>Sensor
+├── IMU
+└── DistanceSensor</pre></figure>
+
+        <h3 id="virtual-override">virtual / override</h3>
+
+        <figure class="code"><pre><code class="language-cpp">class Sensor
+{
+public:
+    virtual void update() = 0;
+};</code></pre></figure>
+
+        <h3 id="enum-class">enum class</h3>
+
+        <figure class="code"><pre><code class="language-cpp">enum class RobotState
+{
+    STOP,
+    MOVE,
+    ERROR
+};</code></pre></figure>
+
+        <h2 id="講座終了時の目標コード">講座終了時の目標コード</h2>
+
+        <p>最終的に、受講者が以下のようなコードを「写経」ではなく、自分で設計して書けることを目指す。</p>
+
+        <figure class="code"><figcaption>main.cpp</figcaption><pre><code class="language-cpp">#include "Robot.h"
+
+Robot robot;
+
+void setup()
+{
+    robot.initialize();
+}
+
+void loop()
+{
+    robot.update();
+}</code></pre></figure>
+
+        <p>内部では、</p>
+
+        <figure class="diagram"><pre>Robot
+ │
+ ├── Controller
+ │
+ ├── Sensor
+ │    ├── IMU
+ │    └── DistanceSensor
+ │
+ └── Motor</pre></figure>
+
+        <p>のように責務を分離する。この段階で、</p>
+
+        <figure class="diagram"><pre>「main.cppには何を書けばいいのか」
+「この変数はどのクラスが持つべきか」
+「この処理はどのクラスの責務なのか」
+「このクラスはprivateにすべきか」
+「共通インターフェースが必要か」</pre></figure>
+
+        <p>を自分で考えられる状態を目標とする。</p>
+
+        <h2 id="評価の観点">評価の観点</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>観点</th><th>確認すること</th></tr></thead>
+          <tbody>
+          <tr><td>クラス分割</td><td>1クラス1責務になっているか</td></tr>
+          <tr><td>カプセル化</td><td>内部データが<code>private</code>になっているか</td></tr>
+          <tr><td>継承</td><td><code>Sensor</code>を継承する意味を説明できるか</td></tr>
+          <tr><td>ポリモーフィズム</td><td><code>Sensor*</code>で扱えているか</td></tr>
+          <tr><td>状態管理</td><td>状態が<code>enum class</code>で表現されているか</td></tr>
+          <tr><td>ファイル分割</td><td><code>.h</code>と<code>.cpp</code>が適切に分かれているか</td></tr>
+          <tr><td><code>main.cpp</code></td><td>短く保たれているか</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>提出前に<a href="../checklist.html">到達度チェック</a>で自己確認させるとよい。</p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="1クラス1責務、悪い設計例、責務による分割例。">
+  <title>第14回 クラス設計 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-14" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第14回</p>
+          <h1>クラス設計</h1>
+          <p class="lead">1クラス1責務。どの処理をどのクラスに置くかを考える。</p>
+        </header>
+
+        <h2 id="1クラス1責務">1クラス1責務</h2>
+
+        <p>例えば、</p>
+
+        <figure class="diagram"><pre>IMU</pre></figure>
+
+        <p>はセンサの読み取りや状態管理を担当する。一方、</p>
+
+        <figure class="diagram"><pre>PIDController</pre></figure>
+
+        <p>はPID計算を担当する。全部を1クラスに詰め込まない。</p>
+
+        <h2 id="悪い例">悪い例</h2>
+
+        <figure class="diagram"><pre>FlightController
+ ├── IMU読み取り
+ ├── GPS読み取り
+ ├── PID計算
+ ├── サーボ制御
+ ├── モータ制御
+ ├── WiFi
+ ├── ログ
+ └── 状態管理</pre></figure>
+
+        <p>このクラスは、センサを変えても、制御を変えても、通信を変えても修正が必要になる。変更理由が多すぎる。</p>
+
+        <h2 id="分割例">分割例</h2>
+
+        <figure class="diagram"><pre>FlightController
+ │
+ ├── IMU
+ ├── GPS
+ ├── PIDController
+ ├── ServoManager
+ ├── MotorManager
+ └── FlightState</pre></figure>
+
+        <p>それぞれのクラスに責務を持たせる。<code>FlightController</code>は「まとめ役」になり、細部は各クラスが持つ。</p>
+
+        <h2 id="設計を考えるときの問い">設計を考えるときの問い</h2>
+
+        <ul>
+        <li>このクラスは一言で何をするものか説明できるか</li>
+        <li>この変数はどのクラスが持つべきか</li>
+        <li>この処理はどのクラスの責務か</li>
+        <li>このメンバはprivateにすべきか</li>
+        <li>共通インターフェースが必要か</li>
+      </ul>
+
+        <section class="exercise"><h3 class="exercise-title">演習：責務を割り当てる</h3><ul>
+        <li>第9回で作った<code>RobotState</code>は、どのクラスが持つべきかを議論する</li>
+        <li>「距離センサの値が近ければ止まる」という判断は、センサとコントローラのどちらの責務かを考える</li>
+        <li>悪い例のクラス図を自分の言葉で分割し直す</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

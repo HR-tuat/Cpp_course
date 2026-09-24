@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="12週間の授業計画表と、各回の授業形式。">
+  <title>12週間の授業計画 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="guide-schedule" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">20・21章</p>
+          <h1>12週間の授業計画</h1>
+          <p class="lead">週ごとの内容と、1回あたりの授業の流れ。</p>
+        </header>
+
+        <h2 id="週ごとの計画">週ごとの計画</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th class="align-right">週</th><th>主な内容</th><th>演習</th><th>対応する回</th></tr></thead>
+          <tbody>
+          <tr><td class="align-right">1</td><td>プログラム・マイコン・開発環境</td><td>LED</td><td><a href="../lessons/00-intro.html">第0回</a></td></tr>
+          <tr><td class="align-right">2</td><td>変数・型・演算子・if</td><td>LED / センサ</td><td><a href="../lessons/01-variables.html">第1回</a></td></tr>
+          <tr><td class="align-right">3</td><td>for・while・switch</td><td>状態による制御</td><td><a href="../lessons/02-control.html">第2回</a></td></tr>
+          <tr><td class="align-right">4</td><td>関数・スコープ</td><td>モータ関数</td><td><a href="../lessons/03-functions.html">第3回</a></td></tr>
+          <tr><td class="align-right">5</td><td>配列・ポインタ・参照</td><td>センサ配列</td><td><a href="../lessons/04-pointers.html">第4回</a></td></tr>
+          <tr><td class="align-right">6</td><td>C++基礎・const・namespace</td><td>小規模プログラム</td><td><a href="../lessons/05-cpp-basics.html">第5回</a></td></tr>
+          <tr><td class="align-right">7</td><td>クラス・オブジェクト・コンストラクタ</td><td>LEDクラス</td><td><a href="../lessons/06-classes.html">第6回</a></td></tr>
+          <tr><td class="align-right">8</td><td>ヘッダ・cpp・カプセル化</td><td>Motorクラス</td><td><a href="../lessons/07-headers.html">第7回</a> / <a href="../lessons/08-encapsulation.html">第8回</a></td></tr>
+          <tr><td class="align-right">9</td><td>enum / enum class・状態管理</td><td>RobotState</td><td><a href="../lessons/09-enum.html">第9回</a></td></tr>
+          <tr><td class="align-right">10</td><td>継承・protected</td><td>Sensorクラス</td><td><a href="../lessons/10-inheritance.html">第10回</a></td></tr>
+          <tr><td class="align-right">11</td><td>virtual / override / 抽象クラス</td><td>IMU / GPS</td><td><a href="../lessons/11-virtual.html">第11回</a> / <a href="../lessons/12-abstract.html">第12回</a></td></tr>
+          <tr><td class="align-right">12</td><td>ポリモーフィズム・設計・最終課題</td><td>統合</td><td><a href="../lessons/13-polymorphism.html">第13回</a>〜<a href="../lessons/15-mcu-design.html">第15回</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>12週に対して教材は16回分ある。週によっては2回分をまとめて扱う（8週目・11週目・12週目）。進度が遅れた場合は、第14回・第15回を最終課題の時間に吸収させるとよい。</p></aside>
+
+        <h2 id="各回の授業形式">各回の授業形式</h2>
+
+        <p>1回あたり以下の構成を基本とする。</p>
+
+        <figure class="diagram"><pre>① 前回の復習
+    ↓
+② 新しい概念の説明
+    ↓
+③ 小さなコード例
+    ↓
+④ マイコンでの例
+    ↓
+⑤ 演習
+    ↓
+⑥ 発展課題
+    ↓
+⑦ 次回までの課題</pre></figure>
+
+        <p>講義だけで終わらせず、受講者自身にコードを書かせる。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>段階</th><th>ねらい</th><th>目安</th></tr></thead>
+          <tbody>
+          <tr><td>① 前回の復習</td><td>前提が抜けたまま進まないようにする</td><td>5〜10分</td></tr>
+          <tr><td>② 新しい概念の説明</td><td>なぜその機能が必要なのかから入る</td><td>15〜20分</td></tr>
+          <tr><td>③ 小さなコード例</td><td>最小限の例で文法を確認する</td><td>10分</td></tr>
+          <tr><td>④ マイコンでの例</td><td>実物が動くことで納得させる</td><td>10〜15分</td></tr>
+          <tr><td>⑤ 演習</td><td>手を動かす時間を必ず確保する</td><td>30〜40分</td></tr>
+          <tr><td>⑥ 発展課題</td><td>早く終わった人向け</td><td>任意</td></tr>
+          <tr><td>⑦ 次回までの課題</td><td>次回の導入につなげる</td><td>5分</td></tr>
+          </tbody>
+        </table>
+      </div>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

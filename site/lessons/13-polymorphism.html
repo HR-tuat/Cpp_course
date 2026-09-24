@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ポリモーフィズムの基本、マイコンでの応用、組み込みでの注意点。">
+  <title>第13回 ポリモーフィズム | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-13" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第13回</p>
+          <h1>ポリモーフィズム</h1>
+          <p class="lead">種類の違うものを、同じ手続きで扱う。</p>
+        </header>
+
+        <h2 id="基本">基本</h2>
+
+        <figure class="code"><pre><code class="language-cpp">IMU imu;
+GPS gps;
+
+Sensor* sensors[2];
+
+sensors[0] = &amp;imu;
+sensors[1] = &amp;gps;</code></pre></figure>
+
+        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 2; i++)
+{
+    sensors[i]-&gt;update();
+}</code></pre></figure>
+
+        <p>それぞれのオブジェクトの<code>update()</code>が呼ばれる。ループを書く側は、中身がIMUなのかGPSなのかを知る必要がない。</p>
+
+        <h2 id="マイコンでの応用">マイコンでの応用</h2>
+
+        <p>例えばセンサの種類が変わっても、</p>
+
+        <figure class="code"><pre><code class="language-cpp">Sensor* sensor;</code></pre></figure>
+
+        <p>として扱える。これにより、上位の制御コードをセンサの具体的な種類から分離できる。センサを別の製品に載せ替えても、上位のコードは書き換えずに済む。</p>
+
+        <figure class="diagram"><pre>     Controller          ← Sensorの種類を知らない
+         │
+         ↓
+      Sensor*            ← 共通インターフェース
+         │
+   ┌─────┴─────┐
+   ↓           ↓
+  IMU         GPS</pre></figure>
+
+        <h2 id="注意点">注意点</h2>
+
+        <p>組み込みシステムでは、動的メモリ確保や仮想関数を無条件に多用するのではなく、</p>
+
+        <ul>
+        <li>RAM使用量</li>
+        <li>Flash使用量</li>
+        <li>実行時間</li>
+        <li>リアルタイム性</li>
+        <li>メモリ断片化</li>
+      </ul>
+
+        <p>なども考慮する必要がある。</p>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>この講座では「使い方」と「設計上の意味」を学び、性能上の詳細は発展内容とする。</p></aside>
+
+        <section class="exercise"><h3 class="exercise-title">演習：センサを配列でまとめて更新する</h3><ul>
+        <li><code>IMU</code> / <code>GPS</code> / <code>ToF</code>を<code>Sensor*</code>の配列に入れる</li>
+        <li><code>loop()</code>で全センサを一括更新する</li>
+        <li>センサを1種類追加したとき、<code>loop()</code>側を書き換える必要があるかを確認する</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

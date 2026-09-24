@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="本講座の方針。文法の暗記ではなく、大きなプログラムの整理の仕方を学ぶ。">
+  <title>講座の基本方針 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="guide-policy" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">1章</p>
+          <h1>講座の基本方針</h1>
+          <p class="lead">C++の機能を網羅することは目的ではない。</p>
+        </header>
+
+        <h2 id="c-の文法を覚える-ことを目的にしない">「C++の文法を覚える」ことを目的にしない</h2>
+
+        <p>本講座の目的はC++の機能を網羅することではない。最終的には、</p>
+
+        <figure class="diagram"><pre>「マイコンで動く大きなプログラムを
+どうやって整理して書くか」</pre></figure>
+
+        <p>を理解することを目的とする。そのため、次の順番で進める。</p>
+
+        <figure class="diagram"><pre>プログラミングの基礎
+        ↓
+C/C++の基本文法
+        ↓
+関数
+        ↓
+複数ファイル
+        ↓
+クラス
+        ↓
+カプセル化
+        ↓
+enum
+        ↓
+継承
+        ↓
+virtual / override
+        ↓
+クラス設計
+        ↓
+マイコン向けシステム設計</pre></figure>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>この順番は「前の回で困ったことを、次の回の機能が解決する」ように並んでいる。たとえばグローバル変数の問題（第3回）をクラス（第6回）とカプセル化（第8回）が解決する。順番を崩すと機能の必要性が伝わらなくなる。</p></aside>
+
+        <h2 id="マイコンを教材として利用する">マイコンを教材として利用する</h2>
+
+        <p>単なるコンソールプログラムだけでなく、可能な範囲でマイコンを利用する。</p>
+
+        <p>例：</p>
+
+        <ul>
+        <li>LED</li>
+        <li>ボタン</li>
+        <li>PWM</li>
+        <li>サーボ</li>
+        <li>モータ</li>
+        <li>センサ</li>
+        <li>シリアル通信</li>
+      </ul>
+
+        <p>ただし、ハードウェアに依存しすぎないよう、</p>
+
+        <figure class="diagram"><pre>C++の概念
+    ↓
+簡単なPC上のプログラム
+    ↓
+マイコン上での応用</pre></figure>
+
+        <p>という流れも用意する。</p>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>ハードウェアのトラブル（配線ミス・書き込み失敗）でC++の学習が止まらないようにする。概念の確認はPC上で先に済ませておくと安全である。</p></aside>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

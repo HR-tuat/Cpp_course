@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="指導上の注意点。コードを暗記させない、アクセス修飾子を表面的に教えない、継承を目的化しない、virtualは図で説明する。">
+  <title>教える際の重要ポイント | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="guide-teaching-notes" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">23章</p>
+          <h1>教える際の重要ポイント</h1>
+          <p class="lead">暗記させない。表面的に教えない。目的化しない。</p>
+        </header>
+
+        <h2 id="コードを暗記させない">コードを暗記させない</h2>
+
+        <p>例えば、</p>
+
+        <figure class="code"><pre><code class="language-cpp">class Motor
+{
+};</code></pre></figure>
+
+        <p>を暗記することを目標にしない。重要なのは、</p>
+
+        <blockquote><p>「なぜMotorをクラスにするのか？」</p></blockquote>
+
+        <p>を説明できることである。</p>
+
+        <h2 id="public-private-protectedを表面的に教えない">public / private / protectedを表面的に教えない</h2>
+
+        <p>単に、</p>
+
+        <figure class="diagram"><pre>public = 外から使える
+private = 外から使えない</pre></figure>
+
+        <p>だけで終わらせない。「なぜ内部データを隠す必要があるのか」を説明する。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>第3回のグローバル変数の問題点を持ち出すと繋がりやすい。「どこからでも書き換えられると何が困るか」を先に経験させておく。</p></aside>
+
+        <h2 id="継承を目的化しない">継承を目的化しない</h2>
+
+        <p>「C++には継承があるから使う」のではなく、</p>
+
+        <figure class="diagram"><pre>共通するインターフェースがある
+        ↓
+共通部分を抽象化したい
+        ↓
+継承を利用する</pre></figure>
+
+        <p>という順番で考える。</p>
+
+        <h2 id="virtualは図で説明する">virtualは図で説明する</h2>
+
+        <figure class="diagram"><pre>             Sensor
+               │
+       ┌───────┴───────┐
+       ↓               ↓
+      IMU              GPS
+       │                │
+    update()         update()</pre></figure>
+
+        <p>そして、</p>
+
+        <figure class="code"><pre><code class="language-cpp">Sensor* sensor = &amp;imu;
+sensor-&gt;update();</code></pre></figure>
+
+        <p>がなぜ<code>IMU::update()</code>を呼べるのかを説明する。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p><code>virtual</code>を外したコードと付けたコードを両方動かして見せるのが最も早い。言葉で説明するより、出力の違いを見せる。</p></aside>
+
+        <h2 id="つまずきやすい箇所の早見表">つまずきやすい箇所の早見表</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>回</th><th>つまずきやすい点</th><th>対処</th></tr></thead>
+          <tbody>
+          <tr><td><a href="../lessons/01-variables.html">第1回</a></td><td><code>=</code>と<code>==</code>の取り違え</td><td>エラーにならない例を見せる</td></tr>
+          <tr><td><a href="../lessons/02-control.html">第2回</a></td><td><code>switch</code>の<code>break</code>忘れ</td><td>フォールスルーを実演する</td></tr>
+          <tr><td><a href="../lessons/04-pointers.html">第4回</a></td><td><code>*</code>と<code>&amp;</code>の混乱</td><td>図でアドレスと値を分けて描く</td></tr>
+          <tr><td><a href="../lessons/06-classes.html">第6回</a></td><td>クラス定義末尾の<code>;</code>忘れ</td><td>エラーメッセージの読み方を教える</td></tr>
+          <tr><td><a href="../lessons/07-headers.html">第7回</a></td><td><code>.cpp</code>で<code>LED::</code>を書き忘れる</td><td>宣言と定義の対応を確認させる</td></tr>
+          <tr><td><a href="../lessons/10-inheritance.html">第10回</a></td><td>has-aをisのように継承する</td><td><code>Robot</code>と<code>Motor</code>の例で確認する</td></tr>
+          <tr><td><a href="../lessons/11-virtual.html">第11回</a></td><td><code>override</code>を付けない</td><td>必ず付ける規約にする</td></tr>
+          </tbody>
+        </table>
+      </div>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

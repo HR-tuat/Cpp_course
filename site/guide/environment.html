@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="VS Code / PlatformIO / ESP32 / Git、Marp・draw.io による教材作成、教材リポジトリの構成例。">
+  <title>開発環境 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="guide-environment" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">2章</p>
+          <h1>開発環境</h1>
+          <p class="lead">受講者側の環境と、教材作成側の環境。</p>
+        </header>
+
+        <h2 id="推奨環境">推奨環境</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>用途</th><th>ツール</th></tr></thead>
+          <tbody>
+          <tr><td>エディタ</td><td>Visual Studio Code</td></tr>
+          <tr><td>ビルド</td><td>C++コンパイラ</td></tr>
+          <tr><td>バージョン管理</td><td>Git</td></tr>
+          <tr><td>共有</td><td>GitHub</td></tr>
+          <tr><td>マイコン</td><td>ESP32</td></tr>
+          <tr><td>マイコン開発環境</td><td>PlatformIO</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <h2 id="教材作成">教材作成</h2>
+
+        <h3 id="スライド">スライド</h3>
+
+        <ul>
+        <li>Marp</li>
+        <li>Markdown</li>
+        <li>Visual Studio Code</li>
+      </ul>
+
+        <h3 id="図">図</h3>
+
+        <ul>
+        <li>draw.io</li>
+      </ul>
+
+        <h3 id="配布資料">配布資料</h3>
+
+        <ul>
+        <li>Markdown</li>
+        <li>PDF</li>
+      </ul>
+
+        <h3 id="コード">コード</h3>
+
+        <ul>
+        <li>Git / GitHub</li>
+      </ul>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>draw.ioの元ファイル（<code>.drawio</code>）はリポジトリの<code>diagrams/</code>に置き、書き出したSVGを<code>site/public/images/diagrams/</code>に置く。元ファイルを残しておかないと後から修正できない。</p></aside>
+
+        <h2 id="教材のリポジトリ例">教材のリポジトリ例</h2>
+
+        <figure class="diagram"><pre>cpp-microcontroller-course/
+│
+├── README.md
+│
+├── slides/
+│   ├── 01_intro.md
+│   ├── 02_basic.md
+│   ├── 03_function.md
+│   ├── 04_array_pointer.md
+│   ├── 05_cpp_basic.md
+│   ├── 06_class.md
+│   ├── 07_header.md
+│   ├── 08_encapsulation.md
+│   ├── 09_enum.md
+│   ├── 10_inheritance.md
+│   ├── 11_virtual.md
+│   └── 12_design.md
+│
+├── examples/
+│   ├── 01_basic/
+│   ├── 02_function/
+│   ├── 03_pointer/
+│   ├── 04_class/
+│   ├── 05_header/
+│   ├── 06_encapsulation/
+│   ├── 07_enum/
+│   ├── 08_inheritance/
+│   └── 09_virtual/
+│
+├── exercises/
+│   ├── 01_basic/
+│   ├── 02_function/
+│   ├── 03_class/
+│   ├── 04_header/
+│   ├── 05_encapsulation/
+│   ├── 06_enum/
+│   ├── 07_inheritance/
+│   └── 08_virtual/
+│
+└── final_project/</pre></figure>
+
+        <h2 id="このサイトのリポジトリ構成">このサイトのリポジトリ構成</h2>
+
+        <p>本サイトは上記の教材リポジトリを実際のファイル構成に落としたものである。</p>
+
+        <figure class="diagram"><pre>.
+├── .github/workflows/deploy.yml   # push → build → GitHub Pages
+├── site/                          # Viteのroot（公開されるサイト）
+│   ├── index.html
+│   ├── guide/ lessons/ exercises/ final-project/
+│   ├── styles/ scripts/ public/
+│   ├── checklist.html
+│   └── advanced.html
+├── diagrams/                      # draw.io の元ファイル
+├── code/                          # 受講者向けC++コード
+│   ├── examples/ exercises/ solutions/ final-project/
+├── package.json
+├── tsconfig.json
+└── vite.config.ts</pre></figure>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>ディレクトリ</th><th>内容</th></tr></thead>
+          <tbody>
+          <tr><td><code>site/</code></td><td>Webサイト本体。Viteのroot。</td></tr>
+          <tr><td><code>code/examples/</code></td><td>各回のサンプル（PlatformIOプロジェクト）</td></tr>
+          <tr><td><code>code/exercises/</code></td><td>演習の雛形（穴あき）</td></tr>
+          <tr><td><code>code/solutions/</code></td><td>解答例（講師用・公開方針は要相談）</td></tr>
+          <tr><td><code>code/final-project/</code></td><td>最終課題の雛形（<code>src/</code> <code>include/</code> 構成）</td></tr>
+          <tr><td><code>diagrams/</code></td><td>draw.ioの<code>.drawio</code>ファイル</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <h2 id="ローカルでの動かし方">ローカルでの動かし方</h2>
+
+        <figure class="code"><pre><code class="language-bash">npm ci
+npm run dev     # 開発サーバ
+npm run build   # dist/ に出力
+npm run preview # ビルド結果の確認</code></pre></figure>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>code/</code>以下の各サンプルは<code>platformio.ini</code>を含む独立したPlatformIOプロジェクトであり、サイトのビルドとは無関係に扱う。</p></aside>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

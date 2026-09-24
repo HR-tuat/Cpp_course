@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="本講座の基礎を習得した後に扱う発展テーマの一覧。">
+  <title>発展内容 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="./styles/base.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/components.css">
+  <link rel="stylesheet" href="./styles/code.css">
+</head>
+<body data-page="advanced" data-base="./">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="./index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">26章</p>
+          <h1>発展内容</h1>
+          <p class="lead">2〜3か月の本編では扱い切れないテーマ。</p>
+        </header>
+
+        <p>2〜3か月の本編では扱い切れないため、以下は発展編とする。これらは本講座の基礎を習得した後に扱う。</p>
+
+        <h2 id="c-の言語機能">C++の言語機能</h2>
+
+        <ul>
+        <li>テンプレート</li>
+        <li>STL</li>
+        <li><code>std::array</code></li>
+        <li><code>std::vector</code></li>
+        <li>スマートポインタ</li>
+        <li>lambda</li>
+        <li>move semantics</li>
+        <li>RAII</li>
+        <li>C++20/23</li>
+      </ul>
+
+        <h2 id="組み込み固有のテーマ">組み込み固有のテーマ</h2>
+
+        <ul>
+        <li>RTOS</li>
+        <li>割り込み</li>
+        <li>DMA</li>
+        <li>メモリ配置</li>
+      </ul>
+
+        <h2 id="開発プロセス">開発プロセス</h2>
+
+        <ul>
+        <li>静的解析</li>
+        <li>単体テスト</li>
+        <li>モック</li>
+        <li>CI/CD</li>
+        <li>組み込み向け設計パターン</li>
+      </ul>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>本編で扱う範囲は<a href="index.html">トップページの最終到達目標</a>に示したとおり。発展内容に手を出す前に、<a href="checklist.html">到達度チェック</a>が一通り埋まっていることを確認する。</p></aside>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="./scripts/main.ts"></script>
+</body>
+</html>

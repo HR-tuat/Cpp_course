@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CとC++の違い、const、const参照、名前空間、関数オーバーロード。">
+  <title>第5回 C++基礎 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-05" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第5回</p>
+          <h1>C++基礎</h1>
+          <p class="lead">大規模なプログラムを整理するためのC++の機能を押さえる。</p>
+        </header>
+
+        <h2 id="cとc">CとC++</h2>
+
+        <p>C++はCを基礎として発展した言語だが、C++にはCにはない多くの機能がある。本講座では特に「大規模なプログラムを整理するための機能」に重点を置く。</p>
+
+        <h2 id="const">const</h2>
+
+        <figure class="code"><pre><code class="language-cpp">const int maxSpeed = 100;</code></pre></figure>
+
+        <p>変更してはいけない値を明示する。うっかり書き換えようとするとコンパイル時にエラーになるため、バグを早い段階で発見できる。</p>
+
+        <h2 id="const参照">const参照</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void print(const Sensor&amp; sensor)
+{
+}</code></pre></figure>
+
+        <p>コピーを避けながら変更しないことを表現できる。オブジェクトを引数に渡すときの基本形として覚えておくとよい。</p>
+
+        <h2 id="名前空間">名前空間</h2>
+
+        <figure class="code"><pre><code class="language-cpp">namespace Motor
+{
+    void start();
+}</code></pre></figure>
+
+        <p>使用：</p>
+
+        <figure class="code"><pre><code class="language-cpp">Motor::start();</code></pre></figure>
+
+        <p>名前の衝突を避け、どのまとまりに属する機能なのかを示せる。</p>
+
+        <h2 id="関数オーバーロード">関数オーバーロード</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int add(int a, int b);
+
+float add(float a, float b);</code></pre></figure>
+
+        <p>同じ関数名でも引数の型や数が異なれば複数定義できる。呼び出す側は型を意識せず同じ名前で呼べる。</p>
+
+        <section class="exercise"><h3 class="exercise-title">演習：小規模プログラム</h3><ul>
+        <li><code>const</code>でピン番号やしきい値を定義し、マジックナンバーを排除する</li>
+        <li>名前空間にセンサ関連の関数をまとめてみる</li>
+        <li><code>add(int, int)</code>と<code>add(float, float)</code>を両方定義し、呼び分けを確認する</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

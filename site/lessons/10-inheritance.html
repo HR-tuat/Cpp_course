@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="継承の書き方、is-aの関係、protectedの使いどころ。">
+  <title>第10回 継承 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-10" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第10回</p>
+          <h1>継承</h1>
+          <p class="lead">共通する性質を親クラスにまとめ、個別の機能を子クラスに実装する。</p>
+        </header>
+
+        <h2 id="継承なし">継承なし</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class IMU
+{
+public:
+    void update();
+};
+
+class GPS
+{
+public:
+    void update();
+};</code></pre></figure>
+
+        <p>両方に<code>update()</code>が存在する。共通点がコード上どこにも表現されていない。</p>
+
+        <h2 id="共通部分をsensorへ">共通部分をSensorへ</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Sensor
+{
+public:
+    void update();
+};</code></pre></figure>
+
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
+{
+};</code></pre></figure>
+
+        <figure class="code"><pre><code class="language-cpp">class GPS : public Sensor
+{
+};</code></pre></figure>
+
+        <h2 id="is-a-の関係">「is-a」の関係</h2>
+
+        <figure class="diagram"><pre>IMU is a Sensor
+GPS is a Sensor</pre></figure>
+
+        <p>継承を使うべきか判断する際の重要な考え方。「AはBの一種である」と自然に言えないなら、継承ではなく「持つ（has-a）」関係を検討する。</p>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>Robot</code>は<code>Motor</code>の一種ではない。<code>Robot</code>は<code>Motor</code>を持っている。ここを取り違えた継承は後で必ず破綻する。</p></aside>
+
+        <h2 id="protected">protected</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Sensor
+{
+protected:
+    int value;
+};</code></pre></figure>
+
+        <p>派生クラスから利用できる。外部には見せたくないが、子には使わせたいデータに使う。</p>
+
+        <section class="exercise"><h3 class="exercise-title">演習：クラス構造を考える</h3><figure class="diagram"><pre>Device
+├── LED
+├── Motor
+└── Servo</pre></figure><ul>
+        <li><code>Device</code>に共通して置けるものは何かを考える（ピン番号・初期化など）</li>
+        <li>それぞれ固有の機能は何かを書き出す</li>
+        <li>「is-a」で説明できるかを確認する</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

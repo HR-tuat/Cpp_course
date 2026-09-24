@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="if / else / else if / switch / for / while とマイコンでの注意点。">
+  <title>第2回 条件分岐・繰り返し | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-02" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第2回</p>
+          <h1>条件分岐・繰り返し</h1>
+          <p class="lead">条件によって処理を変え、同じ処理を繰り返す。</p>
+        </header>
+
+        <h2 id="if">if</h2>
+
+        <figure class="code"><pre><code class="language-cpp">if (condition)
+{
+}</code></pre></figure>
+
+        <h2 id="if-else">if / else</h2>
+
+        <figure class="code"><pre><code class="language-cpp">if (temperature &gt;= 30)
+{
+    // ...
+}
+else
+{
+    // ...
+}</code></pre></figure>
+
+        <h2 id="else-if">else if</h2>
+
+        <figure class="code"><pre><code class="language-cpp">if (temperature &gt;= 40)
+{
+}
+else if (temperature &gt;= 30)
+{
+}
+else
+{
+}</code></pre></figure>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>条件は上から順に評価される。<code>&gt;= 30</code>を先に書くと<code>&gt;= 40</code>の枝には決して到達しない。順番に意味があることを意識させる。</p></aside>
+
+        <h2 id="switch">switch</h2>
+
+        <figure class="code"><pre><code class="language-cpp">switch (mode)
+{
+case 0:
+    break;
+
+case 1:
+    break;
+
+default:
+    break;
+}</code></pre></figure>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>break</code>を書き忘れると次の<code>case</code>へ流れ込む（フォールスルー）。第9回の<code>enum class</code>と組み合わせると、<code>switch</code>はぐっと読みやすくなる。</p></aside>
+
+        <h2 id="for">for</h2>
+
+        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 10; i++)
+{
+}</code></pre></figure>
+
+        <figure class="diagram"><pre>for ( 初期化 ; 継続条件 ; 更新 )
+        ↓         ↓        ↓
+    int i = 0   i &lt; 10     i++</pre></figure>
+
+        <h2 id="while">while</h2>
+
+        <figure class="code"><pre><code class="language-cpp">while (condition)
+{
+}</code></pre></figure>
+
+        <h2 id="マイコンでの注意">マイコンでの注意</h2>
+
+        <p>無限ループはマイコンでは珍しくない。</p>
+
+        <figure class="code"><pre><code class="language-cpp">while (true)
+{
+}</code></pre></figure>
+
+        <p>ただしArduinoの<code>loop()</code>自体が繰り返し呼ばれるため、通常は<code>loop()</code>を利用する。<code>loop()</code>の中で長時間止まり続けると、他の処理が一切動かなくなる点に注意する。</p>
+
+        <section class="exercise"><h3 class="exercise-title">演習</h3><ul>
+        <li>0〜9をシリアル出力する</li>
+        <li>LEDを一定回数点滅させる</li>
+        <li>ボタンが押されている間だけLEDを点灯する</li>
+      </ul><p>3つ目は<code>loop()</code>と<code>if</code>の組み合わせで書ける。<code>while</code>で待ち続けないほうがよい理由も一緒に考えさせる。</p></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

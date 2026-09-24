@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="配列、メモリとアドレス、ポインタ、デリファレンス、参照。">
+  <title>第4回 配列・メモリ・ポインタ・参照 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-04" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第4回</p>
+          <h1>配列・メモリ・ポインタ・参照</h1>
+          <p class="lead">C++で頻繁に登場するメモリとアドレスの基本を理解する。</p>
+        </header>
+
+        <h2 id="配列">配列</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int values[5];
+
+values[0] = 10;
+values[1] = 20;</code></pre></figure>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>添字は0から始まる。<code>values[5]</code>は存在しない（範囲外アクセス）。マイコンでは範囲外に書き込んでもエラーにならず、別の変数を壊して原因不明の不具合になることがある。</p></aside>
+
+        <h2 id="配列とループ">配列とループ</h2>
+
+        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 5; i++)
+{
+    Serial.println(values[i]);
+}</code></pre></figure>
+
+        <h2 id="メモリ">メモリ</h2>
+
+        <figure class="diagram"><pre>変数
+ ↓
+メモリ上の領域</pre></figure>
+
+        <p>変数には「値」だけでなく「どこに保存されているか」というアドレスがある。</p>
+
+        <h2 id="アドレス演算子">アドレス演算子</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int value = 10;
+
+int* ptr = &amp;value;</code></pre></figure>
+
+        <p><code>&amp;value</code>は<code>value</code>のアドレス。<code>int*</code>は「intを指すポインタ」という型である。</p>
+
+        <h2 id="デリファレンス">デリファレンス</h2>
+
+        <figure class="code"><pre><code class="language-cpp">*ptr = 20;</code></pre></figure>
+
+        <p><code>ptr</code>が指している場所の値を変更する。この行のあと<code>value</code>は<code>20</code>になっている。</p>
+
+        <h2 id="参照">参照</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int value = 10;
+
+int&amp; ref = value;</code></pre></figure>
+
+        <p><code>ref</code>は<code>value</code>の別名として扱える。<code>ref = 20;</code>と書けば<code>value</code>が変わる。</p>
+
+        <h2 id="ポインタと参照の比較">ポインタと参照の比較</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>ポインタ</th><th>参照</th></tr></thead>
+          <tbody>
+          <tr><td>アドレスを保持</td><td>○</td><td>内部的に利用</td></tr>
+          <tr><td><code>nullptr</code></td><td>○</td><td>×</td></tr>
+          <tr><td>再代入</td><td>○</td><td>基本的に×</td></tr>
+          <tr><td><code>*</code>が必要</td><td>○</td><td>×</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「値を書き換えたいだけなら参照」「指す先を差し替えたい・無効を表したいならポインタ」と使い分ける、と伝えると判断しやすい。</p></aside>
+
+        <section class="exercise"><h3 class="exercise-title">演習</h3><ul>
+        <li>配列の最大値を求める</li>
+        <li>ポインタを使って関数から変数を変更する</li>
+        <li>参照を使って関数から変数を変更する</li>
+      </ul><figure class="code"><pre><code class="language-cpp">void addOne(int* value)
+{
+    *value = *value + 1;
+}
+
+void addOneRef(int&amp; value)
+{
+    value = value + 1;
+}</code></pre></figure></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>
