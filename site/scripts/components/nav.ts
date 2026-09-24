@@ -72,7 +72,21 @@ export function renderPager(): void {
   const host = document.querySelector<HTMLElement>('[data-pager]');
   if (!host) return;
 
-  const index = READING_ORDER.findIndex((page) => page.id === currentPageId());
+  const current = currentPageId();
+
+  // 解答例ページは READING_ORDER に含めない。対応する講義への戻り導線だけを出す
+  if (current.startsWith('solution-')) {
+    const lesson = PAGES.find((page) => page.id === current.replace('solution-', 'lesson-'));
+    if (lesson) {
+      host.innerHTML = `<a class="pager-prev" href="${href(lesson)}">
+  <span class="pager-label">← 講義に戻る / ${lesson.label}</span>
+  <span class="pager-title">${lesson.title}</span>
+</a>`;
+    }
+    return;
+  }
+
+  const index = READING_ORDER.findIndex((page) => page.id === current);
   if (index < 0) return;
 
   const prev = READING_ORDER[index - 1];

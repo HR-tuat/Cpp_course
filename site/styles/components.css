@@ -298,3 +298,71 @@ figure.diagram figcaption {
   color: var(--text);
   border-color: var(--accent);
 }
+
+/* --- 解答例 --------------------------------------------------------------- */
+
+/* 未公開の回ではJSが何も入れないため、枠ごと消す */
+.solution-slot:empty {
+  display: none;
+}
+
+.solution-link {
+  display: block;
+  margin-top: 1rem;
+  padding: .7rem .9rem;
+  border: 1px solid var(--tip);
+  border-radius: var(--radius);
+  background: var(--tip-soft);
+  color: var(--text);
+}
+
+.solution-link:hover {
+  background: var(--bg-raised);
+  border-color: var(--tip);
+}
+
+.solution-link-label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--tip);
+}
+
+.solution-link-title {
+  display: block;
+  font-size: .92rem;
+  font-weight: 700;
+}
+
+.solution-pending {
+  color: var(--text-faint);
+}
+
+.solution-count {
+  margin-top: .6rem;
+  font-size: .82rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.badge {
+  display: inline-block;
+  padding: .05rem .55rem;
+  border-radius: 999px;
+  font-size: .74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-open {
+  color: var(--tip);
+  background: var(--tip-soft);
+  border: 1px solid var(--tip);
+}
+
+.badge-closed {
+  color: var(--text-faint);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-strong);
+}

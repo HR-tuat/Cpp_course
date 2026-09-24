@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="各回の演習の解答例の一覧。授業後に順次公開される。">
+  <title>解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solutions" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">演習の解答</p>
+          <h1>解答例</h1>
+          <p class="lead">各回の演習の解答例。授業後に順次公開する。</p>
+        </header>
+
+        <h2 id="公開の方針">公開の方針</h2>
+
+        <p>解答例は、その回の授業が終わったあとに公開する。まだ公開されていない回は、下の一覧で「未公開」と表示される。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>先に解答を見てしまうと、演習の意味がなくなる。うまく動かなくても、まず自分で書いてから読むこと。「動かない理由を考えた時間」がいちばん身につく。</p></aside>
+
+        <h2 id="一覧">一覧</h2>
+
+        <div data-solution-index></div>
+
+        <h2 id="読むときの注意">読むときの注意</h2>
+
+        <ul>
+        <li>解答例はひとつの書き方にすぎない。動作が同じなら書き方が違ってよい</li>
+        <li>自分のコードと違っていたら、<strong>どちらが読みやすいか</strong>を考える</li>
+        <li>写して終わりにせず、「なぜその書き方なのか」を説明できるようにする</li>
+      </ul>
+
+        <p>設計の演習（第14回・第15回）には唯一の正解がない。解答例と違う結論でも、根拠が説明できれば正しい。</p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

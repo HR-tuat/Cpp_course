@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第0回 演習の解答例。LED点滅と、速度変更・ボタン・条件分岐の発展。">
+  <title>第0回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-00" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第0回 解答例</p>
+          <h1>LEDを点滅させる</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="基本-500ms周期で点滅">基本：500ms周期で点滅</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void setup()
+{
+    pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop()
+{
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
+}</code></pre></figure>
+
+        <h2 id="発展1-点滅速度を変える">発展1：点滅速度を変える</h2>
+
+        <p><code>delay()</code>の数値を直接書き換えるのではなく、名前を付けておくと変更箇所が1か所で済む。</p>
+
+        <figure class="code"><pre><code class="language-cpp">const int BLINK_MS = 100;   // ここだけ変えれば速度が変わる
+
+void loop()
+{
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(BLINK_MS);
+
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(BLINK_MS);
+}</code></pre></figure>
+
+        <h2 id="発展2-ボタンでledのon-offを切り替える">発展2：ボタンでLEDのON/OFFを切り替える</h2>
+
+        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
+const int BUTTON_PIN = 4;
+
+void setup()
+{
+    pinMode(LED_PIN, OUTPUT);
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
+}
+
+void loop()
+{
+    // INPUT_PULLUP では、押したときに LOW になる
+    if (digitalRead(BUTTON_PIN) == LOW)
+    {
+        digitalWrite(LED_PIN, HIGH);
+    }
+    else
+    {
+        digitalWrite(LED_PIN, LOW);
+    }
+}</code></pre></figure>
+
+        <h2 id="ポイント">ポイント</h2>
+
+        <ul>
+        <li><code>setup()</code>は1回、<code>loop()</code>は繰り返し呼ばれる</li>
+        <li>数値に名前を付けると、何を表す値かがコードから読み取れる</li>
+        <li><code>INPUT_PULLUP</code>を使うと外付け抵抗なしでボタンを読める（押すとLOW）</li>
+      </ul>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>pinMode()</code>を<code>loop()</code>の中に書いてしまう誤りが多い。初期設定は<code>setup()</code>に置く。</p></aside>
+
+        <p>→ <a href="../lessons/00-intro.html">第0回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

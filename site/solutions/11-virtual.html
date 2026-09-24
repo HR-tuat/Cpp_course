@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第11回 解答例。virtualの有無で呼ばれる関数が変わることの確認。">
+  <title>第11回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-11" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第11回 解答例</p>
+          <h1>IMUとGPSをvirtualで扱う</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="解答">解答</h2>
+
+        <figure class="code"><figcaption>include/Sensor.h</figcaption><pre><code class="language-cpp">#pragma once
+
+class Sensor
+{
+public:
+    virtual ~Sensor() = default;
+
+    virtual void update();
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/Sensor.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "Sensor.h"
+
+void Sensor::update()
+{
+    Serial.println("Sensor::update");
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>include/IMU.h</figcaption><pre><code class="language-cpp">#pragma once
+
+#include "Sensor.h"
+
+class IMU : public Sensor
+{
+public:
+    void update() override;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/IMU.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "IMU.h"
+
+void IMU::update()
+{
+    Serial.println("IMU::update");
+}</code></pre></figure>
+
+        <h2 id="確認する">確認する</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "GPS.h"
+#include "IMU.h"
+#include "Sensor.h"
+
+IMU imu;
+GPS gps;
+
+void setup()
+{
+    Serial.begin(115200);
+
+    Sensor* sensor = &amp;imu;
+    sensor-&gt;update();       // IMU::update  ← virtual だから
+
+    sensor = &amp;gps;
+    sensor-&gt;update();       // GPS::update
+}
+
+void loop()
+{
+}</code></pre></figure>
+
+        <h2 id="virtualを外すとどうなるか">virtualを外すとどうなるか</h2>
+
+        <p><code>Sensor::update()</code>から<code>virtual</code>を消して、同じコードを動かす。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th><code>Sensor::update()</code>の宣言</th><th><code>sensor-&gt;update()</code>の出力</th></tr></thead>
+          <tbody>
+          <tr><td><code>virtual void update();</code></td><td><code>IMU::update</code>（実際のオブジェクトで決まる）</td></tr>
+          <tr><td><code>void update();</code></td><td><code>Sensor::update</code>（変数の型で決まる）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p><code>virtual</code>がないと、コンパイラは変数の型（<code>Sensor*</code>）だけを見て呼び先を決める。<code>virtual</code>を付けると、実行時に「実際に入っているオブジェクト」を見て決める。この違いは必ず自分で動かして確認すること。</p>
+
+        <h2 id="overrideを必ず付ける">overrideを必ず付ける</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
+{
+public:
+    void updata() override;   // 綴りミス → コンパイルエラーになる
+};</code></pre></figure>
+
+        <p><code>override</code>がなければ、これは<code>Sensor::update()</code>とは無関係な新しい関数として受け入れられ、エラーにならない。そして<code>sensor-&gt;update()</code>は<code>Sensor</code>の実装を呼び続ける。原因を見つけるのが非常に難しいバグになる。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p><code>virtual ~Sensor() = default;</code>（仮想デストラクタ）も付けておく。基底クラスのポインタ越しに<code>delete</code>する可能性があるなら必須。</p></aside>
+
+        <p>→ <a href="../lessons/11-virtual.html">第11回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

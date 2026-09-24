@@ -5,6 +5,7 @@
 import { renderNav, renderPager } from './components/nav';
 import { enhanceCodeBlocks } from './components/codeBlock';
 import { renderToc } from './components/toc';
+import { renderSolutionIndex, renderSolutionLink } from './components/solutionLink';
 import { setupChecklist } from './features/checklist';
 
 const THEME_KEY = 'cpp-course:theme';
@@ -49,6 +50,8 @@ function init(): void {
   renderPager();
   renderToc();
   enhanceCodeBlocks();
+  renderSolutionLink();
+  renderSolutionIndex();
   setupChecklist();
 }
 

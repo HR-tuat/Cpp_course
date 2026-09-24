@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第2回 演習の解答例。for・while・ボタン入力。">
+  <title>第2回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-02" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第2回 解答例</p>
+          <h1>繰り返しと条件分岐</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="1-0-9をシリアル出力">1. 0〜9をシリアル出力</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void setup()
+{
+    Serial.begin(115200);
+
+    for (int i = 0; i &lt; 10; i++)
+    {
+        Serial.println(i);
+    }
+}
+
+void loop()
+{
+}</code></pre></figure>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>1回だけ実行したい処理は<code>setup()</code>に書く。<code>loop()</code>に書くと延々と出力され続ける。</p></aside>
+
+        <h2 id="2-ledを一定回数点滅させる">2. LEDを一定回数点滅させる</h2>
+
+        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
+const int BLINK_MS = 200;
+
+void blink(int times)
+{
+    for (int i = 0; i &lt; times; i++)
+    {
+        digitalWrite(LED_PIN, HIGH);
+        delay(BLINK_MS);
+
+        digitalWrite(LED_PIN, LOW);
+        delay(BLINK_MS);
+    }
+}
+
+void setup()
+{
+    pinMode(LED_PIN, OUTPUT);
+    blink(5);
+}
+
+void loop()
+{
+}</code></pre></figure>
+
+        <h2 id="3-ボタンが押されている間だけled点灯">3. ボタンが押されている間だけLED点灯</h2>
+
+        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
+const int BUTTON_PIN = 4;
+
+void setup()
+{
+    pinMode(LED_PIN, OUTPUT);
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
+}
+
+void loop()
+{
+    bool pressed = (digitalRead(BUTTON_PIN) == LOW);
+
+    digitalWrite(LED_PIN, pressed ? HIGH : LOW);
+}</code></pre></figure>
+
+        <h2 id="なぜwhileで待たないのか">なぜwhileで待たないのか</h2>
+
+        <p>次のように書いても動くが、勧められない。</p>
+
+        <figure class="code"><pre><code class="language-cpp">// 良くない例
+while (digitalRead(BUTTON_PIN) == LOW)
+{
+    digitalWrite(LED_PIN, HIGH);
+}</code></pre></figure>
+
+        <p>この<code>while</code>の中にいる間、他の処理は一切動かない。センサを読む、通信する、別のLEDを制御するといったことが全部止まる。<code>loop()</code>は繰り返し呼ばれるのだから、「1回分の判断」だけを書いて抜けるのが基本である。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>この考え方は第9回の状態管理につながる。<code>loop()</code>は「今の状態を見て、今やるべきことを1回やる」場所だと捉える。</p></aside>
+
+        <p>→ <a href="../lessons/02-control.html">第2回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

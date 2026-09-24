@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第14回 解答例。設計に唯一の正解はないが、判断の根拠を示す。">
+  <title>第14回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-14" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第14回 解答例</p>
+          <h1>責務を割り当てる</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>設計の演習に唯一の正解はない。ここに示すのは「こう考えた」という一例であり、違う結論でも根拠が説明できれば正しい。</p></aside>
+
+        <h2 id="1-robotstateは誰が持つべきか">1. RobotStateは誰が持つべきか</h2>
+
+        <p>候補は<code>Robot</code>と<code>Controller</code>の2つ。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>持たせる先</th><th>根拠</th><th>評価</th></tr></thead>
+          <tbody>
+          <tr><td><code>Robot</code></td><td>ロボット全体の状態だから</td><td><code>Robot</code>が状態遷移の判断まで持つと肥大化する</td></tr>
+          <tr><td><code>Controller</code></td><td>状態を<strong>決める</strong>のは制御判断だから</td><td>推奨。状態と、状態を変える処理が同じ場所にある</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>判断の根拠は「<strong>そのデータを変更する処理はどこにあるか</strong>」である。状態を変えるのは「距離が近いから止まろう」という制御判断であり、それは<code>Controller</code>の仕事。データは、それを変更する処理と同じクラスに置く。</p>
+
+        <figure class="code"><pre><code class="language-cpp">class Controller
+{
+public:
+    void update();
+    RobotState getState() const;   // 外からは読むだけ
+
+private:
+    RobotState state;              // 変更できるのは Controller だけ
+};</code></pre></figure>
+
+        <h2 id="2-距離が近ければ止まる-は誰の責務か">2. 「距離が近ければ止まる」は誰の責務か</h2>
+
+        <p>この処理は2つに分解できる。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>処理</th><th>担当</th><th>理由</th></tr></thead>
+          <tbody>
+          <tr><td>距離を測って数値にする</td><td><code>DistanceSensor</code></td><td>センサの読み取り方はセンサが知っていればよい</td></tr>
+          <tr><td>「近い」と判断して止める</td><td><code>Controller</code></td><td>しきい値も停止の判断も制御の都合</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p><code>DistanceSensor</code>に<code>isNear()</code>を持たせたくなるが、勧められない。</p>
+
+        <figure class="code"><pre><code class="language-cpp">// 考えどころ
+class DistanceSensor
+{
+public:
+    bool isNear() const;   // 「近い」の基準は誰が決める？
+};</code></pre></figure>
+
+        <p>「近い」の基準は用途によって変わる。小型ロボットなら100mm、大型なら1000mmかもしれない。センサは「何mmか」だけを答え、それを近いと見なすかは<code>Controller</code>が決める。</p>
+
+        <figure class="code"><pre><code class="language-cpp">// 推奨
+void Controller::update()
+{
+    if (distance.getDistanceMm() &lt; STOP_DISTANCE_MM)
+    {
+        state = RobotState::STOP;
+        motor.stop();
+    }
+    else
+    {
+        state = RobotState::MOVE;
+        motor.setSpeed(CRUISE_SPEED);
+    }
+}</code></pre></figure>
+
+        <h2 id="3-悪い例を分割し直す">3. 悪い例を分割し直す</h2>
+
+        <p>元の<code>FlightController</code>は、変更理由が8つある。</p>
+
+        <figure class="diagram"><pre>FlightController
+ ├── IMU読み取り      センサを変えたら直す
+ ├── GPS読み取り      センサを変えたら直す
+ ├── PID計算          制御則を変えたら直す
+ ├── サーボ制御       機体構成を変えたら直す
+ ├── モータ制御       機体構成を変えたら直す
+ ├── WiFi             通信方式を変えたら直す
+ ├── ログ             記録先を変えたら直す
+ └── 状態管理         飛行モードを増やしたら直す</pre></figure>
+
+        <p>分割の基準は「<strong>変更理由が同じものを1つにまとめる</strong>」である。</p>
+
+        <figure class="diagram"><pre>FlightController          ← まとめ役だけを担当
+ │
+ ├── IMU                  ┐
+ ├── GPS                  ┘ センサ（Sensorを継承）
+ │
+ ├── PIDController        制御計算
+ │
+ ├── ServoManager         ┐
+ ├── MotorManager         ┘ アクチュエータ
+ │
+ └── FlightState          状態管理</pre></figure>
+
+        <p><code>FlightController</code>に残るのは「各部品を順番に動かす」ことだけになる。</p>
+
+        <figure class="code"><pre><code class="language-cpp">void FlightController::update()
+{
+    for (int i = 0; i &lt; SENSOR_COUNT; i++)
+    {
+        sensors[i]-&gt;update();
+    }
+
+    float command = pid.compute(imu.getRoll(), target);
+
+    servos.apply(command);
+}</code></pre></figure>
+
+        <h2 id="判断に迷ったときの問い">判断に迷ったときの問い</h2>
+
+        <ul>
+        <li>このクラスは一言で何をするものか説明できるか</li>
+        <li>このクラスを直す理由は何通りあるか（多ければ分割）</li>
+        <li>このデータを<strong>変更する</strong>処理はどこにあるか（そこに置く）</li>
+        <li>この判断基準は、使う側によって変わるか（変わるなら上位に置く）</li>
+      </ul>
+
+        <p>→ <a href="../lessons/14-design.html">第14回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

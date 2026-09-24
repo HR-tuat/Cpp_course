@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第7回 演習の解答例。ヘッダとcppへの分割、ヘッダガード。">
+  <title>第7回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-07" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第7回 解答例</p>
+          <h1>LED・Motor・Buttonを分割する</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="ファイル構成">ファイル構成</h2>
+
+        <figure class="diagram"><pre>include/
+├── LED.h
+├── Motor.h
+└── Button.h
+
+src/
+├── LED.cpp
+├── Motor.cpp
+├── Button.cpp
+└── main.cpp</pre></figure>
+
+        <h2 id="led">LED</h2>
+
+        <figure class="code"><figcaption>include/LED.h</figcaption><pre><code class="language-cpp">#pragma once
+
+class LED
+{
+public:
+    LED(int pin);
+
+    void begin();
+    void on();
+    void off();
+    void toggle();
+
+private:
+    int pin;
+    bool state;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/LED.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "LED.h"
+
+LED::LED(int pin)
+    : pin(pin), state(false)
+{
+}
+
+void LED::begin()
+{
+    pinMode(pin, OUTPUT);
+    off();
+}
+
+void LED::on()
+{
+    state = true;
+    digitalWrite(pin, HIGH);
+}
+
+void LED::off()
+{
+    state = false;
+    digitalWrite(pin, LOW);
+}
+
+void LED::toggle()
+{
+    if (state)
+    {
+        off();
+    }
+    else
+    {
+        on();
+    }
+}</code></pre></figure>
+
+        <h2 id="button">Button</h2>
+
+        <figure class="code"><figcaption>include/Button.h</figcaption><pre><code class="language-cpp">#pragma once
+
+class Button
+{
+public:
+    Button(int pin);
+
+    void begin();
+    bool isPressed() const;
+
+private:
+    int pin;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>src/Button.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "Button.h"
+
+Button::Button(int pin)
+    : pin(pin)
+{
+}
+
+void Button::begin()
+{
+    pinMode(pin, INPUT_PULLUP);
+}
+
+bool Button::isPressed() const
+{
+    return digitalRead(pin) == LOW;
+}</code></pre></figure>
+
+        <h2 id="main-cpp">main.cpp</h2>
+
+        <figure class="code"><figcaption>src/main.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "Button.h"
+#include "LED.h"
+#include "Motor.h"
+
+LED led(2);
+Button button(4);
+Motor motor(5);
+
+void setup()
+{
+    led.begin();
+    button.begin();
+    motor.begin();
+}
+
+void loop()
+{
+    if (button.isPressed())
+    {
+        led.on();
+        motor.setSpeed(50);
+    }
+    else
+    {
+        led.off();
+        motor.stop();
+    }
+}</code></pre></figure>
+
+        <p><code>main.cpp</code>が短く、何をしているかがそのまま読める状態になっているかを確認すること。</p>
+
+        <h2 id="よくある誤り">よくある誤り</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>症状</th><th>原因</th></tr></thead>
+          <tbody>
+          <tr><td><code>undefined reference to LED::on()</code></td><td><code>.cpp</code>側で<code>LED::</code>を書き忘れ、ただの関数を定義している</td></tr>
+          <tr><td><code>redefinition of class LED</code></td><td>ヘッダガード（<code>#pragma once</code>）がない</td></tr>
+          <tr><td><code>'pinMode' was not declared</code></td><td><code>.cpp</code>で<code>#include &lt;Arduino.h&gt;</code>を忘れている</td></tr>
+          <tr><td><code>'LED' does not name a type</code></td><td><code>main.cpp</code>で<code>#include "LED.h"</code>を忘れている</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p><code>Button::isPressed() const</code>の<code>const</code>は「このメンバ関数はオブジェクトの状態を変えない」という意味。付けられるものには付ける習慣にするとよい。</p></aside>
+
+        <p>→ <a href="../lessons/07-headers.html">第7回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

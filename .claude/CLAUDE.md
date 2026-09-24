@@ -79,6 +79,18 @@ OS設定と手動切り替えで食い違う）。同じ二重定義が `styles/
 各HTMLの `<head>` にある小さなインラインスクリプトが保存済みテーマを描画前に適用している
 （ちらつき防止）ので消さない。
 
+### 解答例は「隠す」のではなく「ビルドしない」
+
+`site/scripts/data/solutions.ts` の `published` が公開スイッチ。`false` の回は
+**`vite.config.ts` が rollup の入力から落とす**ため `dist` に出力されない。
+静的ホストでは配信したものは必ず読まれるので、**JSやCSSで隠す実装に変えてはいけない**。
+`solutionLink.ts` がリンクを出し分けているのは404へのリンクを見せないための配慮であって、
+非公開の保証ではない。
+
+解答例ページは `PAGES`（`lessons.ts`）には載せない。未公開の回が混ざると前へ/次への経路が
+壊れるため、`SOLUTIONS` 側だけで管理し、`renderPager()` が `solution-` 接頭辞を見て
+講義への戻り導線だけを出している。
+
 ### 到達度チェックの永続化
 
 `checklist.html` の各 `data-check="..."` が localStorage のキーになる（`cpp-course:checklist:v1`）。

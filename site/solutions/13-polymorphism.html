@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第13回 解答例。Sensor*の配列による一括更新と、追加時の影響範囲。">
+  <title>第13回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-13" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第13回 解答例</p>
+          <h1>センサを配列でまとめて更新する</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="解答">解答</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "GPS.h"
+#include "IMU.h"
+#include "Sensor.h"
+#include "ToF.h"
+
+IMU imu;
+GPS gps;
+ToF tof(34);
+
+Sensor* sensors[] = {&amp;imu, &amp;gps, &amp;tof};
+const int SENSOR_COUNT = sizeof(sensors) / sizeof(sensors[0]);
+
+void setup()
+{
+    Serial.begin(115200);
+}
+
+void loop()
+{
+    for (int i = 0; i &lt; SENSOR_COUNT; i++)
+    {
+        sensors[i]-&gt;update();
+        sensors[i]-&gt;print();
+    }
+
+    delay(1000);
+}</code></pre></figure>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p><code>sizeof(sensors) / sizeof(sensors[0])</code>で要素数を求めておくと、センサを増やしても数字を直さずに済む。<code>3</code>と直接書くと必ず直し忘れる。</p></aside>
+
+        <h2 id="センサを1種類追加したとき">センサを1種類追加したとき</h2>
+
+        <p><code>ToF</code>を追加するために変更が必要だったのは、次の2行だけである。</p>
+
+        <figure class="code"><pre><code class="language-cpp">ToF tof(34);                                  // 追加
+Sensor* sensors[] = {&amp;imu, &amp;gps, &amp;tof};       // 1要素追加</code></pre></figure>
+
+        <p><code>loop()</code>の中は<strong>1文字も変えていない</strong>。これがポリモーフィズムの効果である。</p>
+
+        <figure class="diagram"><pre>        loop()                ← Sensorの種類を知らない
+          │
+          ↓
+      Sensor*                 ← 共通の約束ごと
+          │
+   ┌──────┼──────┐
+   ↓      ↓      ↓
+  IMU    GPS    ToF           ← 増えても loop() は無関係</pre></figure>
+
+        <h2 id="もしポリモーフィズムを使わなかったら">もしポリモーフィズムを使わなかったら</h2>
+
+        <figure class="code"><pre><code class="language-cpp">// 良くない例
+void loop()
+{
+    imu.update();
+    imu.print();
+
+    gps.update();
+    gps.print();
+
+    tof.update();    // センサを増やすたびに loop() を直す
+    tof.print();
+}</code></pre></figure>
+
+        <p>センサが増えるたびに<code>loop()</code>が伸びていく。種類ごとに<code>if</code>で分岐するコードも同じ問題を抱える。</p>
+
+        <h2 id="組み込みでの注意">組み込みでの注意</h2>
+
+        <p>仮想関数を使うと、次のコストがかかる。</p>
+
+        <ul>
+        <li>各オブジェクトに仮想関数テーブルへのポインタ（多くの環境で4バイト）が付く</li>
+        <li>呼び出しが1段階間接的になる</li>
+        <li>コンパイラがインライン展開しにくくなる</li>
+      </ul>
+
+        <p>センサ数個の制御では問題にならない。ただし「割り込みの中で何万回も呼ぶ」ような場所では測定してから判断する。</p>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>この講座では「使い方」と「設計上の意味」を学ぶ。性能の詳細は<a href="../advanced.html">発展内容</a>として扱う。</p></aside>
+
+        <p>→ <a href="../lessons/13-polymorphism.html">第13回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>
