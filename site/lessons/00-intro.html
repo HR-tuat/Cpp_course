@@ -103,12 +103,10 @@
 
         <h2 id="arduino系プログラムの形">Arduino系プログラムの形</h2>
 
-        <figure class="code"><pre><code class="language-cpp">void setup()
-{
+        <figure class="code"><pre><code class="language-cpp">void setup() {
 }
 
-void loop()
-{
+void loop() {
 }</code></pre></figure>
 
         <ul>
@@ -118,13 +116,11 @@ void loop()
 
         <p>PC上のプログラムが持つ<code>main()</code>に相当するものが、Arduino系では<code>setup()</code>と<code>loop()</code>に分かれていると考えるとよい。</p>
 
-        <section class="exercise"><h3 class="exercise-title">演習：LEDを点滅させる</h3><figure class="code"><pre><code class="language-cpp">void setup()
-{
+        <section class="exercise"><h3 class="exercise-title">演習：LEDを点滅させる</h3><figure class="code"><pre><code class="language-cpp">void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void loop()
-{
+void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(500);
 

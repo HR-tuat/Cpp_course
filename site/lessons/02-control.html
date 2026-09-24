@@ -53,39 +53,29 @@
 
         <h2 id="if">if</h2>
 
-        <figure class="code"><pre><code class="language-cpp">if (condition)
-{
+        <figure class="code"><pre><code class="language-cpp">if (condition) {
 }</code></pre></figure>
 
         <h2 id="if-else">if / else</h2>
 
-        <figure class="code"><pre><code class="language-cpp">if (temperature &gt;= 30)
-{
+        <figure class="code"><pre><code class="language-cpp">if (temperature &gt;= 30) {
     // ...
-}
-else
-{
+} else {
     // ...
 }</code></pre></figure>
 
         <h2 id="else-if">else if</h2>
 
-        <figure class="code"><pre><code class="language-cpp">if (temperature &gt;= 40)
-{
-}
-else if (temperature &gt;= 30)
-{
-}
-else
-{
+        <figure class="code"><pre><code class="language-cpp">if (temperature &gt;= 40) {
+} else if (temperature &gt;= 30) {
+} else {
 }</code></pre></figure>
 
         <aside class="callout callout-warn"><p class="callout-title">注意</p><p>条件は上から順に評価される。<code>&gt;= 30</code>を先に書くと<code>&gt;= 40</code>の枝には決して到達しない。順番に意味があることを意識させる。</p></aside>
 
         <h2 id="switch">switch</h2>
 
-        <figure class="code"><pre><code class="language-cpp">switch (mode)
-{
+        <figure class="code"><pre><code class="language-cpp">switch (mode) {
 case 0:
     break;
 
@@ -100,8 +90,7 @@ default:
 
         <h2 id="for">for</h2>
 
-        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 10; i++)
-{
+        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 10; i++) {
 }</code></pre></figure>
 
         <figure class="diagram"><pre>for ( 初期化 ; 継続条件 ; 更新 )
@@ -110,16 +99,14 @@ default:
 
         <h2 id="while">while</h2>
 
-        <figure class="code"><pre><code class="language-cpp">while (condition)
-{
+        <figure class="code"><pre><code class="language-cpp">while (condition) {
 }</code></pre></figure>
 
         <h2 id="マイコンでの注意">マイコンでの注意</h2>
 
         <p>無限ループはマイコンでは珍しくない。</p>
 
-        <figure class="code"><pre><code class="language-cpp">while (true)
-{
+        <figure class="code"><pre><code class="language-cpp">while (true) {
 }</code></pre></figure>
 
         <p>ただしArduinoの<code>loop()</code>自体が繰り返し呼ばれるため、通常は<code>loop()</code>を利用する。<code>loop()</code>の中で長時間止まり続けると、他の処理が一切動かなくなる点に注意する。</p>

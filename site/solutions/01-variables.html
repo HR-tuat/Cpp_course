@@ -58,25 +58,20 @@
         <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
 const float THRESHOLD = 30.0f;
 
-void setup()
-{
+void setup() {
     pinMode(LED_PIN, OUTPUT);
     Serial.begin(115200);
 }
 
-void loop()
-{
+void loop() {
     float temperature = 32.0f;   // 実機ではセンサから読む
 
     Serial.print("temperature = ");
     Serial.println(temperature);
 
-    if (temperature &gt;= THRESHOLD)
-    {
+    if (temperature &gt;= THRESHOLD) {
         digitalWrite(LED_PIN, HIGH);
-    }
-    else
-    {
+    } else {
         digitalWrite(LED_PIN, LOW);
     }
 

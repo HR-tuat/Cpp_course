@@ -7,12 +7,10 @@
 
 Robot robot;
 
-void setup()
-{
+void setup() {
     robot.initialize();
 }
 
-void loop()
-{
+void loop() {
     robot.update();
 }

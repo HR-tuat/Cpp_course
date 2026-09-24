@@ -126,16 +126,14 @@ DistanceSensor</pre></figure>
 
         <h3 id="virtual-override">virtual / override</h3>
 
-        <figure class="code"><pre><code class="language-cpp">class Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class Sensor {
 public:
     virtual void update() = 0;
 };</code></pre></figure>
 
         <h3 id="enum-class">enum class</h3>
 
-        <figure class="code"><pre><code class="language-cpp">enum class RobotState
-{
+        <figure class="code"><pre><code class="language-cpp">enum class RobotState {
     STOP,
     MOVE,
     ERROR
@@ -149,13 +147,11 @@ public:
 
 Robot robot;
 
-void setup()
-{
+void setup() {
     robot.initialize();
 }
 
-void loop()
-{
+void loop() {
     robot.update();
 }</code></pre></figure>
 

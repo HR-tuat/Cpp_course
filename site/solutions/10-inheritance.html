@@ -68,8 +68,7 @@
 
         <figure class="code"><figcaption>include/Device.h</figcaption><pre><code class="language-cpp">#pragma once
 
-class Device
-{
+class Device {
 public:
     Device(int pin);
 
@@ -86,17 +85,14 @@ protected:
 #include "Device.h"
 
 Device::Device(int pin)
-    : pin(pin)
-{
+    : pin(pin) {
 }
 
-void Device::begin()
-{
+void Device::begin() {
     pinMode(pin, OUTPUT);
 }
 
-int Device::getPin() const
-{
+int Device::getPin() const {
     return pin;
 }</code></pre></figure>
 
@@ -106,8 +102,7 @@ int Device::getPin() const
 
 #include "Device.h"
 
-class LED : public Device
-{
+class LED : public Device {
 public:
     LED(int pin);
 
@@ -124,30 +119,23 @@ private:
 #include "LED.h"
 
 LED::LED(int pin)
-    : Device(pin), state(false)     // 親のコンストラクタを先に呼ぶ
-{
+    : Device(pin), state(false) {     // 親のコンストラクタを先に呼ぶ
 }
 
-void LED::on()
-{
+void LED::on() {
     state = true;
     digitalWrite(pin, HIGH);        // 親の protected メンバを使える
 }
 
-void LED::off()
-{
+void LED::off() {
     state = false;
     digitalWrite(pin, LOW);
 }
 
-void LED::toggle()
-{
-    if (state)
-    {
+void LED::toggle() {
+    if (state) {
         off();
-    }
-    else
-    {
+    } else {
         on();
     }
 }</code></pre></figure>

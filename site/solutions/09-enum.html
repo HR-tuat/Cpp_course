@@ -57,8 +57,7 @@
 
         <figure class="code"><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-enum class RobotState
-{
+enum class RobotState {
     STOP,
     MOVE,
     ERROR
@@ -69,15 +68,12 @@ const int ERROR_BLINK_MS = 100;
 
 RobotState state = RobotState::STOP;
 
-void setState(RobotState next)
-{
+void setState(RobotState next) {
     state = next;
 }
 
-void updateLed()
-{
-    switch (state)
-    {
+void updateLed() {
+    switch (state) {
     case RobotState::STOP:
         digitalWrite(LED_PIN, LOW);
         break;
@@ -96,14 +92,12 @@ void updateLed()
     }
 }
 
-void setup()
-{
+void setup() {
     pinMode(LED_PIN, OUTPUT);
     setState(RobotState::MOVE);
 }
 
-void loop()
-{
+void loop() {
     updateLed();
     delay(50);
 }</code></pre></figure>
@@ -131,14 +125,11 @@ state = RobotState::MOVE;   // これしか書けない</code></pre></figure>
 
         <h2 id="状態を切り替える">状態を切り替える</h2>
 
-        <figure class="code"><pre><code class="language-cpp">void loop()
-{
-    if (Serial.available() &gt; 0)
-    {
+        <figure class="code"><pre><code class="language-cpp">void loop() {
+    if (Serial.available() &gt; 0) {
         char command = Serial.read();
 
-        switch (command)
-        {
+        switch (command) {
         case 's':
             setState(RobotState::STOP);
             break;

@@ -4,22 +4,18 @@
 
 // TODO: コンストラクタをメンバ初期化リストで実装する
 
-void LED::begin()
-{
+void LED::begin() {
     // TODO: pinMode() を呼び、消灯状態にする
 }
 
-void LED::on()
-{
+void LED::on() {
     // TODO
 }
 
-void LED::off()
-{
+void LED::off() {
     // TODO
 }
 
-void LED::toggle()
-{
+void LED::toggle() {
     // TODO: 現在の状態によって on() / off() を呼び分ける
 }

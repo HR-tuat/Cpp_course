@@ -55,14 +55,12 @@
 
         <p>次のコードを考える。</p>
 
-        <figure class="code"><pre><code class="language-cpp">class Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class Sensor {
 public:
     void update();
 };
 
-class IMU : public Sensor
-{
+class IMU : public Sensor {
 public:
     void update();
 };</code></pre></figure>
@@ -71,22 +69,19 @@ public:
 
         <h2 id="virtual">virtual</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class Sensor {
 public:
     virtual void update();
 };</code></pre></figure>
 
-        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor {
 public:
     void update();
 };</code></pre></figure>
 
         <h2 id="override">override</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor {
 public:
     void update() override;
 };</code></pre></figure>

@@ -55,18 +55,15 @@
 
         <h2 id="1-0-9をシリアル出力">1. 0〜9をシリアル出力</h2>
 
-        <figure class="code"><pre><code class="language-cpp">void setup()
-{
+        <figure class="code"><pre><code class="language-cpp">void setup() {
     Serial.begin(115200);
 
-    for (int i = 0; i &lt; 10; i++)
-    {
+    for (int i = 0; i &lt; 10; i++) {
         Serial.println(i);
     }
 }
 
-void loop()
-{
+void loop() {
 }</code></pre></figure>
 
         <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>1回だけ実行したい処理は<code>setup()</code>に書く。<code>loop()</code>に書くと延々と出力され続ける。</p></aside>
@@ -76,10 +73,8 @@ void loop()
         <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
 const int BLINK_MS = 200;
 
-void blink(int times)
-{
-    for (int i = 0; i &lt; times; i++)
-    {
+void blink(int times) {
+    for (int i = 0; i &lt; times; i++) {
         digitalWrite(LED_PIN, HIGH);
         delay(BLINK_MS);
 
@@ -88,14 +83,12 @@ void blink(int times)
     }
 }
 
-void setup()
-{
+void setup() {
     pinMode(LED_PIN, OUTPUT);
     blink(5);
 }
 
-void loop()
-{
+void loop() {
 }</code></pre></figure>
 
         <h2 id="3-ボタンが押されている間だけled点灯">3. ボタンが押されている間だけLED点灯</h2>
@@ -103,14 +96,12 @@ void loop()
         <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
 const int BUTTON_PIN = 4;
 
-void setup()
-{
+void setup() {
     pinMode(LED_PIN, OUTPUT);
     pinMode(BUTTON_PIN, INPUT_PULLUP);
 }
 
-void loop()
-{
+void loop() {
     bool pressed = (digitalRead(BUTTON_PIN) == LOW);
 
     digitalWrite(LED_PIN, pressed ? HIGH : LOW);
@@ -121,8 +112,7 @@ void loop()
         <p>次のように書いても動くが、勧められない。</p>
 
         <figure class="code"><pre><code class="language-cpp">// 良くない例
-while (digitalRead(BUTTON_PIN) == LOW)
-{
+while (digitalRead(BUTTON_PIN) == LOW) {
     digitalWrite(LED_PIN, HIGH);
 }</code></pre></figure>
 

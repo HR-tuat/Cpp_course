@@ -53,8 +53,7 @@
 
         <h2 id="ledクラス">LEDクラス</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class LED
-{
+        <figure class="code"><pre><code class="language-cpp">class LED {
 public:
     LED(int pin);
 
@@ -69,8 +68,7 @@ private:
 
         <h2 id="motorクラス">Motorクラス</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Motor
-{
+        <figure class="code"><pre><code class="language-cpp">class Motor {
 public:
     Motor(int pin);
 
@@ -84,16 +82,14 @@ private:
 
         <h2 id="sensorクラス">Sensorクラス</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class Sensor {
 public:
     virtual void update() = 0;
 };</code></pre></figure>
 
         <h2 id="imu">IMU</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor {
 public:
     void update() override;
 
@@ -105,8 +101,7 @@ private:
 
         <h2 id="flightmode">FlightMode</h2>
 
-        <figure class="code"><pre><code class="language-cpp">enum class FlightMode
-{
+        <figure class="code"><pre><code class="language-cpp">enum class FlightMode {
     MANUAL,
     AUTO,
     LANDING

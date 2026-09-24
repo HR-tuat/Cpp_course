@@ -61,8 +61,7 @@ Sensor* sensors[2];
 sensors[0] = &amp;imu;
 sensors[1] = &amp;gps;</code></pre></figure>
 
-        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 2; i++)
-{
+        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 2; i++) {
     sensors[i]-&gt;update();
 }</code></pre></figure>
 

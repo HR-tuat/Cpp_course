@@ -2,8 +2,7 @@
 
 #include <Arduino.h>
 
-enum class RobotState
-{
+enum class RobotState {
     STOP,
     MOVE,
     ERROR
@@ -13,15 +12,12 @@ const int LED_PIN = 2;
 
 RobotState state = RobotState::STOP;
 
-void setState(RobotState next)
-{
+void setState(RobotState next) {
     state = next;
 }
 
-void updateLed()
-{
-    switch (state)
-    {
+void updateLed() {
+    switch (state) {
     case RobotState::STOP:
         digitalWrite(LED_PIN, LOW);
         break;
@@ -39,14 +35,12 @@ void updateLed()
     }
 }
 
-void setup()
-{
+void setup() {
     pinMode(LED_PIN, OUTPUT);
     setState(RobotState::MOVE);
 }
 
-void loop()
-{
+void loop() {
     updateLed();
     delay(50);
 }

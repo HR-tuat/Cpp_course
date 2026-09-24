@@ -21,6 +21,9 @@ dist/
 .DS_Store
 Thumbs.db
 
+# 作業用スクリプトの中間ファイル
+__pycache__/
+
 # ログ
 npm-debug.log*
 *.log

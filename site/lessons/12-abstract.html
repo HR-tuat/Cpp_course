@@ -53,8 +53,7 @@
 
         <h2 id="純粋仮想関数">純粋仮想関数</h2>
 
-        <figure class="code"><pre><code class="language-cpp">class Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class Sensor {
 public:
     virtual void update() = 0;
 };</code></pre></figure>
@@ -69,8 +68,7 @@ public:
 
         <p>派生クラスで実装する。</p>
 
-        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
-{
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor {
 public:
     void update() override;
 };</code></pre></figure>

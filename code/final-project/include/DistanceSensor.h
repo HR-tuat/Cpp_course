@@ -2,8 +2,7 @@
 
 #include "Sensor.h"
 
-class DistanceSensor : public Sensor
-{
+class DistanceSensor : public Sensor {
 public:
     DistanceSensor(int pin);
 

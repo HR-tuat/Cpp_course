@@ -62,8 +62,7 @@ values[1] = 20;</code></pre></figure>
 
         <h2 id="配列とループ">配列とループ</h2>
 
-        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 5; i++)
-{
+        <figure class="code"><pre><code class="language-cpp">for (int i = 0; i &lt; 5; i++) {
     Serial.println(values[i]);
 }</code></pre></figure>
 
@@ -117,13 +116,11 @@ int&amp; ref = value;</code></pre></figure>
         <li>配列の最大値を求める</li>
         <li>ポインタを使って関数から変数を変更する</li>
         <li>参照を使って関数から変数を変更する</li>
-      </ul><figure class="code"><pre><code class="language-cpp">void addOne(int* value)
-{
+      </ul><figure class="code"><pre><code class="language-cpp">void addOne(int* value) {
     *value = *value + 1;
 }
 
-void addOneRef(int&amp; value)
-{
+void addOneRef(int&amp; value) {
     value = value + 1;
 }</code></pre></figure><div class="solution-slot" data-solution></div></section>
       </article>

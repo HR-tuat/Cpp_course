@@ -5,8 +5,7 @@
 #include "IMU.h"
 #include "Motor.h"
 
-class Robot
-{
+class Robot {
 public:
     Robot();
 

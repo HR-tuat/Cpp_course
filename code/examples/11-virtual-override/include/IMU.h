@@ -2,8 +2,7 @@
 
 #include "Sensor.h"
 
-class IMU : public Sensor
-{
+class IMU : public Sensor {
 public:
     IMU();
 

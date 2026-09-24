@@ -57,8 +57,7 @@
 
         <p>修正前：</p>
 
-        <figure class="code"><pre><code class="language-cpp">if (analogRead(34) &gt; 2000)
-{
+        <figure class="code"><pre><code class="language-cpp">if (analogRead(34) &gt; 2000) {
     analogWrite(5, 128);
 }</code></pre></figure>
 
@@ -69,8 +68,7 @@ const int MOTOR_PIN = 5;
 const int SENSOR_THRESHOLD = 2000;
 const int MOTOR_HALF = 128;
 
-if (analogRead(SENSOR_PIN) &gt; SENSOR_THRESHOLD)
-{
+if (analogRead(SENSOR_PIN) &gt; SENSOR_THRESHOLD) {
     analogWrite(MOTOR_PIN, MOTOR_HALF);
 }</code></pre></figure>
 
@@ -78,8 +76,7 @@ if (analogRead(SENSOR_PIN) &gt; SENSOR_THRESHOLD)
 
         <h2 id="2-名前空間にまとめる">2. 名前空間にまとめる</h2>
 
-        <figure class="code"><figcaption>Sensor.h</figcaption><pre><code class="language-cpp">namespace Sensor
-{
+        <figure class="code"><figcaption>Sensor.h</figcaption><pre><code class="language-cpp">namespace Sensor {
 const int PIN = 34;
 const int THRESHOLD = 2000;
 
@@ -92,20 +89,16 @@ bool isNear();
 
 #include "Sensor.h"
 
-namespace Sensor
-{
-void begin()
-{
+namespace Sensor {
+void begin() {
     pinMode(PIN, INPUT);
 }
 
-int read()
-{
+int read() {
     return analogRead(PIN);
 }
 
-bool isNear()
-{
+bool isNear() {
     return read() &gt; THRESHOLD;
 }
 }</code></pre></figure>
@@ -114,8 +107,7 @@ bool isNear()
 
         <figure class="code"><pre><code class="language-cpp">Sensor::begin();
 
-if (Sensor::isNear())
-{
+if (Sensor::isNear()) {
     // ...
 }</code></pre></figure>
 
@@ -123,18 +115,15 @@ if (Sensor::isNear())
 
         <h2 id="3-関数オーバーロード">3. 関数オーバーロード</h2>
 
-        <figure class="code"><pre><code class="language-cpp">int add(int a, int b)
-{
+        <figure class="code"><pre><code class="language-cpp">int add(int a, int b) {
     return a + b;
 }
 
-float add(float a, float b)
-{
+float add(float a, float b) {
     return a + b;
 }
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
 
     Serial.println(add(1, 2));          // int版が呼ばれる → 3
