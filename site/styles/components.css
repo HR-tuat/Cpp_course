@@ -370,18 +370,26 @@ figure.diagram figcaption {
 /* --- 表示対象者による出し分け ------------------------------------------- */
 
 /*
- * [data-for] のブロックは既定で隠し、対象者が一致したときだけ出す。
- * 「既定で隠す」向きにしてあるのは、JSが動かなくても受講者に講師向けの
- * 記述が出ないようにするため。ただし配信自体はされているので、本当に見せたくない
- * ものは解答例と同じく vite.config.ts でビルドから外すこと。
+ * [data-for] は対象者が一致したときだけ出す。
+ *
+ * 隠す側だけを書いているのが大事で、**一致した要素には display を一切触らない**。
+ * そのため、ブロック（p / section）でもインライン（span / code）でも、
+ * tr / td / li や display を持つクラス（.card-grid の grid など）でもそのまま使える。
+ * 一致した側に display: block を当てる実装に戻すと、インラインが改行し、
+ * grid / flex が崩れる。
+ *
+ * data-audience がまだ入っていないときはすべて隠す。JSもインラインスクリプトも
+ * 動かない環境で、受講者に講師向けの記述が漏れない向きに倒すため。
+ * ただし配信自体はされているので、本当に見せたくないものは解答例と同じく
+ * vite.config.ts でビルドから外すこと。
  */
-[data-for] {
+:root:not([data-audience]) [data-for] {
   display: none;
 }
 
-:root[data-audience="student"] [data-for="student"],
-:root[data-audience="teacher"] [data-for="teacher"] {
-  display: block;
+:root[data-audience="student"] [data-for]:not([data-for="student"]),
+:root[data-audience="teacher"] [data-for]:not([data-for="teacher"]) {
+  display: none;
 }
 
 /* 本文中で「ここは受講者には見えていない」ことを示す小さな見出し */
