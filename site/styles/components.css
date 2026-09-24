@@ -89,8 +89,13 @@ figure.diagram figcaption {
   font-size: .92rem;
 }
 
-.callout p:last-child {
+/* 囲みの末尾にコード例を置いても下だけ余白が残らないようにする */
+.callout > :last-child {
   margin-bottom: 0;
+}
+
+.callout figure.code {
+  margin-top: .7rem;
 }
 
 .callout-title {
