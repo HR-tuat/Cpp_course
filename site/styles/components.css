@@ -1,0 +1,300 @@
+/* ==========================================================================
+   components.css — 表・注意書き・演習ボックス・図・カード・チェックリスト
+   ========================================================================== */
+
+/* --- 表 ------------------------------------------------------------------- */
+
+.table-wrap {
+  margin: 1.2rem 0 1.6rem;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+  line-height: 1.6;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-subtle);
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th,
+td {
+  padding: .55rem .85rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover {
+  background: var(--bg-subtle);
+}
+
+.align-right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.align-center {
+  text-align: center;
+}
+
+/* --- 概念図（等幅プレーン） ------------------------------------------------ */
+
+figure.diagram {
+  margin: 1.3rem 0 1.6rem;
+  padding: 1rem 1.1rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+figure.diagram pre {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: .84rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  white-space: pre;
+}
+
+figure.diagram figcaption {
+  margin-bottom: .5rem;
+  font-size: .76rem;
+  color: var(--text-faint);
+}
+
+/* --- 注意書き ------------------------------------------------------------- */
+
+.callout {
+  margin: 1.3rem 0 1.6rem;
+  padding: .85rem 1.1rem;
+  border-left: 3px solid var(--note);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--note-soft);
+  font-size: .92rem;
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+.callout-title {
+  margin: 0 0 .25rem;
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--note);
+}
+
+.callout-warn {
+  border-left-color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.callout-warn .callout-title {
+  color: var(--warn);
+}
+
+.callout-tip {
+  border-left-color: var(--tip);
+  background: var(--tip-soft);
+}
+
+.callout-tip .callout-title {
+  color: var(--tip);
+}
+
+/* --- 演習ボックス --------------------------------------------------------- */
+
+.exercise {
+  margin: 2rem 0;
+  padding: 1.1rem 1.25rem 1.25rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow);
+}
+
+.exercise-title {
+  margin: 0 0 .75rem;
+  padding-left: 1.6rem;
+  font-size: 1rem;
+  position: relative;
+}
+
+.exercise-title::before {
+  content: "✎";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+}
+
+.exercise > :last-child {
+  margin-bottom: 0;
+}
+
+.exercise figure.code,
+.exercise figure.diagram {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* --- カード --------------------------------------------------------------- */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: .75rem;
+  margin: 1.3rem 0 1.8rem;
+}
+
+.card {
+  display: block;
+  padding: .9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  color: var(--text);
+}
+
+.card:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+  transition: transform .12s ease;
+}
+
+.card-eyebrow {
+  display: block;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  color: var(--accent);
+}
+
+.card-title {
+  display: block;
+  font-size: .95rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.card-desc {
+  display: block;
+  margin-top: .2rem;
+  font-size: .8rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* --- チェックリスト ------------------------------------------------------- */
+
+.checklist {
+  margin: 1rem 0 1.6rem;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.checklist li + li {
+  border-top: 1px solid var(--border);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+  padding: .55rem .9rem;
+  cursor: pointer;
+  font-size: .93rem;
+}
+
+.check:hover {
+  background: var(--bg-subtle);
+}
+
+.check input {
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: .38rem 0 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.check input:checked + span {
+  color: var(--text-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--border-strong);
+}
+
+/* --- 進捗表示 ------------------------------------------------------------- */
+
+.checklist-status {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: .9rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+}
+
+.progress-text {
+  margin: 0;
+  font-size: .85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.progress {
+  flex: 1 1 8rem;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width .2s ease;
+}
+
+.btn-reset {
+  padding: .3rem .8rem;
+  font-size: .78rem;
+  color: var(--text-muted);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.btn-reset:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}

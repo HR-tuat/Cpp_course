@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="宣言と定義、include、ヘッダガード、.hと.cppの役割分担。">
+  <title>第7回 ヘッダファイルとcppファイル | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-07" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第7回</p>
+          <h1>ヘッダファイルとcppファイル</h1>
+          <p class="lead">クラスを複数ファイルに分割する。</p>
+        </header>
+
+        <h2 id="なぜ分割するのか">なぜ分割するのか</h2>
+
+        <p>すべてを<code>main.cpp</code>に書くと、</p>
+
+        <figure class="diagram"><pre>main.cpp
+ ├── LED
+ ├── Motor
+ ├── Sensor
+ ├── Controller
+ └── ...</pre></figure>
+
+        <p>となり、コードが巨大になる。そこで、</p>
+
+        <figure class="diagram"><pre>main.cpp
+LED.h
+LED.cpp
+Motor.h
+Motor.cpp</pre></figure>
+
+        <p>のように分ける。</p>
+
+        <h2 id="宣言と定義">宣言と定義</h2>
+
+        <figure class="code"><figcaption>LED.h</figcaption><pre><code class="language-cpp">class LED
+{
+public:
+    LED(int pin);
+
+    void on();
+    void off();
+
+private:
+    int pin;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>LED.cpp</figcaption><pre><code class="language-cpp">#include "LED.h"
+
+LED::LED(int pin)
+    : pin(pin)
+{
+}
+
+void LED::on()
+{
+}
+
+void LED::off()
+{
+}</code></pre></figure>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>.cpp</code>側でメンバ関数を書くときは<code>LED::</code>が必要。これを忘れて「ただの関数」を定義してしまうミスが多い。</p></aside>
+
+        <h2 id="include">include</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include "LED.h"</code></pre></figure>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>書き方</th><th>意味</th></tr></thead>
+          <tbody>
+          <tr><td><code>#include "LED.h"</code></td><td>自分のプロジェクト内のファイル</td></tr>
+          <tr><td><code>#include &lt;Arduino.h&gt;</code></td><td>処理系やライブラリが提供するファイル</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <h2 id="ヘッダガード">ヘッダガード</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#ifndef LED_H
+#define LED_H
+
+// ...
+
+#endif</code></pre></figure>
+
+        <p>または、</p>
+
+        <figure class="code"><pre><code class="language-cpp">#pragma once</code></pre></figure>
+
+        <p>を紹介する。同じヘッダが2回読み込まれて多重定義になるのを防ぐ仕組みである。</p>
+
+        <h2 id="宣言と定義の考え方">宣言と定義の考え方</h2>
+
+        <figure class="diagram"><pre>.h
+↓
+「何ができるか」
+
+.cpp
+↓
+「どうやって実現しているか」</pre></figure>
+
+        <p>という考え方を持たせる。利用する側は<code>.h</code>だけを見れば使い方が分かる、という状態が理想である。</p>
+
+        <section class="exercise"><h3 class="exercise-title">演習：以下のクラスをそれぞれ.hと.cppに分割する</h3><figure class="diagram"><pre>LED
+Motor
+Button</pre></figure><ul>
+        <li>ヘッダガードを必ず付ける</li>
+        <li><code>main.cpp</code>から3つすべてを<code>#include</code>して使う</li>
+        <li><code>.h</code>を見ただけで使い方が分かるかを確認する</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

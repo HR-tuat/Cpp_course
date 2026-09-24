@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="純粋仮想関数、抽象クラス、インターフェースとしての利用。">
+  <title>第12回 純粋仮想関数と抽象クラス | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-12" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第12回</p>
+          <h1>純粋仮想関数と抽象クラス</h1>
+          <p class="lead">「必ず実装させる」仕組みとしてのインターフェース。</p>
+        </header>
+
+        <h2 id="純粋仮想関数">純粋仮想関数</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Sensor
+{
+public:
+    virtual void update() = 0;
+};</code></pre></figure>
+
+        <p><code>= 0</code>は「ここには実装がない。派生クラスが必ず実装すること」という意味である。</p>
+
+        <h2 id="抽象クラス">抽象クラス</h2>
+
+        <p><code>Sensor</code>そのものを直接オブジェクトとして作ることはできない。</p>
+
+        <figure class="code"><pre><code class="language-cpp">Sensor sensor; // エラー</code></pre></figure>
+
+        <p>派生クラスで実装する。</p>
+
+        <figure class="code"><pre><code class="language-cpp">class IMU : public Sensor
+{
+public:
+    void update() override;
+};</code></pre></figure>
+
+        <h2 id="インターフェースとして利用する">インターフェースとして利用する</h2>
+
+        <figure class="diagram"><pre>Sensor
+  │
+  ├── IMU
+  ├── GPS
+  └── ToF</pre></figure>
+
+        <p>共通して、</p>
+
+        <figure class="code"><pre><code class="language-cpp">update()</code></pre></figure>
+
+        <p>を持つことを要求できる。新しいセンサを追加する人は、<code>Sensor</code>を継承した時点で<code>update()</code>の実装を強制される。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「共通の実装をまとめたい」のが継承、「共通の約束ごとを決めたい」のが抽象クラス。この2つは動機が違う。</p></aside>
+
+        <section class="exercise"><h3 class="exercise-title">演習</h3><ul>
+        <li>第11回の<code>Sensor::update()</code>を純粋仮想関数に変える</li>
+        <li><code>Sensor sensor;</code>と書くとどうなるかを実際に確かめる</li>
+        <li>新しく<code>ToF</code>クラスを追加し、<code>update()</code>を実装する</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

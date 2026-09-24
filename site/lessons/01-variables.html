@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="変数、基本的な型、算術演算・比較演算・論理演算。">
+  <title>第1回 変数・型・演算子 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-01" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第1回</p>
+          <h1>変数・型・演算子</h1>
+          <p class="lead">プログラムでデータを扱う方法を理解する。</p>
+        </header>
+
+        <h2 id="変数">変数</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int count = 0;</code></pre></figure>
+
+        <ul>
+        <li><code>int</code>：型</li>
+        <li><code>count</code>：変数名</li>
+        <li><code>0</code>：初期値</li>
+      </ul>
+
+        <p>変数は「名前を付けた箱」であり、型はその箱に入れられるものの種類を表す。</p>
+
+        <h2 id="基本的な型">基本的な型</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int
+float
+double
+char
+bool</code></pre></figure>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>型</th><th>扱うもの</th><th>例</th></tr></thead>
+          <tbody>
+          <tr><td><code>int</code></td><td>整数</td><td><code>int count = 0;</code></td></tr>
+          <tr><td><code>float</code></td><td>小数（単精度）</td><td><code>float temperature = 25.5f;</code></td></tr>
+          <tr><td><code>double</code></td><td>小数（倍精度）</td><td><code>double pi = 3.14159;</code></td></tr>
+          <tr><td><code>char</code></td><td>1文字</td><td><code>char c = 'A';</code></td></tr>
+          <tr><td><code>bool</code></td><td>真偽（<code>true</code> / <code>false</code>）</td><td><code>bool isOn = false;</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <h3 id="マイコンでの注意">マイコンでの注意</h3>
+
+        <p>型のサイズは環境によって異なる場合があるため、必要に応じて次のような型も紹介する。</p>
+
+        <figure class="code"><pre><code class="language-cpp">int8_t
+uint8_t
+int16_t
+uint16_t
+int32_t
+uint32_t</code></pre></figure>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>ただし序盤では詳細に踏み込みすぎない。「環境によって<code>int</code>の大きさが違うことがある」「だからサイズを明示する書き方がある」という程度でよい。</p></aside>
+
+        <h2 id="算術演算">算術演算</h2>
+
+        <figure class="code"><pre><code class="language-cpp">+
+-
+*
+/
+%</code></pre></figure>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>/</code>は整数同士だと切り捨てになる（<code>7 / 2</code>は<code>3</code>）。小数が欲しい場合は<code>7.0f / 2</code>のように書く。ここはつまずきやすい。</p></aside>
+
+        <h2 id="比較演算">比較演算</h2>
+
+        <figure class="code"><pre><code class="language-cpp">==
+!=
+&lt;
+&gt;
+&lt;=
+&gt;=</code></pre></figure>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>=</code>（代入）と<code>==</code>（比較）の取り違えは初学者で最も多い誤りの一つ。<code>if (a = 1)</code>はエラーにならず意図しない動作になる。</p></aside>
+
+        <h2 id="論理演算">論理演算</h2>
+
+        <figure class="code"><pre><code class="language-cpp">&amp;&amp;
+||
+!</code></pre></figure>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>演算子</th><th>意味</th><th>例</th></tr></thead>
+          <tbody>
+          <tr><td><code>&amp;&amp;</code></td><td>かつ</td><td><code>if (a &gt;= 10 &amp;&amp; b &lt; 5)</code></td></tr>
+          <tr><td><code>||</code></td><td>または</td><td><code>if (a == 0 || b == 0)</code></td></tr>
+          <tr><td><code>!</code></td><td>否定</td><td><code>if (!isOn)</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <section class="exercise"><h3 class="exercise-title">演習：温度が30度以上ならLEDを点灯する</h3><figure class="code"><pre><code class="language-cpp">float temperature = 32.0;
+
+if (temperature &gt;= 30.0)
+{
+    // LED ON
+}</code></pre></figure><ul>
+        <li>まずは<code>temperature</code>を固定値で書き、しきい値を変えて動作を確認する</li>
+        <li>余裕があれば<code>Serial.println()</code>で値を出力してみる</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

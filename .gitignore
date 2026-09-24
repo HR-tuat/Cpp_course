@@ -1,0 +1,24 @@
+# 草案（元資料）
+Cpp引継ぎ資料草案.md
+フォルダ構成.md
+
+# 依存とビルド出力
+node_modules/
+dist/
+.vite/
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# エディタ・OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ログ
+npm-debug.log*
+*.log
+
+# Claude

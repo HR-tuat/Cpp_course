@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="public / private / protected、getter・setter、カプセル化の本質。">
+  <title>第8回 カプセル化 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-08" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第8回</p>
+          <h1>カプセル化</h1>
+          <p class="lead">クラス内部のデータを適切に隠し、外部から安全に操作する。</p>
+        </header>
+
+        <h2 id="public">public</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Motor
+{
+public:
+    void setSpeed(int speed);
+};</code></pre></figure>
+
+        <p>外部から呼び出せる。</p>
+
+        <h2 id="private">private</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Motor
+{
+private:
+    int speed;
+};</code></pre></figure>
+
+        <p>外部から直接アクセスできない。</p>
+
+        <h2 id="protected">protected</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Sensor
+{
+protected:
+    int value;
+};</code></pre></figure>
+
+        <p>通常の外部コードからはアクセスできないが、派生クラスから利用できる。</p>
+
+        <h2 id="アクセス範囲">アクセス範囲</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>修飾子</th><th>クラス内部</th><th>派生クラス</th><th>外部</th></tr></thead>
+          <tbody>
+          <tr><td>public</td><td>○</td><td>○</td><td>○</td></tr>
+          <tr><td>protected</td><td>○</td><td>○</td><td>×</td></tr>
+          <tr><td>private</td><td>○</td><td>×</td><td>×</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <h2 id="getter-setter">getter / setter</h2>
+
+        <figure class="code"><pre><code class="language-cpp">class Motor
+{
+public:
+    void setSpeed(int speed);
+    int getSpeed() const;
+
+private:
+    int speed;
+};</code></pre></figure>
+
+        <h2 id="なぜprivateにするのか">なぜprivateにするのか</h2>
+
+        <p>例えば、</p>
+
+        <figure class="code"><pre><code class="language-cpp">motor.speed = -100000;</code></pre></figure>
+
+        <p>のような不正な値を外部から設定される可能性がある。そこで、</p>
+
+        <figure class="code"><pre><code class="language-cpp">void Motor::setSpeed(int speed)
+{
+    if (speed &lt; 0)
+    {
+        speed = 0;
+    }
+
+    if (speed &gt; 100)
+    {
+        speed = 100;
+    }
+
+    this-&gt;speed = speed;
+}</code></pre></figure>
+
+        <p>のようにクラス内部で制限する。値を守る場所が1か所に集まるため、不正な状態が作られにくくなる。</p>
+
+        <h2 id="カプセル化の本質">カプセル化の本質</h2>
+
+        <p>単に「privateを使う」ということではない。</p>
+
+        <figure class="diagram"><pre>内部の実装
+    ↓
+隠す
+
+外部には
+    ↓
+必要な操作だけ公開する</pre></figure>
+
+        <p>という考え方を理解する。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「とりあえず全部privateにしてgetter/setterを付ける」のはカプセル化ではない。外部に必要な操作は何かを先に考え、それだけをpublicにする。</p></aside>
+
+        <section class="exercise"><h3 class="exercise-title">演習</h3><ul>
+        <li>第6回の<code>LED</code>クラス、第7回の<code>Motor</code>クラスのメンバ変数をすべて<code>private</code>にする</li>
+        <li><code>Motor::setSpeed()</code>に0〜100の制限を実装する</li>
+        <li>そのクラスで「外部に本当に必要な操作」は何かを書き出す</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

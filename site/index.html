@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="プログラミング未経験者向け、マイコン（ESP32）を教材としたC++講座の教材サイト。">
+  <title>トップ | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="./styles/base.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/components.css">
+  <link rel="stylesheet" href="./styles/code.css">
+</head>
+<body data-page="home" data-base="./">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="./index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <h1>マイコンのためのC++講座</h1>
+          <p class="lead">C言語を含めてプログラミング経験がない人が、12週間でESP32などのマイコン上のプログラムをクラスと複数ファイルで設計・実装できるようになることを目指す講座の教材。</p>
+        </header>
+
+        <h2 id="対象">対象</h2>
+
+        <p>本講座は、C言語を含めてプログラミング経験がない人を対象とする。最終的には、ESP32などのマイコン上で動作するプログラムを、C++のクラスや複数ファイルを用いて設計・実装できるようになることを目標とする。</p>
+
+        <h2 id="期間">期間</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>内容</th></tr></thead>
+          <tbody>
+          <tr><td>全体</td><td>2〜3か月</td></tr>
+          <tr><td>標準</td><td>12週間</td></tr>
+          <tr><td>頻度</td><td>週1回〜2回</td></tr>
+          <tr><td>1回の長さ</td><td>90〜120分程度</td></tr>
+          <tr><td>進め方</td><td>講義だけでなく、毎回必ずコードを書く</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <h2 id="最終到達目標">最終到達目標</h2>
+
+        <p>受講者が以下を自力で使用できることを目標とする。</p>
+
+        <h3 id="プログラミング基礎">プログラミング基礎</h3>
+
+        <ul>
+        <li>変数</li>
+        <li>型</li>
+        <li>演算子</li>
+        <li>条件分岐</li>
+        <li>繰り返し</li>
+        <li>関数</li>
+        <li>配列</li>
+        <li>スコープ</li>
+      </ul>
+
+        <h3 id="c-c-の基礎">C/C++の基礎</h3>
+
+        <ul>
+        <li>ポインタ</li>
+        <li>参照</li>
+        <li><code>const</code></li>
+        <li><code>struct</code></li>
+        <li><code>enum</code></li>
+        <li><code>enum class</code></li>
+        <li>名前空間</li>
+      </ul>
+
+        <h3 id="c-の主要機能">C++の主要機能</h3>
+
+        <ul>
+        <li>クラス / オブジェクト / コンストラクタ</li>
+        <li>メンバ変数 / メンバ関数</li>
+        <li><code>public</code> / <code>private</code> / <code>protected</code> / カプセル化</li>
+        <li>継承 / 仮想関数 / <code>virtual</code> / <code>override</code></li>
+        <li>純粋仮想関数 / 抽象クラス / ポリモーフィズム</li>
+      </ul>
+
+        <h3 id="プログラム設計">プログラム設計</h3>
+
+        <ul>
+        <li><code>.h</code> / <code>.cpp</code>への分割</li>
+        <li>クラスの責務分離</li>
+        <li>インターフェースと実装の分離</li>
+        <li>センサ・アクチュエータなどのクラス化</li>
+        <li>状態を<code>enum class</code>で管理</li>
+        <li>複数クラスを組み合わせたマイコンプログラムの設計</li>
+      </ul>
+
+        <h2 id="学習の流れ">学習の流れ</h2>
+
+        <figure class="diagram"><pre>プログラミングの基礎
+        ↓
+C/C++の基本文法
+        ↓
+関数
+        ↓
+複数ファイル
+        ↓
+クラス
+        ↓
+カプセル化
+        ↓
+enum
+        ↓
+継承
+        ↓
+virtual / override
+        ↓
+クラス設計
+        ↓
+マイコン向けシステム設計</pre></figure>
+
+        <h2 id="はじめに読む">はじめに読む</h2>
+
+        <div class="card-grid">
+        <a class="card" href="guide/policy.html">
+          <span class="card-eyebrow">1章</span>
+          <span class="card-title">講座の基本方針</span>
+          <span class="card-desc">文法の網羅を目的にしない。何を目的に据えるか。</span>
+        </a>
+        <a class="card" href="guide/environment.html">
+          <span class="card-eyebrow">2章</span>
+          <span class="card-title">開発環境</span>
+          <span class="card-desc">VS Code / PlatformIO / ESP32 / Git と教材作成環境。</span>
+        </a>
+        <a class="card" href="guide/schedule.html">
+          <span class="card-eyebrow">20・21章</span>
+          <span class="card-title">12週間の授業計画</span>
+          <span class="card-desc">週ごとの内容と、1回あたりの授業の流れ。</span>
+        </a>
+        <a class="card" href="guide/teaching-notes.html">
+          <span class="card-eyebrow">23章</span>
+          <span class="card-title">教える際の重要ポイント</span>
+          <span class="card-desc">暗記させない。継承を目的化しない。</span>
+        </a>
+      </div>
+
+        <h2 id="各回の教材">各回の教材</h2>
+
+        <div class="card-grid">
+        <a class="card" href="lessons/00-intro.html">
+          <span class="card-eyebrow">第0回</span>
+          <span class="card-title">プログラミングとマイコン</span>
+          <span class="card-desc">プログラム・コンパイル・マイコンの構成</span>
+        </a>
+        <a class="card" href="lessons/01-variables.html">
+          <span class="card-eyebrow">第1回</span>
+          <span class="card-title">変数・型・演算子</span>
+          <span class="card-desc">データを扱う</span>
+        </a>
+        <a class="card" href="lessons/02-control.html">
+          <span class="card-eyebrow">第2回</span>
+          <span class="card-title">条件分岐・繰り返し</span>
+          <span class="card-desc">if / switch / for / while</span>
+        </a>
+        <a class="card" href="lessons/03-functions.html">
+          <span class="card-eyebrow">第3回</span>
+          <span class="card-title">関数</span>
+          <span class="card-desc">処理を意味のある単位に分ける</span>
+        </a>
+        <a class="card" href="lessons/04-pointers.html">
+          <span class="card-eyebrow">第4回</span>
+          <span class="card-title">配列・メモリ・ポインタ・参照</span>
+          <span class="card-desc">アドレスの基本</span>
+        </a>
+        <a class="card" href="lessons/05-cpp-basics.html">
+          <span class="card-eyebrow">第5回</span>
+          <span class="card-title">C++基礎</span>
+          <span class="card-desc">const / namespace / オーバーロード</span>
+        </a>
+        <a class="card" href="lessons/06-classes.html">
+          <span class="card-eyebrow">第6回</span>
+          <span class="card-title">クラスとオブジェクト</span>
+          <span class="card-desc">データと処理をまとめる</span>
+        </a>
+        <a class="card" href="lessons/07-headers.html">
+          <span class="card-eyebrow">第7回</span>
+          <span class="card-title">ヘッダとcpp</span>
+          <span class="card-desc">複数ファイルへの分割</span>
+        </a>
+        <a class="card" href="lessons/08-encapsulation.html">
+          <span class="card-eyebrow">第8回</span>
+          <span class="card-title">カプセル化</span>
+          <span class="card-desc">隠すことの意味</span>
+        </a>
+        <a class="card" href="lessons/09-enum.html">
+          <span class="card-eyebrow">第9回</span>
+          <span class="card-title">列挙型と状態管理</span>
+          <span class="card-desc">enum class</span>
+        </a>
+        <a class="card" href="lessons/10-inheritance.html">
+          <span class="card-eyebrow">第10回</span>
+          <span class="card-title">継承</span>
+          <span class="card-desc">is-aの関係</span>
+        </a>
+        <a class="card" href="lessons/11-virtual.html">
+          <span class="card-eyebrow">第11回</span>
+          <span class="card-title">virtual / override</span>
+          <span class="card-desc">親のポインタから子を呼ぶ</span>
+        </a>
+        <a class="card" href="lessons/12-abstract.html">
+          <span class="card-eyebrow">第12回</span>
+          <span class="card-title">純粋仮想関数と抽象クラス</span>
+          <span class="card-desc">インターフェース</span>
+        </a>
+        <a class="card" href="lessons/13-polymorphism.html">
+          <span class="card-eyebrow">第13回</span>
+          <span class="card-title">ポリモーフィズム</span>
+          <span class="card-desc">同じ手続きで扱う</span>
+        </a>
+        <a class="card" href="lessons/14-design.html">
+          <span class="card-eyebrow">第14回</span>
+          <span class="card-title">クラス設計</span>
+          <span class="card-desc">1クラス1責務</span>
+        </a>
+        <a class="card" href="lessons/15-mcu-design.html">
+          <span class="card-eyebrow">第15回</span>
+          <span class="card-title">マイコン向け設計演習</span>
+          <span class="card-desc">道具を組み合わせる</span>
+        </a>
+      </div>
+
+        <h2 id="課題と確認">課題と確認</h2>
+
+        <div class="card-grid">
+        <a class="card" href="exercises/index.html">
+          <span class="card-eyebrow">22章</span>
+          <span class="card-title">演習問題の段階</span>
+          <span class="card-desc">Level 1〜6の難易度設計</span>
+        </a>
+        <a class="card" href="final-project/index.html">
+          <span class="card-eyebrow">19・25章</span>
+          <span class="card-title">最終課題</span>
+          <span class="card-desc">簡易自律ロボットの設計と実装</span>
+        </a>
+        <a class="card" href="checklist.html">
+          <span class="card-eyebrow">24章</span>
+          <span class="card-title">到達度チェック</span>
+          <span class="card-desc">チェック状態はブラウザに保存される</span>
+        </a>
+        <a class="card" href="advanced.html">
+          <span class="card-eyebrow">26章</span>
+          <span class="card-title">発展内容</span>
+          <span class="card-desc">本編の後に扱うテーマ</span>
+        </a>
+      </div>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="./scripts/main.ts"></script>
+</body>
+</html>

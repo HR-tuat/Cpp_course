@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="到達度チェックリスト。基礎・C++・オブジェクト指向・設計の4区分。">
+  <title>到達度チェック | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="./styles/base.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/components.css">
+  <link rel="stylesheet" href="./styles/code.css">
+</head>
+<body data-page="checklist" data-base="./">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="./index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">24章</p>
+          <h1>到達度チェック</h1>
+          <p class="lead">説明できる・使えるようになったかを自分で確認する。チェック状態はこのブラウザに保存される。</p>
+        </header>
+
+        <div class="checklist-status"><p class="progress-text" data-progress-text>0 / 0 項目</p><div class="progress"><div class="progress-bar" data-progress-bar></div></div><button type="button" class="btn-reset" data-check-reset>チェックをすべて消す</button></div>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>チェック状態はブラウザのlocalStorageに保存される。別の端末やブラウザには引き継がれない。</p></aside>
+
+        <h2 id="基礎">基礎</h2>
+
+        <ul class="checklist">
+          <li><label class="check"><input type="checkbox" data-check="basic-variable"><span>変数を説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="basic-type"><span>型を説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="basic-if"><span>ifを使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="basic-for"><span>forを使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="basic-function"><span>関数を作れる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="basic-array"><span>配列を使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="basic-pointer"><span>ポインタの基本を説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="basic-reference"><span>参照を使える</span></label></li>
+        </ul>
+
+        <h2 id="c">C++</h2>
+
+        <ul class="checklist">
+          <li><label class="check"><input type="checkbox" data-check="cpp-const"><span>constを使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="cpp-enum-class"><span>enum classを使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="cpp-class"><span>クラスを作れる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="cpp-constructor"><span>コンストラクタを作れる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="cpp-member-variable"><span>メンバ変数を定義できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="cpp-member-function"><span>メンバ関数を定義できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="cpp-split"><span><code>.h</code>と<code>.cpp</code>に分割できる</span></label></li>
+        </ul>
+
+        <h2 id="オブジェクト指向">オブジェクト指向</h2>
+
+        <ul class="checklist">
+          <li><label class="check"><input type="checkbox" data-check="oop-public"><span>publicを説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-private"><span>privateを説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-protected"><span>protectedを説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-encapsulation"><span>カプセル化を説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-inheritance"><span>継承を説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-virtual"><span>virtualを説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-override"><span>overrideを使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-pure-virtual"><span>純粋仮想関数を説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-abstract"><span>抽象クラスを説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="oop-polymorphism"><span>ポリモーフィズムを説明できる</span></label></li>
+        </ul>
+
+        <h2 id="設計">設計</h2>
+
+        <ul class="checklist">
+          <li><label class="check"><input type="checkbox" data-check="design-responsibility"><span>クラスの責務を分けられる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="design-sensor"><span>センサをクラス化できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="design-actuator"><span>アクチュエータをクラス化できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="design-state"><span>状態をenum classで管理できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="design-compose"><span>複数クラスを組み合わせられる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="design-split"><span><code>.h</code> / <code>.cpp</code>を適切に分割できる</span></label></li>
+        </ul>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="./scripts/main.ts"></script>
+</body>
+</html>

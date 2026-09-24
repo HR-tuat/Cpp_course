@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="演習の難易度設計。Level 1（文法確認）からLevel 6（設計）まで。">
+  <title>演習問題の段階 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="exercises" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">22章</p>
+          <h1>演習問題の段階</h1>
+          <p class="lead">Level 1から6へ、文法確認から設計へ段階的に上げる。</p>
+        </header>
+
+        <h2 id="段階の一覧">段階の一覧</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th class="align-right">Level</th><th>内容</th><th>対応する回</th></tr></thead>
+          <tbody>
+          <tr><td class="align-right">1</td><td>文法確認</td><td><a href="../lessons/01-variables.html">第1回</a>〜<a href="../lessons/02-control.html">第2回</a></td></tr>
+          <tr><td class="align-right">2</td><td>小さな機能</td><td><a href="../lessons/03-functions.html">第3回</a>〜<a href="../lessons/05-cpp-basics.html">第5回</a></td></tr>
+          <tr><td class="align-right">3</td><td>クラス</td><td><a href="../lessons/06-classes.html">第6回</a>〜<a href="../lessons/08-encapsulation.html">第8回</a></td></tr>
+          <tr><td class="align-right">4</td><td>複数クラス</td><td><a href="../lessons/09-enum.html">第9回</a>〜<a href="../lessons/10-inheritance.html">第10回</a></td></tr>
+          <tr><td class="align-right">5</td><td>継承・ポリモーフィズム</td><td><a href="../lessons/11-virtual.html">第11回</a>〜<a href="../lessons/13-polymorphism.html">第13回</a></td></tr>
+          <tr><td class="align-right">6</td><td>設計</td><td><a href="../lessons/14-design.html">第14回</a>〜<a href="../lessons/15-mcu-design.html">第15回</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <h2 id="level-1-文法確認">Level 1：文法確認</h2>
+
+        <p>例：</p>
+
+        <figure class="code"><pre><code class="language-cpp">int a = 10;
+int b = 20;</code></pre></figure>
+
+        <p><code>a + b</code>を表示せよ。</p>
+
+        <h2 id="level-2-小さな機能">Level 2：小さな機能</h2>
+
+        <p>例：</p>
+
+        <figure class="code"><pre><code class="language-cpp">int max(int a, int b);</code></pre></figure>
+
+        <p>を作成せよ。</p>
+
+        <h2 id="level-3-クラス">Level 3：クラス</h2>
+
+        <figure class="code"><pre><code class="language-cpp">LED led(5);
+led.on();</code></pre></figure>
+
+        <p>を実装せよ。</p>
+
+        <h2 id="level-4-複数クラス">Level 4：複数クラス</h2>
+
+        <figure class="diagram"><pre>Robot
+ ├── Motor
+ └── Sensor</pre></figure>
+
+        <h2 id="level-5-継承・ポリモーフィズム">Level 5：継承・ポリモーフィズム</h2>
+
+        <figure class="diagram"><pre>Sensor
+├── IMU
+└── GPS</pre></figure>
+
+        <h2 id="level-6-設計">Level 6：設計</h2>
+
+        <p>「この機能はどのクラスに置くべきか」を受講者自身に考えさせる。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>Level 6には唯一の正解がない。受講者が出した案に対し、「変更が起きたときにどこを直すことになるか」を問い返すとよい。</p></aside>
+
+        <h2 id="演習の雛形">演習の雛形</h2>
+
+        <p>演習の雛形は<code>code/exercises/</code>、解答例は<code>code/solutions/</code>に置く。解答例の公開方針は要相談。</p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

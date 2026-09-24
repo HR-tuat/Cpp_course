@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="関数の定義、引数、戻り値、ローカル変数とグローバル変数。">
+  <title>第3回 関数 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-03" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第3回</p>
+          <h1>関数</h1>
+          <p class="lead">処理を意味のある単位に分割する。</p>
+        </header>
+
+        <h2 id="関数の基本">関数の基本</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int add(int a, int b)
+{
+    return a + b;
+}</code></pre></figure>
+
+        <figure class="diagram"><pre>戻り値
+  ↓
+int add(int a, int b)
+     ↑       ↑
+   関数名   引数</pre></figure>
+
+        <h2 id="戻り値なし">戻り値なし</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void ledOn()
+{
+    digitalWrite(LED_BUILTIN, HIGH);
+}</code></pre></figure>
+
+        <p><code>void</code>は「返す値がない」ことを表す。</p>
+
+        <h2 id="引数">引数</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void setBrightness(int brightness)
+{
+}</code></pre></figure>
+
+        <p>引数を付けることで、同じ処理を違う値に対して使い回せる。</p>
+
+        <h2 id="ローカル変数">ローカル変数</h2>
+
+        <figure class="code"><pre><code class="language-cpp">void function()
+{
+    int value = 10;
+}</code></pre></figure>
+
+        <p><code>value</code>は関数外から直接利用できない。これがスコープである。</p>
+
+        <h2 id="グローバル変数">グローバル変数</h2>
+
+        <figure class="code"><pre><code class="language-cpp">int counter = 0;</code></pre></figure>
+
+        <p>グローバル変数の便利さと問題点を説明する。</p>
+
+        <ul>
+        <li>どこからでも変更できる</li>
+        <li>意図しない変更が起こりやすい</li>
+        <li>後のカプセル化につながる</li>
+      </ul>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「どこからでも触れる」ことは便利さであると同時に危険さでもある、という感覚をここで持たせておくと、第8回のカプセル化が自然に理解できる。</p></aside>
+
+        <section class="exercise"><h3 class="exercise-title">演習：次の関数を作成する</h3><figure class="code"><pre><code class="language-cpp">void motorStop();
+void motorSetSpeed(int speed);
+bool isButtonPressed();
+int readSensor();</code></pre></figure><ul>
+        <li>それぞれ何を引数に取り、何を返すべきかを先に考える</li>
+        <li>この4つの関数が「どこにまとまっているべきか」は第6回のクラスにつながる</li>
+      </ul></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "cpp-microcontroller-course",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "マイコンのためのC++講座 教材サイト",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "typescript": "^5.6.3",
+    "vite": "^7.3.6"
+  }
+}
