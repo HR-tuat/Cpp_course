@@ -2,27 +2,41 @@
  * ページ内目次。本文のh2 / h3から生成し、スクロール位置に追従させる。
  */
 
+import { type Audience } from '../data/lessons';
+
 interface Heading {
   id: string;
   text: string;
   level: 2 | 3;
 }
 
-function collectHeadings(): Heading[] {
+function collectHeadings(audience: Audience): Heading[] {
   const nodes = document.querySelectorAll<HTMLHeadingElement>('.prose h2[id], .prose h3[id]');
 
-  return Array.from(nodes).map((node) => ({
-    id: node.id,
-    text: node.textContent ?? '',
-    level: node.tagName === 'H3' ? 3 : 2,
-  }));
+  return Array.from(nodes)
+    // 対象者の違う [data-for] ブロックはCSSで隠れているので、目次にも載せない
+    .filter((node) => {
+      const scope = node.closest<HTMLElement>('[data-for]');
+      return !scope || scope.dataset.for === audience;
+    })
+    .map((node) => ({
+      id: node.id,
+      text: node.textContent ?? '',
+      level: node.tagName === 'H3' ? 3 : 2,
+    }));
 }
 
-export function renderToc(): void {
+/** 表示対象者の切り替えで再生成されるため、前回の監視を残さない */
+let activeObserver: IntersectionObserver | null = null;
+
+export function renderToc(audience: Audience): void {
   const host = document.querySelector<HTMLElement>('[data-toc]');
   if (!host) return;
 
-  const headings = collectHeadings();
+  activeObserver?.disconnect();
+  host.innerHTML = '';
+
+  const headings = collectHeadings(audience);
   if (headings.length < 2) return;
 
   const items = headings
@@ -66,4 +80,6 @@ function observe(host: HTMLElement, headings: Heading[]): void {
     const element = document.getElementById(heading.id);
     if (element) observer.observe(element);
   });
+
+  activeObserver = observer;
 }

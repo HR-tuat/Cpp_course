@@ -69,8 +69,8 @@
   left: 0;
 }
 
+.audience-toggle,
 .theme-toggle {
-  margin-left: auto;
   padding: .25rem .7rem;
   font-size: .78rem;
   color: var(--text-muted);
@@ -80,9 +80,25 @@
   cursor: pointer;
 }
 
+.audience-toggle {
+  margin-left: auto;
+}
+
+.theme-toggle {
+  margin-left: .4rem;
+}
+
+.audience-toggle:hover,
 .theme-toggle:hover {
   color: var(--text);
   border-color: var(--border-strong);
+}
+
+/* 講師表示のときは一目で分かるようにする */
+:root[data-audience="teacher"] .audience-toggle {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--accent);
 }
 
 /* --- 全体レイアウト ------------------------------------------------------- */

@@ -366,3 +366,37 @@ figure.diagram figcaption {
   background: var(--bg-subtle);
   border: 1px solid var(--border-strong);
 }
+
+/* --- 表示対象者による出し分け ------------------------------------------- */
+
+/*
+ * [data-for] のブロックは既定で隠し、対象者が一致したときだけ出す。
+ * 「既定で隠す」向きにしてあるのは、JSが動かなくても受講者に講師向けの
+ * 記述が出ないようにするため。ただし配信自体はされているので、本当に見せたくない
+ * ものは解答例と同じく vite.config.ts でビルドから外すこと。
+ */
+[data-for] {
+  display: none;
+}
+
+:root[data-audience="student"] [data-for="student"],
+:root[data-audience="teacher"] [data-for="teacher"] {
+  display: block;
+}
+
+/* 本文中で「ここは受講者には見えていない」ことを示す小さな見出し */
+.audience-mark {
+  display: inline-block;
+  margin: 0 0 .4rem;
+  padding: .05rem .55rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-size: .74rem;
+  font-weight: 700;
+}
+
+[data-for] > .audience-mark + h2 {
+  margin-top: .3rem;
+}

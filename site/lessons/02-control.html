@@ -6,11 +6,15 @@
   <meta name="description" content="if / else / else if / switch / for / while とマイコンでの注意点。">
   <title>第2回 条件分岐・繰り返し | マイコンのためのC++講座</title>
   <script>
-    // 保存済みのテーマを描画前に適用する（切り替え時のちらつき防止）
+    // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
     try {
       var t = localStorage.getItem('cpp-course:theme');
       if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
-    } catch (e) {}
+      var a = localStorage.getItem('cpp-course:audience');
+      document.documentElement.dataset.audience = a === 'teacher' ? 'teacher' : 'student';
+    } catch (e) {
+      document.documentElement.dataset.audience = 'student';
+    }
   </script>
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="../styles/layout.css">
@@ -25,6 +29,10 @@
       <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
     </button>
     <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="audience-toggle" type="button" title="表示を切り替える">
+      <span class="sr-only">表示対象</span>
+      <span class="audience-toggle-label">受講者</span>
+    </button>
     <button class="theme-toggle" type="button" title="配色を切り替える">
       <span class="theme-toggle-label">テーマ</span>
     </button>
