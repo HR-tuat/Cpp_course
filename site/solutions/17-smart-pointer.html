@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第17回 解答例。new/deleteからunique_ptrへの置き換え、vectorとの組み合わせ、shared_ptrが不要な理由。">
+  <title>第17回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      var k = localStorage.getItem('cpp-course:teacher-key');
+      var a = localStorage.getItem('cpp-course:audience');
+      if (k) document.documentElement.dataset.teacher = '';
+      document.documentElement.dataset.audience = k && a === 'teacher' ? 'teacher' : 'student';
+    } catch (e) {
+      document.documentElement.dataset.audience = 'student';
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-17" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="audience-toggle" type="button" title="表示を切り替える">
+      <span class="sr-only">表示対象</span>
+      <span class="audience-toggle-label">受講者</span>
+    </button>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第17回 解答例</p>
+          <h1>センサの所有をunique_ptrに任せる</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="まず生ポインタで書く">まず生ポインタで書く</h2>
+
+        <figure class="code"><figcaption>src/main.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "IMU.hpp"
+#include "Sensor.hpp"
+
+void readOnce() {
+    Sensor* sensor = new IMU();
+
+    sensor-&gt;update();
+    sensor-&gt;print();
+
+    delete sensor;
+}
+
+void setup() {
+    Serial.begin(115200);
+}
+
+void loop() {
+    readOnce();
+
+    Serial.print("free heap: ");
+    Serial.println(ESP.getFreeHeap());
+
+    delay(1000);
+}</code></pre></figure>
+
+        <h2 id="deleteを消すと何が起きるか">deleteを消すと何が起きるか</h2>
+
+        <p><code>delete sensor;</code>の行をコメントアウトして動かすと、<code>ESP.getFreeHeap()</code>の値が1秒ごとに減り続ける。</p>
+
+        <figure class="diagram"><pre>free heap: 294512
+free heap: 294488     ← IMU1個分ずつ減っていく
+free heap: 294464
+free heap: 294440
+   ...
+やがて確保に失敗して異常終了する</pre></figure>
+
+        <p>エラーも警告も出ない。<strong>プログラムは正常に動いているように見えたまま、時間をかけて死ぬ</strong>。これがリークのいちばん厄介なところである。</p>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>減る量は毎回同じではない。ヒープの管理情報やアラインメントの分が加わるため、<code>sizeof(IMU)</code>より少し大きくなる。</p></aside>
+
+        <h2 id="unique_ptrに書き換える">unique_ptrに書き換える</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;memory&gt;
+
+void readOnce() {
+    std::unique_ptr&lt;Sensor&gt; sensor = std::make_unique&lt;IMU&gt;();
+
+    sensor-&gt;update();
+    sensor-&gt;print();
+
+}  // ここで解放される</code></pre></figure>
+
+        <p>変わったのは宣言の1行で、<code>delete</code>は消えた。<code>getFreeHeap()</code>は一定の値に戻る。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>生ポインタ</th><th><code>unique_ptr</code></th></tr></thead>
+          <tbody>
+          <tr><td>解放の記述</td><td><code>delete</code>を自分で書く</td><td>書かない</td></tr>
+          <tr><td>途中で<code>return</code>した場合</td><td>解放されない</td><td>解放される</td></tr>
+          <tr><td>二重解放</td><td>起こせる</td><td>コピーがコンパイルエラーになる</td></tr>
+          <tr><td>ポインタの大きさ</td><td>4バイト（ESP32）</td><td>同じ</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「<code>delete</code>を書き忘れない」のではなく「<code>delete</code>を書く場所がない」状態にしたのが要点である。注意力の問題を、型の問題に置き換えている。</p></aside>
+
+        <h2 id="vectorにまとめる">vectorにまとめる</h2>
+
+        <figure class="code"><figcaption>src/main.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include &lt;memory&gt;
+#include &lt;vector&gt;
+
+#include "GPS.hpp"
+#include "IMU.hpp"
+#include "Sensor.hpp"
+#include "ToF.hpp"
+
+std::vector&lt;std::unique_ptr&lt;Sensor&gt;&gt; sensors;
+
+void setup() {
+    Serial.begin(115200);
+
+    sensors.reserve(8);
+
+    sensors.push_back(std::make_unique&lt;IMU&gt;());
+    sensors.push_back(std::make_unique&lt;GPS&gt;());
+    sensors.push_back(std::make_unique&lt;ToF&gt;(34));
+}
+
+void loop() {
+    for (const std::unique_ptr&lt;Sensor&gt;&amp; sensor : sensors) {
+        sensor-&gt;update();
+        sensor-&gt;print();
+    }
+
+    delay(1000);
+}</code></pre></figure>
+
+        <p><code>delete</code>は1行もない。<code>sensors</code>が壊れるとき、持っている3つがすべて解放される。</p>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>範囲forを<code>for (std::unique_ptr&lt;Sensor&gt; sensor : sensors)</code>と値で受けるとコンパイルエラーになる。<code>unique_ptr</code>はコピーできないからである。<strong>必ず参照で受ける</strong>（<code>const auto&amp;</code>でよい）。</p></aside>
+
+        <h2 id="shared_ptrは必要か">shared_ptrは必要か</h2>
+
+        <p><strong>不要である。</strong>理由は、このプログラムで<code>sensors</code>以外にセンサを持つものが存在しないからである。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>問い</th><th>この演習での答え</th></tr></thead>
+          <tbody>
+          <tr><td>持ち主は何人いるか</td><td>1人（<code>sensors</code>だけ）</td></tr>
+          <tr><td>どれが最後に手を離すか決まるか</td><td>決まる（<code>sensors</code>が消えるとき）</td></tr>
+          <tr><td>生死を確認しながら使う相手がいるか</td><td>いない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>3つすべてが「はい」でないかぎり<code>unique_ptr</code>で足りる。<code>shared_ptr</code>にするとカウント用の領域が増え、コピーのたびに増減の処理が走るだけで、得るものがない。</p>
+
+        <p><code>shared_ptr</code>が要るのは、たとえば「同じIMUを、姿勢制御と記録の2つが別々の寿命で参照する」ような場合である。その場合は<a href="../lessons/18-relations.html">第18回</a>の循環参照にも気を配ることになる。</p>
+
+        <h2 id="マイコンでの本当の答え">マイコンでの本当の答え</h2>
+
+        <p>ここまでスマートポインタで書いてきたが、この演習の構成では<strong><code>new</code>自体が不要</strong>である。</p>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;array&gt;
+
+IMU imu;
+GPS gps;
+ToF tof(34);
+
+std::array&lt;Sensor*, 3&gt; sensors = {&amp;imu, &amp;gps, &amp;tof};
+
+void loop() {
+    for (Sensor* sensor : sensors) {
+        sensor-&gt;update();
+        sensor-&gt;print();
+    }
+}</code></pre></figure>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>書き方</th><th>ヒープ</th><th>使うべき場面</th></tr></thead>
+          <tbody>
+          <tr><td>静的に置いて<code>Sensor*</code></td><td>使わない</td><td>種類と個数がコンパイル時に決まる。<strong>既定の選択</strong></td></tr>
+          <tr><td><code>unique_ptr</code>＋<code>vector</code></td><td>使う</td><td>構成が実行時に決まる（接続されたセンサだけ使う等）</td></tr>
+          <tr><td><code>shared_ptr</code></td><td>使う</td><td>持ち主が複数で、寿命を予測できない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>スマートポインタを学ぶのは、<code>new</code>を使いたくなったときに正しく使うためである。「使えるようになったから使う」ではない。<a href="../lessons/15-mcu-design.html">第15回</a>までの設計で<code>new</code>が1つも出てこなかったのは、偶然ではない。</p></aside>
+
+        <p>→ <a href="../lessons/17-smart-pointer.html">第17回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全19回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

@@ -106,6 +106,8 @@
         <li><code>public</code> / <code>private</code> / <code>protected</code> / カプセル化</li>
         <li>継承 / 仮想関数 / <code>virtual</code> / <code>override</code></li>
         <li>純粋仮想関数 / 抽象クラス / ポリモーフィズム</li>
+        <li>STL（<code>std::vector</code> / <code>std::array</code>）</li>
+        <li>スマートポインタ / RAII</li>
       </ul>
 
         <h3 id="プログラム設計">プログラム設計</h3>
@@ -117,6 +119,7 @@
         <li>センサ・アクチュエータなどのクラス化</li>
         <li>状態を<code>enum class</code>で管理</li>
         <li>複数クラスを組み合わせたマイコンプログラムの設計</li>
+        <li>クラス間の依存の向きを決める / 相互参照を解く</li>
       </ul>
 
         <h2 id="学習の流れ">学習の流れ</h2>
@@ -141,7 +144,13 @@ virtual / override
         ↓
 クラス設計
         ↓
-マイコン向けシステム設計</pre></figure>
+マイコン向けシステム設計
+        ↓
+STL / std::vector
+        ↓
+スマートポインタ
+        ↓
+クラス間の相互参照</pre></figure>
 
         <h2 id="はじめに読む">はじめに読む</h2>
 
@@ -251,6 +260,21 @@ virtual / override
           <span class="card-title">マイコン向け設計演習</span>
           <span class="card-desc">道具を組み合わせる</span>
         </a>
+        <a class="card" href="lessons/16-stl-vector.html">
+          <span class="card-eyebrow">第16回</span>
+          <span class="card-title">STLとstd::vector</span>
+          <span class="card-desc">個数の管理を手放す</span>
+        </a>
+        <a class="card" href="lessons/17-smart-pointer.html">
+          <span class="card-eyebrow">第17回</span>
+          <span class="card-title">スマートポインタ</span>
+          <span class="card-desc">誰が解放するかを型で表す</span>
+        </a>
+        <a class="card" href="lessons/18-relations.html">
+          <span class="card-eyebrow">第18回</span>
+          <span class="card-title">クラス間の相互参照</span>
+          <span class="card-desc">前方宣言と依存の向き</span>
+        </a>
       </div>
 
         <h2 id="課題と確認">課題と確認</h2>
@@ -259,7 +283,7 @@ virtual / override
         <a class="card" href="exercises/index.html">
           <span class="card-eyebrow">22章</span>
           <span class="card-title">演習問題の段階</span>
-          <span class="card-desc">Level 1〜6の難易度設計</span>
+          <span class="card-desc">Level 1〜7の難易度設計</span>
         </a>
         <a class="card" href="solutions/index.html">
           <span class="card-eyebrow">解答例</span>
@@ -293,7 +317,7 @@ virtual / override
   </div>
 
   <footer class="site-footer">
-    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+    <p>マイコンのためのC++講座 — 全12週間 / 全19回の教材</p>
   </footer>
 
   <script type="module" src="./scripts/main.ts"></script>

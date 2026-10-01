@@ -95,6 +95,20 @@
           <li><label class="check"><input type="checkbox" data-check="oop-polymorphism"><span>ポリモーフィズムを説明できる</span></label></li>
         </ul>
 
+        <h2 id="標準ライブラリと所有権">標準ライブラリと所有権</h2>
+
+        <ul class="checklist">
+          <li><label class="check"><input type="checkbox" data-check="stl-vector"><span><code>std::vector</code>を使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="stl-range-for"><span>範囲forを使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="stl-array-vs-vector"><span><code>std::array</code>と<code>std::vector</code>を使い分けられる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="mem-ownership"><span>そのポインタの所有者が誰かを言える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="mem-unique-ptr"><span><code>std::unique_ptr</code>を使える</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="mem-shared-ptr"><span><code>shared_ptr</code>と<code>weak_ptr</code>の違いを説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="mem-raii"><span>RAIIを説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="mem-virtual-dtor"><span>仮想デストラクタが必要な理由を説明できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="mem-heap-mcu"><span>マイコンでヒープを使うときの注意を説明できる</span></label></li>
+        </ul>
+
         <h2 id="設計">設計</h2>
 
         <ul class="checklist">
@@ -103,7 +117,9 @@
           <li><label class="check"><input type="checkbox" data-check="design-actuator"><span>アクチュエータをクラス化できる</span></label></li>
           <li><label class="check"><input type="checkbox" data-check="design-state"><span>状態をenum classで管理できる</span></label></li>
           <li><label class="check"><input type="checkbox" data-check="design-compose"><span>複数クラスを組み合わせられる</span></label></li>
-          <li><label class="check"><input type="checkbox" data-check="design-split"><span><code>.hpp</code> / <code>.cpp</code>を適切に分割できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="design-split"><span><code>.h</code> / <code>.cpp</code>を適切に分割できる</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="design-forward-declaration"><span>循環includeを前方宣言で解ける</span></label></li>
+          <li><label class="check"><input type="checkbox" data-check="design-dependency"><span>クラス間の依存の向きを説明できる</span></label></li>
         </ul>
       </article>
 
@@ -116,7 +132,7 @@
   </div>
 
   <footer class="site-footer">
-    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+    <p>マイコンのためのC++講座 — 全12週間 / 全19回の教材</p>
   </footer>
 
   <script type="module" src="./scripts/main.ts"></script>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="STLの概要、std::vectorとstd::array、範囲for、マイコンでヒープを使うときの注意。">
+  <title>第16回 STLとstd::vector | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      var k = localStorage.getItem('cpp-course:teacher-key');
+      var a = localStorage.getItem('cpp-course:audience');
+      if (k) document.documentElement.dataset.teacher = '';
+      document.documentElement.dataset.audience = k && a === 'teacher' ? 'teacher' : 'student';
+    } catch (e) {
+      document.documentElement.dataset.audience = 'student';
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-16" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="audience-toggle" type="button" title="表示を切り替える">
+      <span class="sr-only">表示対象</span>
+      <span class="audience-toggle-label">受講者</span>
+    </button>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第16回</p>
+          <h1>STLとstd::vector</h1>
+          <p class="lead">個数の管理を自分でやめ、標準ライブラリに任せる。</p>
+        </header>
+
+        <h2 id="固定長配列で困ること">固定長配列で困ること</h2>
+
+        <p><a href="13-polymorphism.html">第13回</a>では、センサを生の配列にまとめて回した。</p>
+
+        <figure class="code"><pre><code class="language-cpp">Sensor* sensors[] = {&amp;imu, &amp;gps, &amp;tof};
+const int SENSOR_COUNT = sizeof(sensors) / sizeof(sensors[0]);</code></pre></figure>
+
+        <p>動くが、面倒が3つ残っている。</p>
+
+        <ul>
+        <li>要素数を自分で計算して持ち歩かなければならない</li>
+        <li>実行中に増やせない（長さはコンパイル時に決まる）</li>
+        <li>関数に渡すと長さの情報が落ちる</li>
+      </ul>
+
+        <figure class="code"><pre><code class="language-cpp">// 配列を渡すと、長さは別の引数で渡すしかない
+void updateAll(Sensor* sensors[], int count);</code></pre></figure>
+
+        <p>渡す側と受け取る側で<code>count</code>が食い違えば、範囲外アクセスになる。この「長さを人間が管理する」という仕事を手放すのが今回の目的である。</p>
+
+        <h2 id="stlとは">STLとは</h2>
+
+        <p>C++の標準ライブラリのうち、<strong>データの入れ物（コンテナ）</strong>とそれを扱う仕組みをまとめてSTL（Standard Template Library）と呼ぶ。代表的なものは次のとおり。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>名前</th><th>何を入れるか</th></tr></thead>
+          <tbody>
+          <tr><td><code>std::array</code></td><td>個数が決まっている並び</td></tr>
+          <tr><td><code>std::vector</code></td><td>個数が変わる並び</td></tr>
+          <tr><td><code>std::string</code></td><td>文字列</td></tr>
+          <tr><td><code>std::map</code></td><td>キーと値の対応表</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>本講座で扱うのは<code>std::vector</code>と<code>std::array</code>の2つだけである。どちらも<strong>テンプレート</strong>なので、<code>&lt;&gt;</code>の中に「何を入れるか」を書いて使う。</p>
+
+        <h2 id="std-vector">std::vector</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;vector&gt;
+
+std::vector&lt;int&gt; values;
+
+values.push_back(10);
+values.push_back(20);
+
+Serial.println(values.size());  // 2
+Serial.println(values[0]);      // 10</code></pre></figure>
+
+        <p><code>std::vector&lt;int&gt;</code>は「<code>int</code>を並べて入れる箱」という型である。<code>push_back()</code>で末尾に足すと、箱のほうが勝手に広がる。<code>size()</code>で今の個数が取れるので、<code>SENSOR_COUNT</code>のような変数を自分で用意する必要がなくなる。</p>
+
+        <p>最初から中身が決まっているなら、まとめて書ける。</p>
+
+        <figure class="code"><pre><code class="language-cpp">std::vector&lt;int&gt; values = {10, 20, 30};</code></pre></figure>
+
+        <h2 id="範囲for">範囲for</h2>
+
+        <figure class="code"><pre><code class="language-cpp">for (int value : values) {
+    Serial.println(value);
+}</code></pre></figure>
+
+        <p>添字を書かないので、<code>i &lt;= size()</code>のような境界の間違いが起きない。中身を書き換えたいときは参照で受ける。</p>
+
+        <figure class="code"><pre><code class="language-cpp">for (int&amp; value : values) {
+    value = value * 2;
+}</code></pre></figure>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>参照で受けるかどうかの判断は<a href="04-pointers.html">第4回</a>と同じである。書き換えるなら<code>T&amp;</code>、読むだけで型が大きいなら<code>const T&amp;</code>、<code>int</code>のような小さい型を読むだけなら値で受けてよい。</p></aside>
+
+        <h2 id="よく使う操作">よく使う操作</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>書き方</th><th>意味</th></tr></thead>
+          <tbody>
+          <tr><td><code>push_back(x)</code></td><td>末尾に1つ足す</td></tr>
+          <tr><td><code>size()</code></td><td>今の個数</td></tr>
+          <tr><td><code>empty()</code></td><td>空かどうか</td></tr>
+          <tr><td><code>clear()</code></td><td>中身を全部捨てる</td></tr>
+          <tr><td><code>v[i]</code></td><td><code>i</code>番目。範囲は確認されない</td></tr>
+          <tr><td><code>at(i)</code></td><td><code>i</code>番目。範囲外なら例外を投げる</td></tr>
+          <tr><td><code>reserve(n)</code></td><td><code>n</code>個分の場所を先に確保する</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>at()</code>の例外は、Arduinoの既定の設定では例外機能そのものが無効にされていることが多く、その場合は例外ではなく異常終了になる。<strong>範囲外にならない添字を書くこと</strong>が本筋であり、<code>at()</code>は保険にすぎない。</p></aside>
+
+        <h2 id="vectorでセンサをまとめる">vectorでセンサをまとめる</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;vector&gt;
+
+#include "GPS.hpp"
+#include "IMU.hpp"
+#include "Sensor.hpp"
+#include "ToF.hpp"
+
+IMU imu;
+GPS gps;
+ToF tof(34);
+
+std::vector&lt;Sensor*&gt; sensors = {&amp;imu, &amp;gps, &amp;tof};
+
+void loop() {
+    for (Sensor* sensor : sensors) {
+        sensor-&gt;update();
+        sensor-&gt;print();
+    }
+}</code></pre></figure>
+
+        <p><code>SENSOR_COUNT</code>が消え、<code>loop()</code>から数字がなくなった。センサを増やすときに触るのは初期化の1要素だけである。</p>
+
+        <figure class="diagram"><pre>生の配列                    std::vector
+─────────                   ───────────
+個数    自分で持つ          size() が答える
+長さ    渡すと消える        一緒についてくる
+増減    できない            push_back で増やせる</pre></figure>
+
+        <h2 id="std-array">std::array</h2>
+
+        <p>個数が最初から決まっているなら、<code>std::vector</code>ではなく<code>std::array</code>を使う。</p>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;array&gt;
+
+std::array&lt;Sensor*, 3&gt; sensors = {&amp;imu, &amp;gps, &amp;tof};
+
+for (Sensor* sensor : sensors) {
+    sensor-&gt;update();
+}</code></pre></figure>
+
+        <p>生の配列と同じ置き場所・同じ大きさのまま、<code>size()</code>と範囲forが使えるようになる。<strong>ヒープを使わない</strong>点が<code>std::vector</code>との決定的な違いである。</p>
+
+        <h2 id="3つの比較">生の配列・std::array・std::vector</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th><code>int a[3]</code></th><th><code>std::array</code></th><th><code>std::vector</code></th></tr></thead>
+          <tbody>
+          <tr><td>個数を実行中に変えられる</td><td>×</td><td>×</td><td>○</td></tr>
+          <tr><td><code>size()</code>が使える</td><td>×</td><td>○</td><td>○</td></tr>
+          <tr><td>関数に渡しても長さが残る</td><td>×</td><td>○</td><td>○</td></tr>
+          <tr><td>ヒープを使う</td><td>使わない</td><td>使わない</td><td><strong>使う</strong></td></tr>
+          <tr><td>追加の<code>#include</code></td><td>不要</td><td><code>&lt;array&gt;</code></td><td><code>&lt;vector&gt;</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>まず<code>std::array</code>を検討し、<strong>個数が実行中に決まるときだけ</strong><code>std::vector</code>を使う。「とりあえずvector」はPCでは通るが、マイコンでは次節の問題を踏む。</p></aside>
+
+        <h2 id="マイコンで使うときの注意">マイコンで使うときの注意</h2>
+
+        <p><code>std::vector</code>は、入りきらなくなると<strong>より広い場所を確保し直し、中身をコピーして、元の場所を返す</strong>。これはヒープ（動的メモリ）の操作である。</p>
+
+        <figure class="diagram"><pre>push_back            push_back           push_back
+    ↓                    ↓                   ↓
+[10|  ]    →    [10|20]    →    [10|20|30|  ]
+                                 ↑
+                      ここで広い場所を確保し直してコピーする</pre></figure>
+
+        <ul>
+        <li>確保と解放を繰り返すとヒープが断片化し、やがて確保に失敗する</li>
+        <li><code>push_back()</code>にかかる時間が一定でない（確保し直した回だけ重い）</li>
+        <li>RAMの少ないマイコンでは、失敗したときに打てる手が少ない</li>
+      </ul>
+
+        <p>そこで、<strong>個数の上限が読めるなら<code>setup()</code>で先に場所を確保してしまう</strong>。</p>
+
+        <figure class="code"><pre><code class="language-cpp">std::vector&lt;Sensor*&gt; sensors;
+
+void setup() {
+    sensors.reserve(8);  // 8個分の場所を先に確保する
+
+    sensors.push_back(&amp;imu);
+    sensors.push_back(&amp;gps);
+    sensors.push_back(&amp;tof);
+}</code></pre></figure>
+
+        <p><code>reserve()</code>しておけば、8個を超えるまで確保し直しは起きない。<code>loop()</code>の中では増やさない、という運用にすると挙動が読みやすくなる。</p>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>割り込みハンドラの中で<code>push_back()</code>や<code>new</code>を呼んではいけない。確保処理の途中で割り込みが入ると、ヒープの管理情報が壊れる。割り込みでは値を変数に置くだけにして、<code>loop()</code>側で取り出す。</p></aside>
+
+        <aside class="callout callout-note" data-for="teacher"><p class="callout-title">講師向け</p><p><code>std::vector</code>は便利に見えるぶん「配列を使う理由が分からない」という反応が出やすい。<a href="13-polymorphism.html">第13回</a>の<code>sizeof</code>の式を板書してから<code>size()</code>を見せ、<strong>どの仕事が消えたのか</strong>を先に確認させるとよい。ヒープの話は、断片化の図を描いて「確保に失敗したらどうするか」を問い返すと伝わりやすい。</p></aside>
+
+        <section class="exercise"><h3 class="exercise-title">演習：センサをstd::vectorでまとめる</h3><ul>
+        <li><a href="13-polymorphism.html">第13回</a>の<code>Sensor*</code>の配列を<code>std::vector&lt;Sensor*&gt;</code>に書き換える</li>
+        <li>範囲forで<code>update()</code>と<code>print()</code>を回す</li>
+        <li><code>setup()</code>で<code>reserve()</code>してから<code>push_back()</code>する形も書いてみる</li>
+        <li>このプログラムを<code>std::array</code>にした場合、どこが変わり、何ができなくなるかを説明する</li>
+      </ul><div class="solution-slot" data-solution></div></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全19回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>
