@@ -67,6 +67,34 @@
         </table>
       </div>
 
+        <h2 id="サンプルの動かし方">サンプルの動かし方</h2>
+
+        <p>各回の講義ページには<strong>「動かして確かめる」</strong>という節がある。そこで紹介しているサンプルは<code>code/examples/</code>以下にあり、それぞれが独立したPlatformIOプロジェクトになっている。<strong>演習に入る前に、まずこれを動かして結果を見る</strong>のが本講座の進め方である。</p>
+
+        <figure class="code"><pre><code class="language-bash">cd code/examples/00-blink
+
+pio run              # ビルドだけする
+pio run -t upload    # ボードに書き込む
+pio device monitor   # シリアルモニタを開く（115200 bps）</code></pre></figure>
+
+        <p>VS CodeでそのフォルダをそのままPlatformIOのプロジェクトとして開けば、下のツールバーのボタンからも同じことができる。</p>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>サンプルはすべて<strong>配線なしで動く</strong>ように書いてある。結果はボード上の内蔵LEDと<code>Serial</code>の出力だけで確かめられる。センサやモータの値は、実機がなくても動きが見えるようにプログラムの中で作っている（該当箇所にコメントを入れてある）。</p></aside>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>困ったこと</th><th>見るところ</th></tr></thead>
+          <tbody>
+          <tr><td>書き込みに失敗する</td><td>USBケーブルとポート。<code>pio device list</code>で見えるか確認する</td></tr>
+          <tr><td>モニタが文字化けする</td><td>速度。<code>platformio.ini</code>の<code>monitor_speed</code>と<code>Serial.begin()</code>を合わせる</td></tr>
+          <tr><td>最初の数行が出てこない</td><td>書き込み直後はモニタの接続が間に合わない。各サンプルの<code>setup()</code>に<code>delay(1000)</code>を入れてある</td></tr>
+          <tr><td>内蔵LEDが光らない</td><td>ボードによって<code>LED_BUILTIN</code>のピン番号が違う。手元のボードの回路図で確認する</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-note" data-for="teacher"><p class="callout-title">講師向け</p><p><code>code/examples/</code>は<strong>授業中に一緒に動かすためのもの</strong>である。演習の答えそのものではなく、その回の仕組みが動いているところを見せる。先に動かしておくと、演習で手が止まったときに「さっき動かしたあれと同じ形」と言える。</p></aside>
+
         <section data-for="teacher">
         <p class="audience-mark">講師向け</p>
 

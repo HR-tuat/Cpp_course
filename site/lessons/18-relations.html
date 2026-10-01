@@ -306,6 +306,93 @@ Robot ⇄ Controller            Robot ──→ Controller
 
         <aside class="callout callout-note" data-for="teacher"><p class="callout-title">講師向け</p><p>この回は<strong>先にエラーを出させる</strong>のが早い。互いに<code>#include</code>したヘッダを配り、コンパイルさせて<code>has not been declared</code>を見せる。そこから「<code>Controller</code>は<code>Robot</code>の何を知りたいのか」を問うと、案1（引数で渡す）に自然に辿り着く受講者が出る。前方宣言はその後に出すほうが定着する。<code>code/final-project</code>の<code>Controller</code>が<code>Motor&amp;</code>と<code>DistanceSensor&amp;</code>だけを受け取っていて<code>Robot</code>を知らない点も、実例として示せる。</p></aside>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/18-relations/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="diagram"><pre>code/examples/18-relations/
+├── include/
+│   ├── Robot.hpp        Controller.hpp を include する（所有する側）
+│   ├── Controller.hpp   class Robot; の前方宣言だけ（参照する側）
+│   └── Motor.hpp
+└── src/
+    ├── Robot.cpp
+    ├── Controller.cpp   ここで Robot.hpp を include する
+    ├── Motor.cpp
+    └── main.cpp</pre></figure>
+
+        <figure class="code"><figcaption>code/examples/18-relations/include/Controller.hpp</figcaption><pre><code class="language-cpp">// 第18回：相手を「指すだけ」なので、ヘッダでは前方宣言で足りる
+
+#pragma once
+
+class Robot;  // 前方宣言：Robotというクラスがある、とだけ伝える
+
+class Controller {
+public:
+    /**
+     * @brief コンストラクタ
+     * @param robot 判断のときに状態を聞く相手
+     * @note 受け取った参照は保存するだけ。ここでは使わない
+     *       （Robotのメンバがまだ初期化されていない）。
+     */
+    explicit Controller(Robot&amp; robot);
+
+    /**
+     * @brief 状態を見て、止めるかどうかを決める
+     */
+    void update();
+
+private:
+    Robot&amp; robot;  // 参照するだけ。所有はしない
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>code/examples/18-relations/src/Controller.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include "Controller.hpp"
+
+#include "Robot.hpp"  // 中身を使うのはここから。.cppは誰からもincludeされないので循環しない
+
+Controller::Controller(Robot&amp; robot)
+    : robot(robot) {
+    // ここで robot.isObstacleAhead() を呼んではいけない。
+    // Robot のメンバはまだ初期化されていない。
+}
+
+void Controller::update() {
+    if (robot.isObstacleAhead()) {
+        Serial.println("Controller: obstacle -&gt; stop");
+        robot.stop();
+    } else {
+        Serial.println("Controller: clear -&gt; go");
+        robot.go();
+    }
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>distance=350.00
+Controller: clear -&gt; go
+  motor speed=60
+
+distance=200.00
+Controller: clear -&gt; go
+  motor speed=60
+
+distance=150.00
+Controller: clear -&gt; go
+  motor speed=60
+
+distance=100.00
+Controller: obstacle -&gt; stop
+  motor speed=0</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>Controller.hpp</code>に<code>#include "Robot.hpp"</code>がない。<code>class Robot;</code>の1行で足りている</li>
+        <li><code>Controller.hpp</code>の前方宣言を<code>#include "Robot.hpp"</code>に書き換えるとビルドが止まり、<code>'Robot' does not name a type</code>と出る。<strong>一度自分で出しておく</strong></li>
+        <li>距離が150mmを切ったところで<code>obstacle -&gt; stop</code>に変わる。判断は<code>Controller</code>、状態は<code>Robot</code>が持っている</li>
+        <li><code>Controller</code>のコンストラクタで<code>robot.isObstacleAhead()</code>を呼ぶと何が起きるかを考える（<code>Robot</code>のメンバはまだ初期化されていない）</li>
+        <li><code>Controller</code>が<code>Robot</code>から取っているのは「障害物があるか」だけ。引数で渡す形にすれば相互参照が消せないかを考える</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：RobotとControllerの相互参照を解く</h3><ul>
         <li><code>Robot.hpp</code>と<code>Controller.hpp</code>が互いを<code>#include</code>するコードを書き、出るエラーを読む</li>
         <li><code>Controller.hpp</code>を前方宣言に直し、<code>Controller.cpp</code>で<code>Robot.hpp</code>を<code>include</code>して通す</li>

@@ -100,6 +100,81 @@
         <li>共通インターフェースが必要か</li>
       </ul>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/14-design/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="diagram"><pre>code/examples/14-design/
+├── include/
+│   ├── FlightController.hpp  まとめ役。順番に呼ぶだけ
+│   ├── IMU.hpp               姿勢を読む
+│   ├── PIDController.hpp     操作量を計算する
+│   └── MotorManager.hpp      モータに出す
+└── src/
+    ├── FlightController.cpp / IMU.cpp / PIDController.cpp / MotorManager.cpp
+    └── main.cpp</pre></figure>
+
+        <figure class="code"><figcaption>code/examples/14-design/src/FlightController.cpp</figcaption><pre><code class="language-cpp">void FlightController::update() {
+    // 1. 読む（IMUの責務）
+    imu.update();
+    float roll = imu.getRoll();
+
+    // 2. 計算する（PIDControllerの責務）
+    float correction = pid.compute(targetRoll - roll);
+
+    Serial.print("roll=");
+    Serial.print(roll);
+    Serial.print(" correction=");
+    Serial.println(correction);
+
+    // 3. 出力する（MotorManagerの責務）
+    motors.apply(correction);
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>code/examples/14-design/src/main.cpp</figcaption><pre><code class="language-cpp">// 第14回：1クラス1責務
+//
+//   FlightController   まとめ役（順番に呼ぶだけ）
+//    ├── IMU            姿勢を読む
+//    ├── PIDController  操作量を計算する
+//    └── MotorManager   モータに出す
+//
+// main.cpp にも FlightController にも、計算式は1つも書かれていない。
+// 「センサを変える」「ゲインを変える」「出力先を変える」のどれをやっても
+// 直すファイルが1つで済むことを確かめる。
+
+#include &lt;Arduino.h&gt;
+
+#include "FlightController.hpp"
+
+FlightController controller;
+
+void setup() {
+    Serial.begin(115200);
+    delay(1000);
+
+    controller.begin();
+}
+
+void loop() {
+    controller.update();
+    delay(500);
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>roll=9.60 correction=-15.84
+  motor L=65 R=34
+roll=7.68 correction=-12.19
+  motor L=62 R=37
+roll=6.14 correction=-10.23
+  motor L=60 R=39</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>FlightController::update()</code>に計算式が1つもない。「読む → 計算する → 出す」を順番に呼んでいるだけ</li>
+        <li>ゲインを変えたいときに開くのは<code>FlightController.cpp</code>のコンストラクタだけ。PIDの式を直すなら<code>PIDController.cpp</code>だけ</li>
+        <li><code>PIDController</code>はセンサもモータも知らない。<code>compute(5.0f)</code>を直接呼べば、この計算だけを切り離して確かめられる</li>
+        <li>これを全部1つのクラスに書いていたら、「センサを変える」「ゲインを変える」「出力先を変える」でどこを直すことになるかを考える</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：責務を割り当てる</h3><ul>
         <li>第9回で作った<code>RobotState</code>は、どのクラスが持つべきかを議論する</li>
         <li>「距離センサの値が近ければ止まる」という判断は、センサとコントローラのどちらの責務かを考える</li>

@@ -111,6 +111,107 @@ default:
 
         <p>ただしArduinoの<code>loop()</code>自体が繰り返し呼ばれるため、通常は<code>loop()</code>を利用する。<code>loop()</code>の中で長時間止まり続けると、他の処理が一切動かなくなる点に注意する。</p>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/02-control/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="code"><figcaption>code/examples/02-control/src/main.cpp（抜粋）</figcaption><pre><code class="language-cpp">/**
+ * @brief 温度から警報の段階を決める
+ * @details 上から順に評価されるため、条件の順番に意味がある。
+ * @param temperature 温度(℃)
+ * @return 0=normal, 1=warning, 2=danger
+ */
+int alarmLevel(float temperature) {
+    if (temperature &gt;= 40.0f) {
+        return 2;
+    } else if (temperature &gt;= 30.0f) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+/**
+ * @brief 警報の段階を文字列で表示する
+ * @param level 警報の段階(0〜2)
+ */
+void printLevel(int level) {
+    switch (level) {
+    case 0:
+        Serial.println("normal");
+        break;
+
+    case 1:
+        Serial.println("warning");
+        break;
+
+    case 2:
+        Serial.println("danger");
+        break;
+
+    default:
+        Serial.println("unknown");
+        break;
+    }
+}
+
+/**
+ * @brief 内蔵LEDを指定回数点滅させる
+ * @param times 点滅回数
+ */
+void blink(int times) {
+    for (int i = 0; i &lt; times; i++) {
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(BLINK_MS);
+
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(BLINK_MS);
+    }
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>同じファイルの loop()</figcaption><pre><code class="language-cpp">void loop() {
+    // 温度を 25.0 から 5.0 ずつ上げていき、分岐が切り替わる点を見る
+    static float temperature = 25.0f;
+
+    int level = alarmLevel(temperature);
+
+    Serial.print(temperature);
+    Serial.print(" -&gt; ");
+    printLevel(level);
+
+    // 段階と同じ回数だけ点滅させる（normal のときは光らない）
+    blink(level);
+
+    temperature += 5.0f;
+    if (temperature &gt; 45.0f) {
+        temperature = 25.0f;
+    }
+
+    delay(1000);
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>--- for ---
+0 1 2 3 4 5 6 7 8 9
+--- while ---
+3
+2
+1
+--- if / else if / switch ---
+25.00 -&gt; normal
+30.00 -&gt; warning
+35.00 -&gt; warning
+40.00 -&gt; danger
+45.00 -&gt; danger
+25.00 -&gt; normal</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>25.00</code>は<code>normal</code>、<code>30.00</code>は<code>warning</code>、<code>40.00</code>は<code>danger</code>になっている</li>
+        <li><code>alarmLevel()</code>の<code>&gt;= 40.0f</code>と<code>&gt;= 30.0f</code>を入れ替えると、<code>danger</code>が一度も出なくなる。<strong>条件の順番に意味がある</strong></li>
+        <li><code>printLevel()</code>の<code>break</code>を1つ消すと、次の<code>case</code>へ流れ込む（フォールスルー）</li>
+        <li>LEDの点滅回数が段階と同じ回数になっている。<code>normal</code>のときは光らない</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習</h3><ul>
         <li>0〜9をシリアル出力する</li>
         <li>LEDを一定回数点滅させる</li>

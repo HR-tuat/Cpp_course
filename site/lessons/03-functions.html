@@ -148,6 +148,65 @@ int doubleValue(int value, bool flag) {
 
         <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「どこからでも触れる」ことは便利さであると同時に危険さでもある、という感覚をここで持<span data-for="student">っ</span><span data-for="teacher">たせ</span>ておくと、第8回のカプセル化が自然に理解できる。</p></aside>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/03-functions/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="code"><figcaption>code/examples/03-functions/src/main.cpp</figcaption><pre><code class="language-cpp">// 第3回：関数に切り出す
+// 同じ処理を関数にまとめ、loop() を読みやすくする。
+
+#include &lt;Arduino.h&gt;
+
+const int LED_PIN = 2;
+const int BLINK_MS = 300;
+
+/**
+ * @brief LEDを点灯する
+ */
+void ledOn() {
+    digitalWrite(LED_PIN, HIGH);
+}
+
+/**
+ * @brief LEDを消灯する
+ */
+void ledOff() {
+    digitalWrite(LED_PIN, LOW);
+}
+
+/**
+ * @brief LEDを指定回数点滅させる
+ * @param times 点滅回数
+ */
+void blink(int times) {
+    for (int i = 0; i &lt; times; i++) {
+        ledOn();
+        delay(BLINK_MS);
+
+        ledOff();
+        delay(BLINK_MS);
+    }
+}
+
+void setup() {
+    pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+    blink(3);
+    delay(1000);
+}</code></pre></figure>
+
+        <p>内蔵LEDが3回続けて点滅し、1秒休んでまた3回点滅する。</p>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>blink(3)</code>の1行で3回点滅する。同じ<code>digitalWrite</code>を書き写していない</li>
+        <li><code>blink()</code>の中身を直せば、呼んでいるすべての場所に反映される</li>
+        <li><code>BLINK_MS</code>を変えると点滅の速さが変わる。数値が1か所にまとまっている</li>
+        <li><code>LED_PIN</code>のような名前を付けておくと、<code>2</code>という数字の意味が読み取れる</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：次の関数を作成する</h3><figure class="code"><pre><code class="language-cpp">void motorStop();
 void motorSetSpeed(int speed);
 bool isButtonPressed();

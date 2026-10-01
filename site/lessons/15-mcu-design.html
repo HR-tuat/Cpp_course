@@ -124,6 +124,71 @@ private:
         </table>
       </div>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/15-mcu-design/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="diagram"><pre>code/examples/15-mcu-design/
+├── include/
+│   ├── Sensor.hpp      抽象クラス（第12回）
+│   ├── IMU.hpp         Sensor を継承（第10〜11回）
+│   ├── LED.hpp         クラス・カプセル化（第6〜8回）
+│   └── FlightMode.hpp  enum class（第9回）
+└── src/
+    ├── IMU.cpp / LED.cpp
+    └── main.cpp</pre></figure>
+
+        <figure class="code"><figcaption>code/examples/15-mcu-design/src/main.cpp（loop()）</figcaption><pre><code class="language-cpp">void loop() {
+    // センサは種類を問わずまとめて更新する
+    for (int i = 0; i &lt; SENSOR_COUNT; i++) {
+        sensors[i]-&gt;update();
+    }
+
+    // 状態によってふるまいを変える
+    switch (mode) {
+    case FlightMode::MANUAL:
+        led.off();
+        break;
+
+    case FlightMode::AUTO:
+        led.on();
+        break;
+
+    case FlightMode::LANDING:
+        led.toggle();
+        break;
+    }
+
+    // IMUの値はまとめ役（この例では main.cpp）が取り出して使う
+    Serial.print(modeName(mode));
+    Serial.print("  roll=");
+    Serial.println(imu.getRoll());
+
+    advanceMode();
+    delay(200);
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>mode -&gt; MANUAL
+MANUAL  roll=0.50
+MANUAL  roll=1.00
+      :
+MANUAL  roll=5.00
+mode -&gt; AUTO
+AUTO  roll=5.50
+AUTO  roll=6.00
+      :
+AUTO  roll=10.00
+mode -&gt; LANDING
+LANDING  roll=10.50</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li>10周ごとにモードが切り替わり、LEDの出方が変わる（消灯 → 点灯 → 点滅）</li>
+        <li><code>Sensor*</code>の配列、<code>enum class</code>、<code>LED</code>クラスが1つのプログラムで一緒に動いている</li>
+        <li><code>main.cpp</code>にはまだ「モードごとの判断」が残っている。これをどのクラスに移すべきかを考える</li>
+        <li>このサンプルには<code>Motor</code>がまだない。足すときにどのファイルを触ることになるかを見積もる</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：自分のクラス図を書く</h3><ul>
         <li>上記5つを<code>.hpp</code> / <code>.cpp</code>に分割して実装する</li>
         <li><code>main.cpp</code>が短く保たれているかを確認する</li>

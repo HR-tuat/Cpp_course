@@ -135,6 +135,95 @@ uint32_t</code></pre></figure>
         </table>
       </div>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/01-variables/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="code"><figcaption>code/examples/01-variables/src/main.cpp</figcaption><pre><code class="language-cpp">// 第1回：変数・型・演算子
+// 値をシリアルモニタに出して、型と演算子のふるまいを目で確かめる。
+
+#include &lt;Arduino.h&gt;
+
+void setup() {
+    Serial.begin(115200);
+    delay(1000);  // シリアルモニタが繋がるのを待つ
+
+    int count = 7;
+    int divisor = 2;
+    float temperature = 23.5f;
+    char grade = 'A';
+    bool isHot = false;
+
+    Serial.println("--- 変数と型 ---");
+    Serial.print("count       = ");
+    Serial.println(count);
+    Serial.print("temperature = ");
+    Serial.println(temperature);
+    Serial.print("grade       = ");
+    Serial.println(grade);
+
+    Serial.println("--- 割り算 ---");
+    Serial.print("7 / 2    = ");
+    Serial.println(count / divisor);  // 3（小数は切り捨てられる）
+    Serial.print("7 % 2    = ");
+    Serial.println(count % divisor);  // 1
+    Serial.print("7 / 2.0f = ");
+    Serial.println(count / 2.0f);     // 3.50
+
+    Serial.println("--- 比較と論理 ---");
+    isHot = temperature &gt;= 30.0f;
+    Serial.print("temperature &gt;= 30.0f = ");
+    Serial.println(isHot);  // 0（false は 0 と表示される）
+
+    Serial.print("20 &lt; t &amp;&amp; t &lt; 30     = ");
+    Serial.println(20.0f &lt; temperature &amp;&amp; temperature &lt; 30.0f);  // 1
+
+    Serial.println("--- 型の大きさ（バイト）---");
+    Serial.print("int     : ");
+    Serial.println(sizeof(int));
+    Serial.print("float   : ");
+    Serial.println(sizeof(float));
+    Serial.print("double  : ");
+    Serial.println(sizeof(double));
+    Serial.print("char    : ");
+    Serial.println(sizeof(char));
+    Serial.print("bool    : ");
+    Serial.println(sizeof(bool));
+    Serial.print("uint8_t : ");
+    Serial.println(sizeof(uint8_t));
+}
+
+void loop() {
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>--- 変数と型 ---
+count       = 7
+temperature = 23.50
+grade       = A
+--- 割り算 ---
+7 / 2    = 3
+7 % 2    = 1
+7 / 2.0f = 3.50
+--- 比較と論理 ---
+temperature &gt;= 30.0f = 0
+20 &lt; t &amp;&amp; t &lt; 30     = 1
+--- 型の大きさ（バイト）---
+int     : 4
+float   : 4
+double  : 8
+char    : 1
+bool    : 1
+uint8_t : 1</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>7 / 2</code>が<code>3</code>になっている。整数どうしの割り算では小数が捨てられる</li>
+        <li><code>7 / 2.0f</code>は<code>3.50</code>になる。片方を小数で書けば結果も小数になる</li>
+        <li><code>true</code>は<code>1</code>、<code>false</code>は<code>0</code>として表示される</li>
+        <li><code>int</code>は4バイト。これは環境によって変わることがある</li>
+        <li><code>temperature</code>を書き換えて、<code>&gt;= 30.0f</code>の行が<code>1</code>に変わることを確かめる</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：温度が30度以上ならLEDを点灯する</h3><figure class="code"><pre><code class="language-cpp">float temperature = 32.0;
 
 if (temperature &gt;= 30.0) {

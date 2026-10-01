@@ -95,6 +95,8 @@ include/Controller.hpp:12:5: error: 'Robot' does not name a type
      Robot&amp; robot;
      ^~~~~</code></pre></figure>
 
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>1つめのエラーの文言はコンパイラのバージョンで変わる。新しいGCCでは<code>expected ')' before '&amp;' token</code>のように出ることもある。<strong>2つめの<code>'Robot' does not name a type</code>が出ていれば同じ原因</strong>である。</p></aside>
+
         <p>読むべき点は2つある。</p>
 
         <ul>
