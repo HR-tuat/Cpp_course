@@ -12,8 +12,8 @@
 #include "LED.hpp"
 #include "Motor.hpp"
 
-LED led(LED_BUILTIN);
-Motor motor(5);
+LED led(LED_BUILTIN);  // ボード上の内蔵LED
+Motor motor(5);        // モータはつないでいない。結果はシリアルの出力で見る
 
 void setup() {
     Serial.begin(115200);

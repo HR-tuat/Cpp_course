@@ -95,6 +95,68 @@ pio device monitor   # シリアルモニタを開く（115200 bps）</code></pr
 
         <aside class="callout callout-note" data-for="teacher"><p class="callout-title">講師向け</p><p><code>code/examples/</code>は<strong>授業中に一緒に動かすためのもの</strong>である。演習の答えそのものではなく、その回の仕組みが動いているところを見せる。先に動かしておくと、演習で手が止まったときに「さっき動かしたあれと同じ形」と言える。</p></aside>
 
+        <h2 id="実物をつなぐ場合">実物をつなぐ場合</h2>
+
+        <p><strong>サンプルを動かすだけなら、追加の部品は要らない。</strong>光るのはボードに載っている内蔵LEDで、<code>LED_BUILTIN</code>がそのピン番号を指している（多くのESP32 DevKitでGPIO2）。モータや距離センサを使うサンプルも、値はプログラムの中で作ってシリアルに表示しているだけで、実物はつないでいない。</p>
+
+        <p>そのうえで、外付けのLEDをつなぐと分かりやすくなる回がある。<a href="../lessons/06-classes.html">第6回</a>は「同じクラスから2つのオブジェクトを作る」のが主題で、<code>led2</code>はピン4に割り当ててあるが、内蔵LEDは1つしかないので<strong>2つ目の点滅はボード単体では見えない</strong>。ここだけは実物をつなぐ価値がある。</p>
+
+        <h3 id="必要なもの">必要なもの</h3>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>部品</th><th>数</th><th>用途</th></tr></thead>
+          <tbody>
+          <tr><td>ブレッドボード</td><td>1</td><td>はんだ付けなしで配線を組む</td></tr>
+          <tr><td>LED</td><td>2〜3</td><td>第6回で2個あると「同じクラスから2つ」が見える</td></tr>
+          <tr><td>抵抗 220Ω〜330Ω</td><td>LEDと同数</td><td><strong>LEDに直列に入れる。省略するとLEDとGPIOを壊す</strong></td></tr>
+          <tr><td>ジャンパ線（オス-オス）</td><td>10本程度</td><td></td></tr>
+          <tr><td>タクトスイッチ</td><td>1</td><td><a href="../lessons/02-control.html">第2回</a>の「ボタンが押されている間だけ点灯」を実機で試す場合</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>タクトスイッチは<code>pinMode(pin, INPUT_PULLUP)</code>を使えば、プルアップ抵抗を別に用意しなくてよい。その場合<strong>押したときに<code>LOW</code></strong>になる点に注意する。</p></aside>
+
+        <h3 id="配線">配線</h3>
+
+        <figure class="diagram"><pre>ESP32               ブレッドボード
+──────              ─────────────────────────────
+
+GPIO4  ──────────── 抵抗 220Ω ──── LED アノード（足が長い側）
+
+                                   LED カソード（足が短い側・外形が平らな側）
+GND    ─────────────────────────────┘</pre></figure>
+
+        <p>2つ目のLEDを足すときは、別のGPIOから同じ形でもう1組つなぐ。GNDは共通でよい。</p>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>ESP32にはそのままでは使えないピンがある。</p><div class="table-wrap">
+        <table>
+          <thead><tr><th>ピン</th><th>なぜ避けるか</th></tr></thead>
+          <tbody>
+          <tr><td>GPIO6〜11</td><td>内蔵のフラッシュメモリに繋がっている。<strong>触ると起動しなくなる</strong></td></tr>
+          <tr><td>GPIO34〜39</td><td><strong>入力専用</strong>。<code>digitalWrite</code>しても何も出ない</td></tr>
+          <tr><td>GPIO0 / 2 / 5 / 12 / 15</td><td>起動時の状態を見ているピン。外付けを繋ぐと書き込みに失敗することがある</td></tr>
+          </tbody>
+        </table>
+      </div><p>外付けのLEDに使うなら<strong>GPIO4・16〜19・21〜23</strong>あたりが無難である。</p></aside>
+
+        <h3 id="サンプルを外付けledで動かす">サンプルを外付けLEDで動かす</h3>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>回</th><th>書き換えるところ</th></tr></thead>
+          <tbody>
+          <tr><td><a href="../lessons/03-functions.html">第3回</a> / <a href="../lessons/09-enum.html">第9回</a></td><td><code>const int LED_PIN = LED_BUILTIN;</code>を<code>= 4;</code>にする</td></tr>
+          <tr><td><a href="../lessons/06-classes.html">第6回</a></td><td>そのままでよい。ピン4に2つ目のLEDを挿せば<code>led2</code>が光る</td></tr>
+          <tr><td><a href="../lessons/07-headers.html">第7回</a></td><td><code>LED led(LED_BUILTIN);</code>を<code>LED led(4);</code>にする</td></tr>
+          <tr><td>モータを使う回<br>（<a href="../lessons/08-encapsulation.html">第8回</a>・<a href="../lessons/10-inheritance.html">第10回</a>・<a href="../lessons/14-design.html">第14回</a>・<a href="../lessons/18-relations.html">第18回</a>）</td><td>実物のモータは<strong>ESP32のピンから直接は回せない</strong>。モータドライバと別電源が要る。本講座のサンプルはシリアル表示までにしてある</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>ピン番号を1か所にまとめてあるので、書き換えるのは<strong>1行だけ</strong>で済む。これは<a href="../lessons/05-cpp-basics.html">第5回</a>の<code>const</code>でマジックナンバーを排除する話とそのまま繋がる。実機に移すときに何行直すことになるかを、そのまま教材にできる。</p></aside>
+
         <section data-for="teacher">
         <p class="audience-mark">講師向け</p>
 

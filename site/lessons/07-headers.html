@@ -142,7 +142,7 @@ void LED::off() {
 
         <h2 id="動かして確かめる">動かして確かめる</h2>
 
-        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/07-led-header/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>追加の部品は要らない</strong>。光るのはボードに載っている内蔵LEDで、それ以外はシリアルモニタの出力で確かめられる。<code>code/examples/07-led-header/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（手順と、外付けのLEDなどをつなぐ場合は<a href="../guide/environment.html">開発環境</a>にまとめてある）。</p>
 
         <figure class="diagram"><pre>code/examples/07-led-header/
 ├── include/
@@ -157,7 +157,7 @@ void LED::off() {
 
 #include "LED.hpp"
 
-LED led(2);
+LED led(LED_BUILTIN);  // ボード上の内蔵LED。配線なしで光る
 
 void setup() {
     led.begin();

@@ -8,6 +8,7 @@ const int CRUISE_SPEED = 60;
 }
 
 Robot::Robot()
+    // モータはつないでいない。Motor は速度をシリアルに表示する
     : motor(5), controller(*this), distance(400.0f) {
     // controller(*this) で自分自身を渡している。
     // Controller は参照を保存するだけなので、この時点では安全。
