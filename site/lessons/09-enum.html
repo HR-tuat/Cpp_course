@@ -116,7 +116,7 @@ enum class RobotState {
     ERROR
 };
 
-// ボード上の内蔵LED。配線なしで光る
+// ボード上の内蔵LED。配線なしで光る（このボードではGPIO27のRGB LED）
 const int LED_PIN = LED_BUILTIN;
 
 RobotState state = RobotState::STOP;
@@ -163,7 +163,7 @@ void loop() {
     delay(50);
 }</code></pre></figure>
 
-        <p><code>setup()</code>で<code>MOVE</code>にしているので内蔵LEDが点灯する。<code>setState()</code>の引数を<code>STOP</code>や<code>ERROR</code>に書き換えて、見え方を比べる。</p>
+        <p><code>setup()</code>で<code>MOVE</code>にしているのでRGB LEDが点灯する。<code>setState()</code>の引数を<code>STOP</code>や<code>ERROR</code>に書き換えて、見え方を比べる。</p>
 
         <p>確かめること。</p>
 

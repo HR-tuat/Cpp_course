@@ -17,7 +17,7 @@
 
 IMU imu;
 GPS gps;
-ToF tof(34);  // センサはつないでいない。ピン番号は保持するだけ
+ToF tof(6);  // センサはつないでいない。ピン番号は保持するだけ
 
 std::vector<Sensor*> sensors;
 

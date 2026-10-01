@@ -19,7 +19,33 @@ pio run -t upload    # 書き込み
 pio device monitor   # シリアルモニタ（115200 bps）
 ```
 
-ボードを変える場合は各 `platformio.ini` の `board` を書き換える。
+## ボード
+
+**ESP32-C5-DevKitC-1-N8R8**（ESP32-C5 / フラッシュ8MB / PSRAM 8MB）。
+
+ESP32-C5 は**公式の `platform-espressif32` では未対応**なので、pioarduino のフォークを
+使う。各 `platformio.ini` はこの形。
+
+```ini
+[env:esp32-c5-devkitc-1]
+platform = https://github.com/pioarduino/platform-espressif32/releases/download/stable/platform-espressif32.zip
+board = esp32-c5-devkitc1-n8r4
+framework = arduino
+monitor_speed = 115200
+build_flags = -Wall
+```
+
+- N8R8 用のボード定義はまだないので、フラッシュ容量（8MB）とPSRAM有りが一致する
+  **N8R4 を指定している**。PSRAMの容量は起動時に検出される。問題が出たら
+  `board = esp32-c5-devkitc-1`（4MB・PSRAMなし）に下げる。サンプルはPSRAMを使わない。
+- USB-Cは2つある。**「UART」側に挿す**。チップ直結側に挿すと `Serial` が出てこない
+  （その場合は `-DARDUINO_USB_CDC_ON_BOOT=1` が必要）。
+- **内蔵LEDはGPIO27のアドレサブルRGB LED**。`digitalWrite(LED_BUILTIN, HIGH)` で白く点く
+  （arduino-esp32 が内部でRGB書き込みに振り替えている）。`LED_BUILTIN` は
+  **ピン番号ではない**ので、数値に書き換えると光らない。
+- GPIOは0〜28。入力専用ピンはない。ヘッダに出ていて他の機能と衝突しないのは
+  **GPIO23 / GPIO24**（外付けLED向き）と **GPIO6**（ADC1_CH5）。
+  詳しくはサイトの「開発環境 → 実物をつなぐ場合」。
 
 ## examples/ と講義ページの対応
 
@@ -66,13 +92,10 @@ pio device monitor   # シリアルモニタ（115200 bps）
 
 ### 規格
 
-既定は Arduino のまま（多くの環境で `gnu++11`）。`17-smart-pointer` だけは
-`std::make_unique` のために `platformio.ini` で引き上げている。
-
-```ini
-build_unflags = -std=gnu++11
-build_flags = -Wall -std=gnu++17
-```
+ESP-IDF 5.5 は C++ を `-std=gnu++2b`（C++23）でビルドするので、
+**規格の引き上げは要らない**。`std::make_unique` もそのまま使える。
+`-std=gnu++17` のように下げる方向に指定すると、ESP-IDF側のヘッダが
+通らなくなることがある。
 
 ### 手元での構文確認
 

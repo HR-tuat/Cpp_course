@@ -108,8 +108,8 @@ public:
     virtual void update() = 0;
 };</code></pre></figure><p>親のポインタ越しに解放するとき、<code>virtual</code>が付いていなければ親の分しか片付けられない。生ポインタに<code>delete</code>したときと同じ条件だが、スマートポインタは解放を自動で行うぶん見落としやすい。<a href="12-abstract.html">第12回</a>で作った抽象クラスには必ず付けておく。</p></aside>
 
-        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>std::make_unique</code>はC++14からの機能である。古い設定でコンパイルエラーになる場合は、<code>platformio.ini</code>で規格を上げる。</p><figure class="code"><figcaption>platformio.ini</figcaption><pre><code>build_unflags = -std=gnu++11
-build_flags = -Wall -std=gnu++17</code></pre></figure><p>最近のESP32向けArduinoは既定でC++17以降なので、多くの場合この指定は不要である。</p></aside>
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>std::make_unique</code>はC++14からの機能である。本講座のボード（ESP32-C5）が使う<code>arduino-esp32</code> 3.3系はESP-IDF 5.5の設定でC++を<strong>C++23としてビルドする</strong>ため、<strong>そのまま使える</strong>。古い環境で<code>'make_unique' is not a member of 'std'</code>と出たときだけ、<code>platformio.ini</code>で規格を上げる。</p><figure class="code"><figcaption>platformio.ini</figcaption><pre><code>build_unflags = -std=gnu++11
+build_flags = -Wall -std=gnu++17</code></pre></figure><p>規格を下げる方向に書くと、ESP-IDF側のヘッダが通らなくなることがある。<strong>必要がなければ書かない。</strong></p></aside>
 
         <h2 id="shared_ptr">std::shared_ptr</h2>
 
@@ -167,7 +167,7 @@ std::vector&lt;std::unique_ptr&lt;Sensor&gt;&gt; sensors;
 void setup() {
     sensors.push_back(std::make_unique&lt;IMU&gt;());
     sensors.push_back(std::make_unique&lt;GPS&gt;());
-    sensors.push_back(std::make_unique&lt;ToF&gt;(34));
+    sensors.push_back(std::make_unique&lt;ToF&gt;(6));
 }
 
 void loop() {
@@ -219,7 +219,7 @@ new   ←→  delete            オブジェクトを作る
         <figure class="code"><pre><code class="language-cpp">// 個数が決まっているなら、これで足りる。スマートポインタも new も不要
 IMU imu;
 GPS gps;
-ToF tof(34);</code></pre></figure>
+ToF tof(6);</code></pre></figure>
 
         <ul>
         <li>種類と個数がコンパイル時に決まるなら、そのまま変数として置く</li>
@@ -297,15 +297,26 @@ void loop() {
     delay(1000);
 }</code></pre></figure>
 
-        <figure class="code"><figcaption>code/examples/17-smart-pointer/platformio.ini</figcaption><pre><code>[env:esp32dev]
-platform = espressif32
-board = esp32dev
+        <figure class="code"><figcaption>code/examples/17-smart-pointer/platformio.ini</figcaption><pre><code>; ESP32-C5-DevKitC-1-N8R8 向け。
+; ESP32-C5 は公式の platform-espressif32 では未対応なので、pioarduino のフォークを使う。
+; （C5のArduino対応は arduino-esp32 3.3系 / ESP-IDF 5.5 以降）
+[env:esp32-c5-devkitc-1]
+platform = https://github.com/pioarduino/platform-espressif32/releases/download/stable/platform-espressif32.zip
+; N8R8 用のボード定義はまだないので、フラッシュ容量（8MB）とPSRAM有りが一致する
+; N8R4 を使う。PSRAMの容量は起動時に検出されるため実害はない。
+; PSRAMで問題が出たら board = esp32-c5-devkitc-1（4MB・PSRAMなし）に下げる。
+board = esp32-c5-devkitc1-n8r4
 framework = arduino
 monitor_speed = 115200
+build_flags = -Wall
 
-; std::make_unique は C++14 から。Arduinoの既定が gnu++11 の環境でも通るように上げておく
-build_unflags = -std=gnu++11
-build_flags = -Wall -std=gnu++17</code></pre></figure>
+; 第17回の std::make_unique は C++14 以降の機能。
+; ESP-IDF 5.5 は C++ を -std=gnu++2b（C++23）でビルドするので、
+; このボードでは規格の引き上げは要らない。
+; 古い環境で「make_unique is not a member of std」になった場合だけ、
+;   build_unflags = -std=gnu++11
+;   build_flags = -Wall -std=gnu++17
+; のように上書きする。</code></pre></figure>
 
         <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>USE_SMART_POINTER = 1
 free heap at start: 294512

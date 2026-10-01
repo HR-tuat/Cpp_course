@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="VS Code / PlatformIO / ESP32 / Git、Marp・draw.io による教材作成、教材リポジトリの構成例。">
+  <meta name="description" content="VS Code / PlatformIO / ESP32-C5-DevKitC-1 / Git、Marp・draw.io による教材作成、教材リポジトリの構成例。">
   <title>開発環境 | マイコンのためのC++講座</title>
   <script>
     // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
@@ -61,11 +61,54 @@
           <tr><td>ビルド</td><td>C++コンパイラ</td></tr>
           <tr><td>バージョン管理</td><td>Git</td></tr>
           <tr><td>共有</td><td>GitHub</td></tr>
-          <tr><td>マイコン</td><td>ESP32</td></tr>
-          <tr><td>マイコン開発環境</td><td>PlatformIO</td></tr>
+          <tr><td>マイコン</td><td>ESP32-C5-DevKitC-1-N8R8</td></tr>
+          <tr><td>マイコン開発環境</td><td>PlatformIO（pioarduino版のプラットフォーム）</td></tr>
           </tbody>
         </table>
       </div>
+
+        <h2 id="ボードの設定">ボードの設定</h2>
+
+        <p>使うボードは<strong>ESP32-C5-DevKitC-1-N8R8</strong>（ESP32-C5、フラッシュ8MB、PSRAM 8MB）。ESP32-C5はRISC-Vコアの新しいチップで、<strong>PlatformIO公式の<code>platform-espressif32</code>ではまだ対応していない</strong>。そのため、コミュニティが保守している<a href="https://github.com/pioarduino/platform-espressif32">pioarduino版</a>を指定する。<code>code/</code>以下の各プロジェクトの<code>platformio.ini</code>はこの形になっている。</p>
+
+        <figure class="code"><figcaption>platformio.ini</figcaption><pre><code>[env:esp32-c5-devkitc-1]
+platform = https://github.com/pioarduino/platform-espressif32/releases/download/stable/platform-espressif32.zip
+board = esp32-c5-devkitc1-n8r4
+framework = arduino
+monitor_speed = 115200
+build_flags = -Wall</code></pre></figure>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><strong>N8R8用のボード定義はまだないので、N8R4を指定している。</strong>フラッシュ容量（8MB）とPSRAM有りという条件は同じで、PSRAMの容量は起動時に検出されるため実害はない。PSRAM関連で問題が出たら<code>board = esp32-c5-devkitc-1</code>（4MB・PSRAMなし）に下げてよい。本講座のサンプルはPSRAMを使わない。</p></aside>
+
+        <h3 id="2つのusbポート">2つのUSB-Cポート</h3>
+
+        <p>このボードにはUSB-Cが2つある。<strong>授業では「UART」と書かれている側を使う。</strong></p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>ポート</th><th>何が繋がっているか</th><th>授業で使うか</th></tr></thead>
+          <tbody>
+          <tr><td>UART</td><td>USB-UART変換チップ。<code>Serial</code>がそのまま使える（GPIO11=TX / GPIO12=RX）</td><td><strong>こちらを使う</strong></td></tr>
+          <tr><td>USB</td><td>ESP32-C5のUSBに直結（GPIO13=D- / GPIO14=D+）</td><td>使わない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>直結側（USB）に挿すと、<code>Serial</code>の出力がシリアルモニタに出てこない。こちらを使う場合は<code>platformio.ini</code>に<code>-DARDUINO_USB_CDC_ON_BOOT=1</code>を足す必要がある。<strong>混乱の元なので、授業では挿すポートを統一する。</strong></p></aside>
+
+        <h3 id="内蔵ledはrgbled">内蔵LEDはRGB LEDである</h3>
+
+        <p>このボードの内蔵LEDは普通のLEDではなく、<strong>アドレサブルRGB LED（WS2812系）が1個、GPIO27に繋がっている</strong>。点けると白く光る。</p>
+
+        <figure class="code"><pre><code class="language-cpp">pinMode(LED_BUILTIN, OUTPUT);
+digitalWrite(LED_BUILTIN, HIGH);  // 白く点く
+digitalWrite(LED_BUILTIN, LOW);   // 消える</code></pre></figure>
+
+        <p>見た目は普通のLEDと同じように書けるが、裏では<code>digitalWrite</code>がRGB LEDへの書き込みに振り替えられている。<code>LED_BUILTIN</code>は<strong>ピン番号ではなく「内蔵LEDを指す名前」</strong>なので、<code>27</code>と数値で書き換えても同じようには光らない。色を変えたいときは別の関数を使う。</p>
+
+        <figure class="code"><pre><code class="language-cpp">rgbLedWrite(LED_BUILTIN, 0, 64, 0);  // 緑に点ける</code></pre></figure>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>本講座のサンプルは<code>digitalWrite</code>の範囲だけで書いてある。「LEDが点く／消える」という説明はそのまま通じる。色を使った表示は<a href="../advanced.html">発展内容</a>の範囲とする。</p></aside>
 
         <h2 id="サンプルの動かし方">サンプルの動かし方</h2>
 
@@ -88,7 +131,9 @@ pio device monitor   # シリアルモニタを開く（115200 bps）</code></pr
           <tr><td>書き込みに失敗する</td><td>USBケーブルとポート。<code>pio device list</code>で見えるか確認する</td></tr>
           <tr><td>モニタが文字化けする</td><td>速度。<code>platformio.ini</code>の<code>monitor_speed</code>と<code>Serial.begin()</code>を合わせる</td></tr>
           <tr><td>最初の数行が出てこない</td><td>書き込み直後はモニタの接続が間に合わない。各サンプルの<code>setup()</code>に<code>delay(1000)</code>を入れてある</td></tr>
-          <tr><td>内蔵LEDが光らない</td><td>ボードによって<code>LED_BUILTIN</code>のピン番号が違う。手元のボードの回路図で確認する</td></tr>
+          <tr><td>シリアルに何も出ない</td><td><strong>チップ直結のUSBポートに挿していないか。</strong>「UART」と書かれた側に挿す</td></tr>
+          <tr><td>内蔵LEDが光らない</td><td>挿したUSBポートを確認する。<code>LED_BUILTIN</code>を<code>27</code>のような数値に書き換えていると、RGB LEDは光らない</td></tr>
+          <tr><td><code>Unknown board ID</code>と出る</td><td><code>platformio.ini</code>の<code>platform</code>がpioarduino版になっているか。公式版にはC5のボード定義がない</td></tr>
           </tbody>
         </table>
       </div>
@@ -97,9 +142,9 @@ pio device monitor   # シリアルモニタを開く（115200 bps）</code></pr
 
         <h2 id="実物をつなぐ場合">実物をつなぐ場合</h2>
 
-        <p><strong>サンプルを動かすだけなら、追加の部品は要らない。</strong>光るのはボードに載っている内蔵LEDで、<code>LED_BUILTIN</code>がそのピン番号を指している（多くのESP32 DevKitでGPIO2）。モータや距離センサを使うサンプルも、値はプログラムの中で作ってシリアルに表示しているだけで、実物はつないでいない。</p>
+        <p><strong>サンプルを動かすだけなら、追加の部品は要らない。</strong>光るのはボードに載っている内蔵のRGB LEDで、<code>LED_BUILTIN</code>がそれを指している。モータや距離センサを使うサンプルも、値はプログラムの中で作ってシリアルに表示しているだけで、実物はつないでいない。</p>
 
-        <p>そのうえで、外付けのLEDをつなぐと分かりやすくなる回がある。<a href="../lessons/06-classes.html">第6回</a>は「同じクラスから2つのオブジェクトを作る」のが主題で、<code>led2</code>はピン4に割り当ててあるが、内蔵LEDは1つしかないので<strong>2つ目の点滅はボード単体では見えない</strong>。ここだけは実物をつなぐ価値がある。</p>
+        <p>そのうえで、外付けのLEDをつなぐと分かりやすくなる回がある。<a href="../lessons/06-classes.html">第6回</a>は「同じクラスから2つのオブジェクトを作る」のが主題で、<code>led2</code>はGPIO23に割り当ててあるが、内蔵LEDは1つしかないので<strong>2つ目の点滅はボード単体では見えない</strong>。ここだけは実物をつなぐ価値がある。</p>
 
         <h3 id="必要なもの">必要なもの</h3>
 
@@ -120,26 +165,55 @@ pio device monitor   # シリアルモニタを開く（115200 bps）</code></pr
 
         <h3 id="配線">配線</h3>
 
-        <figure class="diagram"><pre>ESP32               ブレッドボード
-──────              ─────────────────────────────
+        <figure class="diagram"><pre>ESP32-C5-DevKitC-1      ブレッドボード
+──────────────────      ─────────────────────────────
 
-GPIO4  ──────────── 抵抗 220Ω ──── LED アノード（足が長い側）
+GPIO23 ──────────────── 抵抗 220Ω ──── LED アノード（足が長い側）
 
-                                   LED カソード（足が短い側・外形が平らな側）
-GND    ─────────────────────────────┘</pre></figure>
+                                       LED カソード（足が短い側・
+                                       外形が平らになっている側）
+GND    ─────────────────────────────────┘</pre></figure>
 
-        <p>2つ目のLEDを足すときは、別のGPIOから同じ形でもう1組つなぐ。GNDは共通でよい。</p>
+        <p>2つ目のLEDを足すときは<code>GPIO24</code>から同じ形でもう1組つなぐ。GNDは共通でよい。</p>
 
-        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>ESP32にはそのままでは使えないピンがある。</p><div class="table-wrap">
+        <h3 id="ピンの選び方">ピンの選び方</h3>
+
+        <p>ESP32-C5のGPIOは<strong>GPIO0〜28</strong>。古いESP32にあった「入力専用ピン」はなく、<strong>0〜28のすべてが出力に使える</strong>。ただしDevKitC-1のヘッダに出ているのは一部で、他の機能が割り当たっているものもある。</p>
+
+        <div class="table-wrap">
         <table>
           <thead><tr><th>ピン</th><th>なぜ避けるか</th></tr></thead>
           <tbody>
-          <tr><td>GPIO6〜11</td><td>内蔵のフラッシュメモリに繋がっている。<strong>触ると起動しなくなる</strong></td></tr>
-          <tr><td>GPIO34〜39</td><td><strong>入力専用</strong>。<code>digitalWrite</code>しても何も出ない</td></tr>
-          <tr><td>GPIO0 / 2 / 5 / 12 / 15</td><td>起動時の状態を見ているピン。外付けを繋ぐと書き込みに失敗することがある</td></tr>
+          <tr><td>GPIO2 / 3 / 4 / 5 / 7 / 25 / 26 / 27 / 28</td><td>起動時の状態を見ているピン（ストラッピング）とJTAG。外付けを繋ぐと書き込みや起動に失敗することがある</td></tr>
+          <tr><td>GPIO27</td><td>上記に加えて<strong>内蔵RGB LED</strong>が繋がっている</td></tr>
+          <tr><td>GPIO11 / 12</td><td>UART0（<code>Serial</code>）。<strong>塞ぐとシリアルモニタが使えなくなる</strong></td></tr>
+          <tr><td>GPIO13 / 14</td><td>チップ直結USBのD- / D+</td></tr>
+          <tr><td>GPIO15</td><td><strong>N8R8ではPSRAMのSPICS1に使われている</strong>（PSRAMなしのモジュールなら空いている）</td></tr>
+          <tr><td>GPIO16〜22</td><td><strong>ヘッダに出ていない</strong></td></tr>
+          <tr><td>GPIO0 / 1</td><td>32.768kHzの水晶用。使わないなら空いているが、I2Cの既定でもある</td></tr>
           </tbody>
         </table>
-      </div><p>外付けのLEDに使うなら<strong>GPIO4・16〜19・21〜23</strong>あたりが無難である。</p></aside>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>残るのは<strong>GPIO6・8・9・10・23・24</strong>。このうち<strong>GPIO23とGPIO24は他の機能が割り当たっておらず、外付けのLEDに最も向いている</strong>。GPIO6はADC1_CH5なので、アナログ入力（距離センサなど）に回すとよい。正確な一覧は<a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c5/esp32-c5-devkitc-1/user_guide.html">EspressifのユーザーガイドのPin Layout</a>を見ること。</p></aside>
+
+        <h3 id="教材で使うピン">教材で使うピン</h3>
+
+        <p>本文・解答例・<code>code/</code>のすべてで、用途ごとに次のピンを使っている。コード例に出てくる数字はこの表のどれかである。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>用途</th><th>ピン</th><th>備考</th></tr></thead>
+          <tbody>
+          <tr><td>内蔵LED</td><td><code>LED_BUILTIN</code></td><td>GPIO27のRGB LED。配線なしで光る</td></tr>
+          <tr><td>外付けLED</td><td>GPIO23</td><td>第6回の2個目のLED</td></tr>
+          <tr><td>ボタン</td><td>GPIO9</td><td><code>INPUT_PULLUP</code>で使う</td></tr>
+          <tr><td>モータ</td><td>GPIO24</td><td>サンプルでは<strong>つながない</strong>。出力はシリアル表示</td></tr>
+          <tr><td>モータ（2本目）</td><td>GPIO10</td><td>第14回</td></tr>
+          <tr><td>アナログ入力（距離センサなど）</td><td>GPIO6</td><td>ADC1_CH5</td></tr>
+          </tbody>
+        </table>
+      </div>
 
         <h3 id="サンプルを外付けledで動かす">サンプルを外付けLEDで動かす</h3>
 
@@ -147,10 +221,10 @@ GND    ────────────────────────�
         <table>
           <thead><tr><th>回</th><th>書き換えるところ</th></tr></thead>
           <tbody>
-          <tr><td><a href="../lessons/03-functions.html">第3回</a> / <a href="../lessons/09-enum.html">第9回</a></td><td><code>const int LED_PIN = LED_BUILTIN;</code>を<code>= 4;</code>にする</td></tr>
-          <tr><td><a href="../lessons/06-classes.html">第6回</a></td><td>そのままでよい。ピン4に2つ目のLEDを挿せば<code>led2</code>が光る</td></tr>
-          <tr><td><a href="../lessons/07-headers.html">第7回</a></td><td><code>LED led(LED_BUILTIN);</code>を<code>LED led(4);</code>にする</td></tr>
-          <tr><td>モータを使う回<br>（<a href="../lessons/08-encapsulation.html">第8回</a>・<a href="../lessons/10-inheritance.html">第10回</a>・<a href="../lessons/14-design.html">第14回</a>・<a href="../lessons/18-relations.html">第18回</a>）</td><td>実物のモータは<strong>ESP32のピンから直接は回せない</strong>。モータドライバと別電源が要る。本講座のサンプルはシリアル表示までにしてある</td></tr>
+          <tr><td><a href="../lessons/03-functions.html">第3回</a> / <a href="../lessons/09-enum.html">第9回</a></td><td><code>const int LED_PIN = LED_BUILTIN;</code>を<code>= 23;</code>にする</td></tr>
+          <tr><td><a href="../lessons/06-classes.html">第6回</a></td><td>そのままでよい。GPIO23に2つ目のLEDを挿せば<code>led2</code>が光る</td></tr>
+          <tr><td><a href="../lessons/07-headers.html">第7回</a></td><td><code>LED led(LED_BUILTIN);</code>を<code>LED led(23);</code>にする</td></tr>
+          <tr><td>モータを使う回<br>（<a href="../lessons/08-encapsulation.html">第8回</a>・<a href="../lessons/10-inheritance.html">第10回</a>・<a href="../lessons/14-design.html">第14回</a>・<a href="../lessons/18-relations.html">第18回</a>）</td><td>実物のモータは<strong>ESP32-C5のピンから直接は回せない</strong>。モータドライバと別電源が要る。本講座のサンプルはシリアル表示までにしてあり、ピン番号は仮に置いてあるだけ（GPIO24など）</td></tr>
           </tbody>
         </table>
       </div>

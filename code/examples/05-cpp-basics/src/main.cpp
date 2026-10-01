@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 // マジックナンバーを名前付きの定数にする
-const int LED_PIN = LED_BUILTIN;
+const int LED_PIN = LED_BUILTIN;  // ボード上のRGB LED
 const float TEMP_THRESHOLD = 30.0f;
 
 /**

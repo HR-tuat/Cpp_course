@@ -91,8 +91,8 @@ private:
     bool state;
 };
 
-LED led1(2);
-LED led2(4);
+LED led1(LED_BUILTIN);
+LED led2(23);
 
 void setup() {
     led1.begin();

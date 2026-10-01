@@ -4,7 +4,7 @@
 
 #include "LED.hpp"
 
-LED led(LED_BUILTIN);  // ボード上の内蔵LED。配線なしで光る
+LED led(LED_BUILTIN);  // ボード上のRGB LED。配線なしで光る
 
 void setup() {
     led.begin();

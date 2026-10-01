@@ -118,7 +118,7 @@ void readOnce() {
           <tr><td>解放の記述</td><td><code>delete</code>を自分で書く</td><td>書かない</td></tr>
           <tr><td>途中で<code>return</code>した場合</td><td>解放されない</td><td>解放される</td></tr>
           <tr><td>二重解放</td><td>起こせる</td><td>コピーがコンパイルエラーになる</td></tr>
-          <tr><td>ポインタの大きさ</td><td>4バイト（ESP32）</td><td>同じ</td></tr>
+          <tr><td>ポインタの大きさ</td><td>4バイト（ESP32-C5は32ビット）</td><td>同じ</td></tr>
           </tbody>
         </table>
       </div>
@@ -146,7 +146,7 @@ void setup() {
 
     sensors.push_back(std::make_unique&lt;IMU&gt;());
     sensors.push_back(std::make_unique&lt;GPS&gt;());
-    sensors.push_back(std::make_unique&lt;ToF&gt;(34));
+    sensors.push_back(std::make_unique&lt;ToF&gt;(6));
 }
 
 void loop() {
@@ -189,7 +189,7 @@ void loop() {
 
 IMU imu;
 GPS gps;
-ToF tof(34);
+ToF tof(6);
 
 std::array&lt;Sensor*, 3&gt; sensors = {&amp;imu, &amp;gps, &amp;tof};
 

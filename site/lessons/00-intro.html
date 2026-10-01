@@ -137,14 +137,14 @@ void loop() {
     delay(500);
 }</code></pre></figure>
 
-        <p>ボード上の内蔵LEDが0.5秒ごとに点滅する。シリアルモニタには何も出ない。</p>
+        <p>ボード上のRGB LEDが0.5秒ごとに白く点滅する。シリアルモニタには何も出ない。</p>
 
         <p>確かめること。</p>
 
         <ul>
         <li><code>setup()</code>は電源が入ったあとに1回だけ、<code>loop()</code>は電源が切れるまで繰り返し呼ばれる</li>
         <li><code>delay(500)</code>の数値を変えると点滅の速さが変わる</li>
-        <li><code>LED_BUILTIN</code>はボードに載っているLEDのピン番号。別のピン番号に書き換えてもよい</li>
+        <li><code>LED_BUILTIN</code>はボード上のLEDを指す名前。このボードの内蔵LEDは<strong>アドレサブルRGB LED</strong>で、<code>digitalWrite</code>すると白く点く（<a href="../guide/environment.html">開発環境</a>に書いてある）</li>
       </ul>
         <section class="exercise"><h3 class="exercise-title">演習：LEDを点滅させる</h3><figure class="code"><pre><code class="language-cpp">void setup() {
     pinMode(LED_BUILTIN, OUTPUT);

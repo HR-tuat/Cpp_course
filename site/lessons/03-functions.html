@@ -157,7 +157,7 @@ int doubleValue(int value, bool flag) {
 
 #include &lt;Arduino.h&gt;
 
-// ボード上の内蔵LED。配線なしで光る（多くのESP32 DevKitでGPIO2）
+// ボード上の内蔵LED。配線なしで光る（このボードではGPIO27のRGB LED）
 const int LED_PIN = LED_BUILTIN;
 const int BLINK_MS = 300;
 
@@ -198,7 +198,7 @@ void loop() {
     delay(1000);
 }</code></pre></figure>
 
-        <p>ボード上の内蔵LEDが3回続けて点滅し、1秒休んでまた3回点滅する。<code>LED_PIN</code>は<code>LED_BUILTIN</code>にしてあるので配線は要らない。</p>
+        <p>ボード上のRGB LEDが3回続けて白く点滅し、1秒休んでまた3回点滅する。<code>LED_PIN</code>は<code>LED_BUILTIN</code>にしてあるので配線は要らない。</p>
 
         <p>確かめること。</p>
 
@@ -206,7 +206,7 @@ void loop() {
         <li><code>blink(3)</code>の1行で3回点滅する。同じ<code>digitalWrite</code>を書き写していない</li>
         <li><code>blink()</code>の中身を直せば、呼んでいるすべての場所に反映される</li>
         <li><code>BLINK_MS</code>を変えると点滅の速さが変わる。数値が1か所にまとまっている</li>
-        <li><code>LED_PIN</code>のように名前を付けておくと、外付けのLEDに移すときに<strong>直すのは1行だけ</strong>で済む</li>
+        <li><code>LED_PIN</code>のように名前を付けておくと、外付けのLEDに移すときに（GPIO23）に移すときも<strong>直すのは1行だけ</strong>で済む</li>
       </ul>
         <section class="exercise"><h3 class="exercise-title">演習：次の関数を作成する</h3><figure class="code"><pre><code class="language-cpp">void motorStop();
 void motorSetSpeed(int speed);

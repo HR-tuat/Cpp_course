@@ -10,8 +10,8 @@ void Device::begin() {
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
 
-    Serial.print("Device::begin() pin=");
-    Serial.println(pin);
+    // LED でもモータでも、ここに来るのは Device に1つだけ書いた begin()
+    Serial.println("Device::begin()");
 }
 
 int Device::getPin() const {

@@ -64,7 +64,7 @@
 
 IMU imu;
 GPS gps;
-ToF tof(34);
+ToF tof(6);
 
 Sensor* sensors[] = {&amp;imu, &amp;gps, &amp;tof};
 const int SENSOR_COUNT = sizeof(sensors) / sizeof(sensors[0]);
@@ -88,7 +88,7 @@ void loop() {
 
         <p><code>ToF</code>を追加するために変更が必要だったのは、次の2行だけである。</p>
 
-        <figure class="code"><pre><code class="language-cpp">ToF tof(34);                                  // 追加
+        <figure class="code"><pre><code class="language-cpp">ToF tof(6);                                  // 追加
 Sensor* sensors[] = {&amp;imu, &amp;gps, &amp;tof};       // 1要素追加</code></pre></figure>
 
         <p><code>loop()</code>の中は<strong>1文字も変えていない</strong>。これがポリモーフィズムの効果である。</p>

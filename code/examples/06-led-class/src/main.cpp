@@ -54,8 +54,8 @@ private:
 };
 
 // 同じクラスから複数のオブジェクトを作れる。違うのはピン番号だけ
-LED led1(LED_BUILTIN);  // ボード上の内蔵LED。配線なしで見える
-LED led2(4);            // 何もつないでいないピン。外付けLEDを挿せば光る
+LED led1(LED_BUILTIN);  // ボード上のRGB LED。配線なしで見える
+LED led2(23);           // 何もつないでいないピン。外付けLEDを挿せば光る
 
 void setup() {
     led1.begin();

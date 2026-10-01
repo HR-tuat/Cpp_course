@@ -83,8 +83,8 @@ void loop() {
 
         <h2 id="発展2-ボタンでledのon-offを切り替える">発展2：ボタンでLEDのON/OFFを切り替える</h2>
 
-        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
-const int BUTTON_PIN = 4;
+        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = LED_BUILTIN;
+const int BUTTON_PIN = 9;
 
 void setup() {
     pinMode(LED_PIN, OUTPUT);

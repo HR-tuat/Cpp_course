@@ -154,9 +154,9 @@ bool Button::isPressed() const {
 #include "LED.hpp"
 #include "Motor.hpp"
 
-LED led(2);
-Button button(4);
-Motor motor(5);
+LED led(LED_BUILTIN);
+Button button(9);
+Motor motor(24);
 
 void setup() {
     led.begin();
