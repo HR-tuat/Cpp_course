@@ -70,7 +70,7 @@ void loop() {
 
         <h2 id="2-ledを一定回数点滅させる">2. LEDを一定回数点滅させる</h2>
 
-        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
+        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = LED_BUILTIN;
 const int BLINK_MS = 200;
 
 void blink(int times) {
@@ -93,8 +93,8 @@ void loop() {
 
         <h2 id="3-ボタンが押されている間だけled点灯">3. ボタンが押されている間だけLED点灯</h2>
 
-        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = 2;
-const int BUTTON_PIN = 4;
+        <figure class="code"><pre><code class="language-cpp">const int LED_PIN = LED_BUILTIN;
+const int BUTTON_PIN = 9;
 
 void setup() {
     pinMode(LED_PIN, OUTPUT);

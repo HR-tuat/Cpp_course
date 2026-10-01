@@ -12,8 +12,8 @@
 #include "LED.hpp"
 #include "Motor.hpp"
 
-LED led(LED_BUILTIN);  // ボード上の内蔵LED
-Motor motor(5);        // モータはつないでいない。結果はシリアルの出力で見る
+LED led(LED_BUILTIN);  // ボード上のRGB LED
+Motor motor(24);       // モータはつないでいない。結果はシリアルの出力で見る
 
 void setup() {
     Serial.begin(115200);
@@ -23,8 +23,8 @@ void setup() {
     led.begin();
     motor.begin();
 
-    Serial.print("led   pin = ");
-    Serial.println(led.getPin());
+    // getPin() も Device に1つだけ書いてある。
+    // LED 側は LED_BUILTIN（内蔵RGB LEDを指す特別な値）なので表示しない
     Serial.print("motor pin = ");
     Serial.println(motor.getPin());
 

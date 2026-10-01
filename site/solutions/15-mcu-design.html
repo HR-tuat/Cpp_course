@@ -143,8 +143,8 @@ float IMU::getYaw() const {
 #include "Motor.hpp"
 #include "Sensor.hpp"
 
-LED led(2);
-Motor motor(5);
+LED led(LED_BUILTIN);
+Motor motor(24);
 IMU imu;
 
 Sensor* sensors[] = {&amp;imu};

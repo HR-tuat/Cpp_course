@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-// ボード上の内蔵LED。配線なしで光る（多くのESP32 DevKitでGPIO2）
+// ボード上の内蔵LED。配線なしで光る（このボードではGPIO27のRGB LED）
 const int LED_PIN = LED_BUILTIN;
 const int BLINK_MS = 300;
 

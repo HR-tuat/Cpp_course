@@ -57,14 +57,14 @@
 
         <p>修正前：</p>
 
-        <figure class="code"><pre><code class="language-cpp">if (analogRead(34) &gt; 2000) {
-    analogWrite(5, 128);
+        <figure class="code"><pre><code class="language-cpp">if (analogRead(6) &gt; 2000) {
+    analogWrite(24, 128);
 }</code></pre></figure>
 
         <p>修正後：</p>
 
-        <figure class="code"><pre><code class="language-cpp">const int SENSOR_PIN = 34;
-const int MOTOR_PIN = 5;
+        <figure class="code"><pre><code class="language-cpp">const int SENSOR_PIN = 6;
+const int MOTOR_PIN = 24;
 const int SENSOR_THRESHOLD = 2000;
 const int MOTOR_HALF = 128;
 
@@ -77,7 +77,7 @@ if (analogRead(SENSOR_PIN) &gt; SENSOR_THRESHOLD) {
         <h2 id="2-名前空間にまとめる">2. 名前空間にまとめる</h2>
 
         <figure class="code"><figcaption>Sensor.hpp</figcaption><pre><code class="language-cpp">namespace Sensor {
-const int PIN = 34;
+const int PIN = 6;
 const int THRESHOLD = 2000;
 
 void begin();

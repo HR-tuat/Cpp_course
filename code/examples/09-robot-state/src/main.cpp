@@ -8,7 +8,7 @@ enum class RobotState {
     ERROR
 };
 
-// ボード上の内蔵LED。配線なしで光る
+// ボード上の内蔵LED。配線なしで光る（このボードではGPIO27のRGB LED）
 const int LED_PIN = LED_BUILTIN;
 
 RobotState state = RobotState::STOP;

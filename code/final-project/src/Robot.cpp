@@ -3,8 +3,10 @@
 #include "Robot.hpp"
 
 namespace {
-const int MOTOR_PIN = 5;
-const int DISTANCE_PIN = 34;
+// ESP32-C5-DevKitC-1 のヘッダに出ていて、他の機能と衝突しないピンを選ぶ。
+// GPIO6 は ADC1_CH5。GPIO24 は特別な機能の割り当てがない。
+const int MOTOR_PIN = 24;
+const int DISTANCE_PIN = 6;
 }
 
 Robot::Robot()

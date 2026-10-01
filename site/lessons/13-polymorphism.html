@@ -128,7 +128,7 @@ sensors[1] = &amp;gps;</code></pre></figure>
 
 IMU imu;
 GPS gps;
-ToF tof(34);  // センサはつないでいない。ピン番号は保持するだけ
+ToF tof(6);  // センサはつないでいない。ピン番号は保持するだけ
 
 // 上位のコードは「Sensorであること」しか知らない
 Sensor* sensors[] = {&amp;imu, &amp;gps, &amp;tof};

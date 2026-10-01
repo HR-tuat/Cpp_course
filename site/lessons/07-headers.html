@@ -157,7 +157,7 @@ void LED::off() {
 
 #include "LED.hpp"
 
-LED led(LED_BUILTIN);  // ボード上の内蔵LED。配線なしで光る
+LED led(LED_BUILTIN);  // ボード上のRGB LED。配線なしで光る
 
 void setup() {
     led.begin();
@@ -168,7 +168,7 @@ void loop() {
     delay(500);
 }</code></pre></figure>
 
-        <p>内蔵LEDが0.5秒ごとに切り替わる。第6回のサンプルと動きは同じで、ファイルの分け方だけが違う。</p>
+        <p>RGB LEDが0.5秒ごとに切り替わる。第6回のサンプルと動きは同じで、ファイルの分け方だけが違う。</p>
 
         <p>確かめること。</p>
 
