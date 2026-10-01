@@ -55,7 +55,7 @@
 
         <h2 id="解答">解答</h2>
 
-        <figure class="code"><figcaption>include/Sensor.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/Sensor.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
 class Sensor {
 public:
@@ -66,15 +66,15 @@ public:
 
         <figure class="code"><figcaption>src/Sensor.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "Sensor.h"
+#include "Sensor.hpp"
 
 void Sensor::update() {
     Serial.println("Sensor::update");
 }</code></pre></figure>
 
-        <figure class="code"><figcaption>include/IMU.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/IMU.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
-#include "Sensor.h"
+#include "Sensor.hpp"
 
 class IMU : public Sensor {
 public:
@@ -83,7 +83,7 @@ public:
 
         <figure class="code"><figcaption>src/IMU.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "IMU.h"
+#include "IMU.hpp"
 
 void IMU::update() {
     Serial.println("IMU::update");
@@ -93,9 +93,9 @@ void IMU::update() {
 
         <figure class="code"><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "GPS.h"
-#include "IMU.h"
-#include "Sensor.h"
+#include "GPS.hpp"
+#include "IMU.hpp"
+#include "Sensor.hpp"
 
 IMU imu;
 GPS gps;

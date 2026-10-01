@@ -66,7 +66,7 @@
 
         <h2 id="device">Device</h2>
 
-        <figure class="code"><figcaption>include/Device.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/Device.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
 class Device {
 public:
@@ -82,7 +82,7 @@ protected:
 
         <figure class="code"><figcaption>src/Device.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "Device.h"
+#include "Device.hpp"
 
 Device::Device(int pin)
     : pin(pin) {
@@ -98,9 +98,9 @@ int Device::getPin() const {
 
         <h2 id="派生クラス">派生クラス</h2>
 
-        <figure class="code"><figcaption>include/LED.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/LED.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
-#include "Device.h"
+#include "Device.hpp"
 
 class LED : public Device {
 public:
@@ -116,7 +116,7 @@ private:
 
         <figure class="code"><figcaption>src/LED.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "LED.h"
+#include "LED.hpp"
 
 LED::LED(int pin)
     : Device(pin), state(false) {     // 親のコンストラクタを先に呼ぶ

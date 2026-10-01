@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Controller.h"
-#include "DistanceSensor.h"
-#include "IMU.h"
-#include "Motor.h"
+#include "Controller.hpp"
+#include "DistanceSensor.hpp"
+#include "IMU.hpp"
+#include "Motor.hpp"
 
 class Robot {
 public:

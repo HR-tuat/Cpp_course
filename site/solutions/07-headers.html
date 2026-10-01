@@ -56,9 +56,9 @@
         <h2 id="ファイル構成">ファイル構成</h2>
 
         <figure class="diagram"><pre>include/
-├── LED.h
-├── Motor.h
-└── Button.h
+├── LED.hpp
+├── Motor.hpp
+└── Button.hpp
 
 src/
 ├── LED.cpp
@@ -68,7 +68,7 @@ src/
 
         <h2 id="led">LED</h2>
 
-        <figure class="code"><figcaption>include/LED.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/LED.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
 class LED {
 public:
@@ -86,7 +86,7 @@ private:
 
         <figure class="code"><figcaption>src/LED.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "LED.h"
+#include "LED.hpp"
 
 LED::LED(int pin)
     : pin(pin), state(false) {
@@ -117,7 +117,7 @@ void LED::toggle() {
 
         <h2 id="button">Button</h2>
 
-        <figure class="code"><figcaption>include/Button.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/Button.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
 class Button {
 public:
@@ -132,7 +132,7 @@ private:
 
         <figure class="code"><figcaption>src/Button.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "Button.h"
+#include "Button.hpp"
 
 Button::Button(int pin)
     : pin(pin) {
@@ -150,9 +150,9 @@ bool Button::isPressed() const {
 
         <figure class="code"><figcaption>src/main.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "Button.h"
-#include "LED.h"
-#include "Motor.h"
+#include "Button.hpp"
+#include "LED.hpp"
+#include "Motor.hpp"
 
 LED led(2);
 Button button(4);
@@ -185,7 +185,7 @@ void loop() {
           <tr><td><code>undefined reference to LED::on()</code></td><td><code>.cpp</code>側で<code>LED::</code>を書き忘れ、ただの関数を定義している</td></tr>
           <tr><td><code>redefinition of class LED</code></td><td>ヘッダガード（<code>#pragma once</code>）がない</td></tr>
           <tr><td><code>'pinMode' was not declared</code></td><td><code>.cpp</code>で<code>#include &lt;Arduino.h&gt;</code>を忘れている</td></tr>
-          <tr><td><code>'LED' does not name a type</code></td><td><code>main.cpp</code>で<code>#include "LED.h"</code>を忘れている</td></tr>
+          <tr><td><code>'LED' does not name a type</code></td><td><code>main.cpp</code>で<code>#include "LED.hpp"</code>を忘れている</td></tr>
           </tbody>
         </table>
       </div>

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "GPS.h"
+#include "GPS.hpp"
 
 GPS::GPS()
     : latitude(0.0f), longitude(0.0f) {

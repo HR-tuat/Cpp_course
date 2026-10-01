@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sensor.h"
+#include "Sensor.hpp"
 
 class GPS : public Sensor {
 public:

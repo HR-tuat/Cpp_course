@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "IMU.h"
+#include "IMU.hpp"
 
 IMU::IMU()
     : roll(0.0f), pitch(0.0f), yaw(0.0f) {

@@ -1,4 +1,4 @@
-#include "Controller.h"
+#include "Controller.hpp"
 
 Controller::Controller(Motor& motor, DistanceSensor& distance)
     : motor(motor), distance(distance), state(RobotState::STOP) {

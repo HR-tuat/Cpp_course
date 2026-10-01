@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "Motor.h"
+#include "Motor.hpp"
 
 Motor::Motor(int pin)
     : pin(pin), speed(0) {
