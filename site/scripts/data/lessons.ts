@@ -62,6 +62,9 @@ export const PAGES: PageMeta[] = [
   { id: 'lesson-13', path: 'lessons/13-polymorphism.html', label: '第13回', title: 'ポリモーフィズム', group: 'lessons' },
   { id: 'lesson-14', path: 'lessons/14-design.html', label: '第14回', title: 'クラス設計', group: 'lessons' },
   { id: 'lesson-15', path: 'lessons/15-mcu-design.html', label: '第15回', title: 'マイコン向け設計演習', group: 'lessons' },
+  { id: 'lesson-16', path: 'lessons/16-stl-vector.html', label: '第16回', title: 'STLとstd::vector', group: 'lessons' },
+  { id: 'lesson-17', path: 'lessons/17-smart-pointer.html', label: '第17回', title: 'スマートポインタ', group: 'lessons' },
+  { id: 'lesson-18', path: 'lessons/18-relations.html', label: '第18回', title: 'クラス間の相互参照', group: 'lessons' },
 
   { id: 'exercises', path: 'exercises/index.html', label: '22章', title: '演習問題の段階', group: 'tasks' },
   { id: 'final-project', path: 'final-project/index.html', label: '19章', title: '最終課題', group: 'tasks' },

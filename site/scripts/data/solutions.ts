@@ -1,9 +1,13 @@
 /**
  * 解答例の公開管理（段階公開）。
  *
- * published を false にしている回は、ビルド対象から除外されるため
- * dist に出力されず、URLを直接叩いても 404 になる。
- * 「JSで隠す」のではなく「そもそも配信しない」ことで非公開を保証している。
+ * published は「受講者にリンクを見せるか」の切り替えである。
+ * **配信するかどうかではない**：未公開の回も dist に出力されるため、
+ * URLを知っていれば受講者でも読める。講師が全回を見られることを優先して
+ * 了承した選択である（2026-09-25。詳細は CLAUDE.md「解答例の公開」）。
+ *
+ *   published: true   受講者にも講師にもリンクが出る
+ *   published: false  受講者には「未公開」表示だけ。講師には「講師のみ」リンクが出る
  *
  * ## 授業後に公開する手順
  *
@@ -11,7 +15,8 @@
  *   2. コミットして main に push する
  *   3. GitHub Actions がビルドし、数分で公開される
  *
- * 非公開に戻したいときは false に戻して push すれば、次のデプロイで消える。
+ * 本当に配信したくない回が出てきたら、vite.config.ts の htmlEntries() で
+ * rollup の入力から落とすしかない。
  */
 
 export interface SolutionMeta {
@@ -42,6 +47,9 @@ export const SOLUTIONS: SolutionMeta[] = [
   { lessonId: 'lesson-13', path: 'solutions/13-polymorphism.html', label: '第13回', title: 'センサを配列でまとめて更新する', published: false },
   { lessonId: 'lesson-14', path: 'solutions/14-design.html', label: '第14回', title: '責務を割り当てる', published: false },
   { lessonId: 'lesson-15', path: 'solutions/15-mcu-design.html', label: '第15回', title: 'マイコン向け設計をまとめる', published: false },
+  { lessonId: 'lesson-16', path: 'solutions/16-stl-vector.html', label: '第16回', title: 'センサをstd::vectorでまとめる', published: false },
+  { lessonId: 'lesson-17', path: 'solutions/17-smart-pointer.html', label: '第17回', title: 'センサの所有をunique_ptrに任せる', published: false },
+  { lessonId: 'lesson-18', path: 'solutions/18-relations.html', label: '第18回', title: 'RobotとControllerの相互参照を解く', published: false },
 ];
 
 export function publishedSolutions(): SolutionMeta[] {

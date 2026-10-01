@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="newとdeleteの問題、unique_ptr・shared_ptr・weak_ptrの使い分け、RAII、マイコンでの注意。">
+  <title>第17回 スマートポインタ | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      var k = localStorage.getItem('cpp-course:teacher-key');
+      var a = localStorage.getItem('cpp-course:audience');
+      if (k) document.documentElement.dataset.teacher = '';
+      document.documentElement.dataset.audience = k && a === 'teacher' ? 'teacher' : 'student';
+    } catch (e) {
+      document.documentElement.dataset.audience = 'student';
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-17" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="audience-toggle" type="button" title="表示を切り替える">
+      <span class="sr-only">表示対象</span>
+      <span class="audience-toggle-label">受講者</span>
+    </button>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第17回</p>
+          <h1>スマートポインタ</h1>
+          <p class="lead">「誰が解放するのか」を、コメントではなく型で表す。</p>
+        </header>
+
+        <h2 id="誰がdeleteするのか">誰がdeleteするのか</h2>
+
+        <figure class="code"><pre><code class="language-cpp">Sensor* sensor = new IMU();
+
+sensor-&gt;update();
+
+delete sensor;</code></pre></figure>
+
+        <p><code>new</code>で確保したものは<code>delete</code>で返す。単純な規則だが、現場では次の形で破綻する。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>失敗</th><th>何が起きるか</th></tr></thead>
+          <tbody>
+          <tr><td><code>delete</code>を書き忘れる</td><td>メモリリーク。動き続けるうちにRAMが尽きる</td></tr>
+          <tr><td>2回<code>delete</code>する</td><td>ヒープの管理情報が壊れる</td></tr>
+          <tr><td><code>delete</code>したポインタを使う</td><td>すでに他人のものになった領域を読み書きする</td></tr>
+          <tr><td>途中で<code>return</code>する</td><td><code>delete</code>の行に辿り着かない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>根本の問題は、<strong>生ポインタには「所有者」なのか「借りているだけ」なのかが書かれていない</strong>ことである。</p>
+
+        <figure class="code"><pre><code class="language-cpp">void doSomething(Sensor* sensor);</code></pre></figure>
+
+        <p>この<code>sensor</code>は、関数の中で<code>delete</code>してよいのか。答えは関数の名前からは分からない。コメントで約束するしかない。スマートポインタは、この約束を<strong>型そのもの</strong>に書き込む道具である。</p>
+
+        <h2 id="unique_ptr">std::unique_ptr</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;memory&gt;
+
+void doSomething() {
+    std::unique_ptr&lt;Sensor&gt; sensor = std::make_unique&lt;IMU&gt;();
+
+    sensor-&gt;update();
+
+}  // ここで自動的に delete される</code></pre></figure>
+
+        <p><code>-&gt;</code>で中身を使う書き方は生ポインタと変わらない。違うのは、<strong>スコープを抜けるときに必ず解放される</strong>点である。途中で<code>return</code>しても解放される。</p>
+
+        <p><code>unique_ptr</code>は名前のとおり<strong>唯一の所有者</strong>を表す。だからコピーできない。</p>
+
+        <figure class="code"><pre><code class="language-cpp">std::unique_ptr&lt;Sensor&gt; a = std::make_unique&lt;IMU&gt;();
+
+std::unique_ptr&lt;Sensor&gt; b = a;             // コンパイルエラー
+std::unique_ptr&lt;Sensor&gt; c = std::move(a);  // OK（所有権がcに移り、aは空になる）</code></pre></figure>
+
+        <p>「2人が同じものを<code>delete</code>する」という事故が、コンパイル時に止まる。<code>std::move()</code>と書いたときだけ所有権が移る。</p>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>std::unique_ptr&lt;Sensor&gt;</code>に<code>IMU</code>を入れるには、<code>Sensor</code>に<strong>仮想デストラクタ</strong>が必要である。</p><figure class="code"><pre><code class="language-cpp">class Sensor {
+public:
+    virtual ~Sensor() = default;  // これが無いと IMU の後片付けが行われない
+
+    virtual void update() = 0;
+};</code></pre></figure><p>親のポインタ越しに解放するとき、<code>virtual</code>が付いていなければ親の分しか片付けられない。生ポインタに<code>delete</code>したときと同じ条件だが、スマートポインタは解放を自動で行うぶん見落としやすい。<a href="12-abstract.html">第12回</a>で作った抽象クラスには必ず付けておく。</p></aside>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>std::make_unique</code>はC++14からの機能である。古い設定でコンパイルエラーになる場合は、<code>platformio.ini</code>で規格を上げる。</p><figure class="code"><figcaption>platformio.ini</figcaption><pre><code>build_unflags = -std=gnu++11
+build_flags = -Wall -std=gnu++17</code></pre></figure><p>最近のESP32向けArduinoは既定でC++17以降なので、多くの場合この指定は不要である。</p></aside>
+
+        <h2 id="shared_ptr">std::shared_ptr</h2>
+
+        <p>所有者が1人に決められない場合は<code>shared_ptr</code>を使う。内部に<strong>参照カウント</strong>を持ち、最後の持ち主が消えたときに解放する。</p>
+
+        <figure class="code"><pre><code class="language-cpp">std::shared_ptr&lt;Sensor&gt; a = std::make_shared&lt;IMU&gt;();
+
+{
+    std::shared_ptr&lt;Sensor&gt; b = a;  // コピーできる。カウントが2になる
+
+    Serial.println(a.use_count());  // 2
+}  // bが消えてカウントが1に戻る
+
+Serial.println(a.use_count());      // 1</code></pre></figure>
+
+        <h2 id="weak_ptr">std::weak_ptr</h2>
+
+        <p><code>shared_ptr</code>が持っているものを、<strong>所有せずに</strong>見たいときに使う。カウントを増やさないので、<code>weak_ptr</code>があっても解放は妨げられない。</p>
+
+        <figure class="code"><pre><code class="language-cpp">std::shared_ptr&lt;Sensor&gt; owner = std::make_shared&lt;IMU&gt;();
+std::weak_ptr&lt;Sensor&gt; watcher = owner;
+
+// 使うときは lock() で shared_ptr に戻す。空なら相手はもう消えている
+if (std::shared_ptr&lt;Sensor&gt; sensor = watcher.lock()) {
+    sensor-&gt;update();
+}</code></pre></figure>
+
+        <p>「相手が生きているかどうか確かめてから使える」のが生ポインタとの違いである。<a href="18-relations.html">第18回</a>のクラス間の相互参照で、この道具が必要になる。</p>
+
+        <h2 id="使い分け">使い分け</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>型</th><th>所有するか</th><th>使う場面</th></tr></thead>
+          <tbody>
+          <tr><td><code>T*</code> / <code>T&amp;</code></td><td>しない</td><td>他人が持っているものを借りて使う</td></tr>
+          <tr><td><code>std::unique_ptr&lt;T&gt;</code></td><td>する（1人だけ）</td><td>所有者がはっきり1人に決まる。<strong>既定の選択</strong></td></tr>
+          <tr><td><code>std::shared_ptr&lt;T&gt;</code></td><td>する（複数）</td><td>どれが最後に手を離すか決められない</td></tr>
+          <tr><td><code>std::weak_ptr&lt;T&gt;</code></td><td>しない</td><td><code>shared_ptr</code>の相手を、生死を確認しつつ見る</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>迷ったら<code>unique_ptr</code>から始める。<code>shared_ptr</code>は「所有者を決める設計を考えたくない」ときの逃げ道にしやすく、後述のコストと<a href="18-relations.html">第18回</a>の循環参照を抱え込む。</p></aside>
+
+        <h2 id="vectorと組み合わせる">vectorと組み合わせる</h2>
+
+        <p><a href="16-stl-vector.html">第16回</a>の<code>std::vector</code>と組み合わせると、センサ一式の生成から解放までを1か所で扱える。</p>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;memory&gt;
+#include &lt;vector&gt;
+
+std::vector&lt;std::unique_ptr&lt;Sensor&gt;&gt; sensors;
+
+void setup() {
+    sensors.push_back(std::make_unique&lt;IMU&gt;());
+    sensors.push_back(std::make_unique&lt;GPS&gt;());
+    sensors.push_back(std::make_unique&lt;ToF&gt;(34));
+}
+
+void loop() {
+    for (const std::unique_ptr&lt;Sensor&gt;&amp; sensor : sensors) {
+        sensor-&gt;update();
+        sensor-&gt;print();
+    }
+}</code></pre></figure>
+
+        <p><code>delete</code>を1行も書いていないが、<code>sensors</code>が壊れるときに全要素が解放される。型が長いので<code>auto</code>で受けてもよい。</p>
+
+        <figure class="code"><pre><code class="language-cpp">for (const auto&amp; sensor : sensors) {
+    sensor-&gt;update();
+}</code></pre></figure>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p><code>std::vector&lt;Sensor&gt;</code>（<code>*</code>なし）にしてはいけない。親クラスの大きさで切り詰められ、子クラスの部分が消える。これを<strong>スライシング</strong>という。ポリモーフィズムで扱うものは、ポインタかスマートポインタで入れる。</p></aside>
+
+        <h2 id="raii">RAII</h2>
+
+        <p>「確保はコンストラクタで、解放はデストラクタで」という考え方をRAII（Resource Acquisition Is Initialization）と呼ぶ。<code>unique_ptr</code>はこれをメモリに対して実装した型である。</p>
+
+        <figure class="diagram"><pre>自分で管理する              RAII
+──────────────              ──────
+new   ←→  delete            オブジェクトを作る
+   書き忘れる                   ↓
+   順序を間違える            スコープを抜ける
+   returnで飛ばす               ↓
+                             必ず解放される</pre></figure>
+
+        <p>対象はメモリに限らない。ファイル、通信路、<code>Wire.begin()</code>と<code>Wire.end()</code>のような対になる処理は、すべて同じ形で書ける。<strong>解放を忘れないよう気をつけるのではなく、忘れられない形にする</strong>のが狙いである。</p>
+
+        <h2 id="マイコンで使うときの注意">マイコンで使うときの注意</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>型</th><th>大きさ</th><th>実行時のコスト</th></tr></thead>
+          <tbody>
+          <tr><td><code>T*</code></td><td>ポインタ1つ分</td><td>なし</td></tr>
+          <tr><td><code>std::unique_ptr&lt;T&gt;</code></td><td>ポインタ1つ分</td><td>解放処理が走るだけ</td></tr>
+          <tr><td><code>std::shared_ptr&lt;T&gt;</code></td><td>ポインタ2つ分</td><td>カウント用の領域を別に確保し、コピー・破棄のたびに増減する</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p><code>unique_ptr</code>は生ポインタと同じ大きさ・同じ速さで使えるので、<code>new</code>を使うなら素直に置き換えてよい。一方<code>shared_ptr</code>は確保が増え、マルチスレッド対応のためカウント操作が原子的に行われるため、安易には使わない。</p>
+
+        <p>そのうえで、組み込みの原則は<strong>そもそも<code>new</code>を使わないこと</strong>である。</p>
+
+        <figure class="code"><pre><code class="language-cpp">// 個数が決まっているなら、これで足りる。スマートポインタも new も不要
+IMU imu;
+GPS gps;
+ToF tof(34);</code></pre></figure>
+
+        <ul>
+        <li>種類と個数がコンパイル時に決まるなら、そのまま変数として置く</li>
+        <li><code>new</code>が必要でも<code>setup()</code>までに済ませる</li>
+        <li><code>loop()</code>や割り込みの中で確保・解放を繰り返さない（<a href="16-stl-vector.html">第16回</a>の断片化と同じ理由）</li>
+      </ul>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>ESP32向けArduinoは例外を無効にしてビルドされるため、確保に失敗したときに<code>std::bad_alloc</code>を受け取って立て直すことはできず、異常終了する。「失敗したら縮退運転する」ような設計が必要なら、ヒープに頼らず静的に確保しておくほうが確実である。</p></aside>
+
+        <aside class="callout callout-note" data-for="teacher"><p class="callout-title">講師向け</p><p>先に<code>new</code>と<code>delete</code>だけで書かせ、<code>delete</code>を1つ消して動かし続けてもらうと、リークが数値（<code>ESP.getFreeHeap()</code>）で見える。そのうえで<code>unique_ptr</code>に置き換えると「何が消えたか」が実感できる。<code>std::move</code>は「所有権が移る」ことだけを押さえ、ムーブセマンティクスの詳細は<a href="../advanced.html">発展内容</a>に回す。</p></aside>
+
+        <section class="exercise"><h3 class="exercise-title">演習：センサの所有をunique_ptrに任せる</h3><ul>
+        <li><code>new</code>と<code>delete</code>でセンサを1つ確保・解放するコードを書き、<code>delete</code>を忘れたときに何が起きるかを確認する</li>
+        <li>それを<code>std::unique_ptr</code>に書き換え、<code>delete</code>が消えることを確かめる</li>
+        <li><code>std::vector&lt;std::unique_ptr&lt;Sensor&gt;&gt;</code>に3種類入れて一括更新する</li>
+        <li>このプログラムで<code>shared_ptr</code>にする必要があるか、理由を付けて答える</li>
+      </ul><div class="solution-slot" data-solution></div></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全19回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

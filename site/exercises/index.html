@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="演習の難易度設計。Level 1（文法確認）からLevel 6（設計）まで。">
+  <meta name="description" content="演習の難易度設計。Level 1（文法確認）からLevel 7（標準ライブラリと所有関係）まで。">
   <title>演習問題の段階 | マイコンのためのC++講座</title>
   <script>
     // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
@@ -48,7 +48,7 @@
         <header class="page-head">
           <p class="eyebrow">22章</p>
           <h1>演習問題の段階</h1>
-          <p class="lead">Level 1から6へ、文法確認から設計へ段階的に上げる。</p>
+          <p class="lead">Level 1から7へ、文法確認から設計・標準ライブラリへ段階的に上げる。</p>
         </header>
 
         <h2 id="段階の一覧">段階の一覧</h2>
@@ -63,6 +63,7 @@
           <tr><td class="align-right">4</td><td>複数クラス</td><td><a href="../lessons/09-enum.html">第9回</a>〜<a href="../lessons/10-inheritance.html">第10回</a></td></tr>
           <tr><td class="align-right">5</td><td>継承・ポリモーフィズム</td><td><a href="../lessons/11-virtual.html">第11回</a>〜<a href="../lessons/13-polymorphism.html">第13回</a></td></tr>
           <tr><td class="align-right">6</td><td>設計</td><td><a href="../lessons/14-design.html">第14回</a>〜<a href="../lessons/15-mcu-design.html">第15回</a></td></tr>
+          <tr><td class="align-right">7</td><td>標準ライブラリと所有関係</td><td><a href="../lessons/16-stl-vector.html">第16回</a>〜<a href="../lessons/18-relations.html">第18回</a></td></tr>
           </tbody>
         </table>
       </div>
@@ -110,6 +111,26 @@ led.on();</code></pre></figure>
 
         <aside class="callout callout-tip" data-for="teacher"><p class="callout-title">講師向け</p><p>Level 6には唯一の正解がない。受講者が出した案に対し、「変更が起きたときにどこを直すことになるか」を問い返すとよい。</p></aside>
 
+        <h2 id="level-7-標準ライブラリと所有関係">Level 7：標準ライブラリと所有関係</h2>
+
+        <p>Level 6までで書いたプログラムを、道具を替えて書き直す段階。新しい機能を覚えることが目的ではなく、<strong>自分で管理していた仕事を手放す</strong>のが目的である。</p>
+
+        <figure class="diagram"><pre>Sensor* sensors[3]                    ← Level 5・6で書いた形
+      ↓  個数の管理をやめる
+std::vector&lt;Sensor*&gt;                  ← 第16回
+      ↓  解放の管理をやめる
+std::vector&lt;std::unique_ptr&lt;Sensor&gt;&gt;  ← 第17回
+      ↓  依存の向きを決める
+Robot → Controller（一方向）           ← 第18回</pre></figure>
+
+        <ul>
+        <li>センサの配列を<code>std::vector</code>に置き換え、<code>SENSOR_COUNT</code>を消す（<a href="../lessons/16-stl-vector.html">第16回</a>）</li>
+        <li><code>new</code>したものを<code>std::unique_ptr</code>に持たせ、<code>delete</code>を消す（<a href="../lessons/17-smart-pointer.html">第17回</a>）</li>
+        <li>互いを<code>#include</code>しているヘッダを、前方宣言か引数渡しで解く（<a href="../lessons/18-relations.html">第18回</a>）</li>
+      </ul>
+
+        <aside class="callout callout-tip" data-for="teacher"><p class="callout-title">講師向け</p><p>Level 7は<strong>先に困らせてから道具を出す</strong>と効果が出る。Level 5・6の成果物をそのまま教材に使えるので、「このコードのどこが面倒か」を挙げさせてから対応する回に進むとよい。「vectorとスマートポインタを使えば上手いコード」という誤解だけは作らないこと。マイコンでは静的に置くほうが正しい場面が多い。</p></aside>
+
         <h2 id="演習の雛形">演習の雛形</h2>
 
         <p>演習の雛形は<code>code/exercises/</code>に置く。</p>
@@ -126,7 +147,7 @@ led.on();</code></pre></figure>
   </div>
 
   <footer class="site-footer">
-    <p>マイコンのためのC++講座 — 全12週間 / 全16回の教材</p>
+    <p>マイコンのためのC++講座 — 全12週間 / 全19回の教材</p>
   </footer>
 
   <script type="module" src="../scripts/main.ts"></script>

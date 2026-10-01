@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="循環include、前方宣言、所有と参照の切り分け、shared_ptrの循環参照とweak_ptr、依存を一方向にする設計。">
+  <title>第18回 クラス間の相互参照 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      var k = localStorage.getItem('cpp-course:teacher-key');
+      var a = localStorage.getItem('cpp-course:audience');
+      if (k) document.documentElement.dataset.teacher = '';
+      document.documentElement.dataset.audience = k && a === 'teacher' ? 'teacher' : 'student';
+    } catch (e) {
+      document.documentElement.dataset.audience = 'student';
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="lesson-18" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="audience-toggle" type="button" title="表示を切り替える">
+      <span class="sr-only">表示対象</span>
+      <span class="audience-toggle-label">受講者</span>
+    </button>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第18回</p>
+          <h1>クラス間の相互参照</h1>
+          <p class="lead">互いを知りたいクラスを、壊れない形で書く。</p>
+        </header>
+
+        <h2 id="互いを知りたくなる場面">互いを知りたくなる場面</h2>
+
+        <p>クラスが増えると、必ずこの形にぶつかる。<code>Robot</code>は<code>Controller</code>を部品として持っている。一方<code>Controller</code>は、判断のために<code>Robot</code>全体の状態を知りたい。</p>
+
+        <figure class="diagram"><pre>  Robot  ──── 持っている ────→  Controller
+    ↑                                │
+    └──────── 状態を聞きたい ─────────┘</pre></figure>
+
+        <p>素直に書くと、両方のヘッダが相手を<code>#include</code>することになる。</p>
+
+        <h2 id="両方includeすると何が起きるか">両方includeすると何が起きるか</h2>
+
+        <figure class="code"><figcaption>Robot.hpp</figcaption><pre><code class="language-cpp">#pragma once
+
+#include "Controller.hpp"   // Controllerの中身が必要
+
+class Robot {
+    // ...
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>Controller.hpp</figcaption><pre><code class="language-cpp">#pragma once
+
+#include "Robot.hpp"        // Robotの中身が必要
+
+class Controller {
+    // ...
+};</code></pre></figure>
+
+        <p><code>#pragma once</code>があるので無限に展開されることはない。代わりに<strong>「片方が先に読まれ、もう片方はまだ存在しない」</strong>という状態でコンパイルが進む。</p>
+
+        <figure class="diagram"><pre>main.cpp が Robot.hpp を読む
+   ↓
+Robot.hpp が Controller.hpp を読む
+   ↓
+Controller.hpp が Robot.hpp を読む
+   ↓
+   #pragma once により2回目は読まれない
+   ↓
+Controller の定義に入る        ← このときまだ class Robot が無い
+   ↓
+error: 'Robot' has not been declared</pre></figure>
+
+        <p>このエラーは「<code>include</code>を足せば直る」ように見えるため、足した結果さらに循環が深くなることが多い。<strong>include を増やす方向では解けない</strong>。</p>
+
+        <h2 id="前方宣言">前方宣言</h2>
+
+        <p>解決は逆方向である。<code>Controller</code>が本当に必要なのは「<code>Robot</code>というクラスが存在する」という事実だけで、中身ではない。それだけを伝えるのが<strong>前方宣言</strong>である。</p>
+
+        <figure class="code"><figcaption>Controller.hpp</figcaption><pre><code class="language-cpp">#pragma once
+
+class Robot;  // 前方宣言：Robotというクラスがある、とだけ伝える
+
+class Controller {
+public:
+    explicit Controller(Robot&amp; robot);
+
+    void update();
+
+private:
+    Robot&amp; robot;
+};</code></pre></figure>
+
+        <p><code>#include "Robot.hpp"</code>が消えたので、循環が切れる。<code>Robot.hpp</code>側は今までどおり<code>#include "Controller.hpp"</code>してよい。</p>
+
+        <figure class="diagram"><pre>修正前                        修正後
+──────                        ──────
+Robot.hpp  ⇄  Controller.hpp   Robot.hpp  →  Controller.hpp
+   （循環）                                      ↓
+                                          class Robot; （前方宣言）</pre></figure>
+
+        <h2 id="前方宣言でできること">前方宣言でできること・できないこと</h2>
+
+        <p>前方宣言されただけの型を<strong>不完全型</strong>という。大きさも中身も分からないので、できることは限られる。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>書き方</th><th></th><th>理由</th></tr></thead>
+          <tbody>
+          <tr><td><code>Robot* robot;</code></td><td>○</td><td>ポインタの大きさは相手に依らない</td></tr>
+          <tr><td><code>Robot&amp; robot;</code></td><td>○</td><td>同じ</td></tr>
+          <tr><td><code>void f(Robot&amp; r);</code>の宣言</td><td>○</td><td>宣言するだけなら中身は不要</td></tr>
+          <tr><td><code>Robot robot;</code></td><td>×</td><td>何バイト必要か分からない</td></tr>
+          <tr><td><code>robot.update();</code></td><td>×</td><td>そのメンバがあるか分からない</td></tr>
+          <tr><td><code>class X : public Robot</code></td><td>×</td><td>親の中身が分からない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「ヘッダでは<strong>相手を指すだけ</strong>、中身を触るのは<code>.cpp</code>」と覚える。これは循環を避ける以外にも効く。ヘッダのincludeが減るぶん、相手のヘッダを直したときに再コンパイルされる範囲が狭くなる。</p></aside>
+
+        <h2 id="呼び出しはcppで">中身を使うのは.cppで</h2>
+
+        <figure class="code"><figcaption>Controller.cpp</figcaption><pre><code class="language-cpp">#include "Controller.hpp"
+
+#include "Robot.hpp"  // ここで初めてRobotの中身が必要になる
+
+Controller::Controller(Robot&amp; robot)
+    : robot(robot) {
+}
+
+void Controller::update() {
+    if (robot.isObstacleAhead()) {
+        robot.stop();
+    }
+}</code></pre></figure>
+
+        <p><code>.cpp</code>は誰からも<code>include</code>されないので、ここで<code>#include "Robot.hpp"</code>しても循環は起きない。</p>
+
+        <h2 id="所有関係を決める">所有関係を決める</h2>
+
+        <p>相互参照を書く前に決めなければならないことがある。<strong>どちらが相手を所有しているか</strong>である。両方が所有するように書くと、どちらが先に消えるのか決まらなくなる。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>向き</th><th>関係</th><th>書き方</th></tr></thead>
+          <tbody>
+          <tr><td><code>Robot</code> → <code>Controller</code></td><td>所有する（親→子）</td><td>値のメンバ、または<code>std::unique_ptr</code></td></tr>
+          <tr><td><code>Controller</code> → <code>Robot</code></td><td>参照するだけ（子→親）</td><td><code>Robot&amp;</code> または <code>Robot*</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <figure class="code"><figcaption>Robot.hpp</figcaption><pre><code class="language-cpp">#pragma once
+
+#include "Controller.hpp"
+#include "Motor.hpp"
+
+class Robot {
+public:
+    Robot();
+
+    void update();
+
+    bool isObstacleAhead() const;
+    void stop();
+
+private:
+    Motor motor;
+    Controller controller;  // Robotが所有する
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>Robot.cpp</figcaption><pre><code class="language-cpp">#include "Robot.hpp"
+
+Robot::Robot()
+    : motor(25), controller(*this) {  // 自分自身を渡す
+}
+
+void Robot::update() {
+    controller.update();
+}</code></pre></figure>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>コンストラクタの初期化リストで<code>*this</code>を渡せるのは、<strong>相手がその場で自分のメンバを使わない</strong>場合に限られる。<code>Controller</code>のコンストラクタが<code>robot.isObstacleAhead()</code>を呼ぶと、<code>Robot</code>のメンバがまだ初期化されていない状態で読むことになる。渡した参照は保存するだけにして、使うのは<code>update()</code>からにする。</p></aside>
+
+        <h2 id="shared_ptrの循環参照">shared_ptrで双方向に持つと解放されない</h2>
+
+        <p><a href="17-smart-pointer.html">第17回</a>の<code>shared_ptr</code>を、双方向にそのまま使うと静かにリークする。</p>
+
+        <figure class="code"><pre><code class="language-cpp">// 良くない例
+class Robot {
+public:
+    std::shared_ptr&lt;Controller&gt; controller;
+};
+
+class Controller {
+public:
+    std::shared_ptr&lt;Robot&gt; robot;  // 親を shared_ptr で持ってしまった
+};</code></pre></figure>
+
+        <figure class="diagram"><pre>  Robot ───── shared_ptr ─────→ Controller
+    ↑                                │
+    └───────── shared_ptr ───────────┘
+
+外から両方手を離しても、互いが相手のカウントを1に保つ
+→ どちらのカウントも0にならない → どちらも解放されない</pre></figure>
+
+        <p>これを<strong>循環参照</strong>という。解決は所有関係のとおりに型を選ぶこと、つまり<strong>子から親への向きを<code>weak_ptr</code>にする</strong>ことである。</p>
+
+        <figure class="code"><pre><code class="language-cpp">class Controller {
+public:
+    void update();
+
+private:
+    std::weak_ptr&lt;Robot&gt; robot;  // 所有しない
+};
+
+void Controller::update() {
+    if (std::shared_ptr&lt;Robot&gt; owner = robot.lock()) {
+        if (owner-&gt;isObstacleAhead()) {
+            owner-&gt;stop();
+        }
+    }
+}</code></pre></figure>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>マイコンでは、そもそも<code>Robot</code>をグローバルやメンバとして静的に置くことが多い。その場合<code>shared_ptr</code>は登場せず、子は<code>Robot&amp;</code>を持つだけで済む。循環参照は<strong><code>shared_ptr</code>を双方向に使ったときにだけ</strong>起きる問題である。</p></aside>
+
+        <h2 id="そもそも減らす">そもそも相互参照を減らす</h2>
+
+        <p>前方宣言は相互参照を<strong>書けるようにする</strong>道具であって、相互参照を<strong>良いものにする</strong>道具ではない。互いを知っているクラスは片方だけを切り出して読むことができず、テストもしにくい。まず依存の向きを一方向に揃えられないかを考える。</p>
+
+        <h3 id="必要な情報だけ渡す">案1：必要な情報だけ引数で渡す</h3>
+
+        <figure class="code"><pre><code class="language-cpp">// Controller は Robot を知らない。必要なのは距離と状態だけだった
+class Controller {
+public:
+    RobotState decide(float distance, RobotState current);
+};</code></pre></figure>
+
+        <p><code>Controller</code>から<code>Robot</code>への参照が消え、<code>Controller</code>単体で動作を確かめられるようになる。<strong>相互参照の多くは、本当は「相手の一部が欲しいだけ」である。</strong></p>
+
+        <h3 id="抽象クラスで向きを変える">案2：抽象クラスで向きを変える</h3>
+
+        <p>どうしても相手に問い合わせたい場合は、<a href="12-abstract.html">第12回</a>の抽象クラスを挟んで、依存の向きを変える。</p>
+
+        <figure class="code"><figcaption>ObstacleSource.hpp</figcaption><pre><code class="language-cpp">#pragma once
+
+class ObstacleSource {
+public:
+    virtual ~ObstacleSource() = default;
+
+    virtual bool isObstacleAhead() const = 0;
+};</code></pre></figure>
+
+        <figure class="code"><pre><code class="language-cpp">class Controller {
+public:
+    explicit Controller(ObstacleSource&amp; source);
+
+private:
+    ObstacleSource&amp; source;  // Robotではなく「約束ごと」を知る
+};
+
+class Robot : public ObstacleSource {
+public:
+    bool isObstacleAhead() const override;
+};</code></pre></figure>
+
+        <figure class="diagram"><pre>相互参照                      一方向
+────────                      ──────
+Robot ⇄ Controller            Robot ──→ Controller
+                                 │          │
+                                 ↓          ↓
+                                ObstacleSource
+                                （両方がこれを向く）</pre></figure>
+
+        <p><code>Controller</code>は<code>Robot</code>を知らなくなり、別のクラスを渡してテストできるようになる。</p>
+
+        <h2 id="判断の順番">判断の順番</h2>
+
+        <ol>
+        <li>本当に相手全体が必要か。必要な値を引数で渡せないか</li>
+        <li>渡せないなら、抽象クラスを挟んで向きを一方向にできないか</li>
+        <li>それでも相互に必要なら、前方宣言で書く。所有は片方だけに持たせる</li>
+      </ol>
+
+        <aside class="callout callout-note" data-for="teacher"><p class="callout-title">講師向け</p><p>この回は<strong>先にエラーを出させる</strong>のが早い。互いに<code>#include</code>したヘッダを配り、コンパイルさせて<code>has not been declared</code>を見せる。そこから「<code>Controller</code>は<code>Robot</code>の何を知りたいのか」を問うと、案1（引数で渡す）に自然に辿り着く受講者が出る。前方宣言はその後に出すほうが定着する。<code>code/final-project</code>の<code>Controller</code>が<code>Motor&amp;</code>と<code>DistanceSensor&amp;</code>だけを受け取っていて<code>Robot</code>を知らない点も、実例として示せる。</p></aside>
+
+        <section class="exercise"><h3 class="exercise-title">演習：RobotとControllerの相互参照を解く</h3><ul>
+        <li><code>Robot.hpp</code>と<code>Controller.hpp</code>が互いを<code>#include</code>するコードを書き、出るエラーを読む</li>
+        <li><code>Controller.hpp</code>を前方宣言に直し、<code>Controller.cpp</code>で<code>Robot.hpp</code>を<code>include</code>して通す</li>
+        <li>所有は<code>Robot</code>側だけに持たせ、<code>Controller</code>は<code>Robot&amp;</code>を保存するだけにする</li>
+        <li>さらに、必要な値だけを引数で渡す形に書き換え、相互参照そのものを消せるかを試す</li>
+      </ul><div class="solution-slot" data-solution></div></section>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全19回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

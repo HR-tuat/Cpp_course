@@ -29,6 +29,9 @@ const RULES: Rule[] = [
   { cls: 'tok-string', re: /"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'/ },
   { cls: 'tok-preproc', re: /^[ \t]*#[a-z]+/m },
   { cls: 'tok-keyword', re: new RegExp(`\\b(?:${KEYWORDS.join('|')})\\b`) },
+  // std:: で始まる名前はまとめて型として塗る。std::vector / std::make_unique のような
+  // 標準ライブラリ名を1語ずつ列挙しなくて済む（第16・17回で多用する）
+  { cls: 'tok-type', re: /\bstd::[A-Za-z_]\w*/ },
   { cls: 'tok-type', re: new RegExp(`\\b(?:${TYPES.join('|')})\\b`) },
   { cls: 'tok-number', re: /\b\d+(?:\.\d+)?[fFuUlL]*\b/ },
   { cls: 'tok-func', re: /\b[A-Za-z_]\w*(?=\s*\()/ },

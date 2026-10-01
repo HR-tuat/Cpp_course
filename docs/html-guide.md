@@ -28,7 +28,7 @@
 サイドバーと「前へ / 次へ」も `PAGES` から生成される。
 
 ```ts
-{ id: 'lesson-16', path: 'lessons/16-xxx.html', label: '第16回', title: 'タイトル', group: 'lessons' },
+{ id: 'lesson-19', path: 'lessons/19-xxx.html', label: '第19回', title: 'タイトル', group: 'lessons' },
 ```
 
 | フィールド | 内容 |
@@ -47,7 +47,7 @@
 新規ページは既存ページをコピーして作る。書き換えるのは次の4箇所だけ。
 
 ```html
-<body data-page="lesson-16" data-base="../">
+<body data-page="lesson-19" data-base="../">
 ```
 
 | 場所 | 書き換える内容 |
@@ -71,7 +71,7 @@
 
 ```html
 <header class="page-head">
-  <p class="eyebrow">第16回</p>
+  <p class="eyebrow">第19回</p>
   <h1>タイトル</h1>
   <p class="lead">1文の要約。</p>
 </header>

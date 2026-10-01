@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="第16回 解答例。std::vectorによるセンサの一括更新、reserveの使い方、std::arrayとの違い。">
+  <title>第16回 解答例 | マイコンのためのC++講座</title>
+  <script>
+    // 保存済みのテーマと表示対象者を描画前に適用する（切り替え時のちらつき防止）
+    try {
+      var t = localStorage.getItem('cpp-course:theme');
+      if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      var k = localStorage.getItem('cpp-course:teacher-key');
+      var a = localStorage.getItem('cpp-course:audience');
+      if (k) document.documentElement.dataset.teacher = '';
+      document.documentElement.dataset.audience = k && a === 'teacher' ? 'teacher' : 'student';
+    } catch (e) {
+      document.documentElement.dataset.audience = 'student';
+    }
+  </script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/code.css">
+</head>
+<body data-page="solution-16" data-base="../">
+  <a class="skip-link" href="#main">本文へスキップ</a>
+
+  <header class="site-header">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar">
+      <span class="nav-toggle-bar"></span><span class="sr-only">メニュー</span>
+    </button>
+    <a class="site-title" href="../index.html">マイコンのためのC++講座</a>
+    <button class="audience-toggle" type="button" title="表示を切り替える">
+      <span class="sr-only">表示対象</span>
+      <span class="audience-toggle-label">受講者</span>
+    </button>
+    <button class="theme-toggle" type="button" title="配色を切り替える">
+      <span class="theme-toggle-label">テーマ</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" data-nav></aside>
+
+    <main id="main" class="content">
+      <article class="prose">
+        <header class="page-head">
+          <p class="eyebrow">第16回 解答例</p>
+          <h1>センサをstd::vectorでまとめる</h1>
+          <p class="lead">演習の解答例。まず自分で書いてから読むこと。</p>
+        </header>
+
+        <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>解答例はひとつの書き方にすぎない。動作が同じでも書き方が違うのは問題ない。大切なのは「なぜそう書いたか」を説明できること。</p></aside>
+
+        <h2 id="解答">解答</h2>
+
+        <figure class="code"><figcaption>src/main.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
+
+#include &lt;vector&gt;
+
+#include "GPS.hpp"
+#include "IMU.hpp"
+#include "Sensor.hpp"
+#include "ToF.hpp"
+
+IMU imu;
+GPS gps;
+ToF tof(34);
+
+std::vector&lt;Sensor*&gt; sensors;
+
+void setup() {
+    Serial.begin(115200);
+
+    sensors.reserve(8);  // 8個分まで確保し直しが起きない
+
+    sensors.push_back(&amp;imu);
+    sensors.push_back(&amp;gps);
+    sensors.push_back(&amp;tof);
+}
+
+void loop() {
+    for (Sensor* sensor : sensors) {
+        sensor-&gt;update();
+        sensor-&gt;print();
+    }
+
+    delay(1000);
+}</code></pre></figure>
+
+        <h2 id="第13回との差">第13回との差</h2>
+
+        <p>消えたのは次の1行である。</p>
+
+        <figure class="code"><pre><code class="language-cpp">const int SENSOR_COUNT = sizeof(sensors) / sizeof(sensors[0]);  // 不要になった</code></pre></figure>
+
+        <p>同時に<code>loop()</code>からも添字と境界の判定が消えた。</p>
+
+        <figure class="code"><pre><code class="language-cpp">// 第13回
+for (int i = 0; i &lt; SENSOR_COUNT; i++) {
+    sensors[i]-&gt;update();
+}
+
+// 第16回
+for (Sensor* sensor : sensors) {
+    sensor-&gt;update();
+}</code></pre></figure>
+
+        <p>個数を人間が管理しなくなったので、<strong>個数の食い違いという種類のバグが消えた</strong>。これが今回いちばん大きい変化である。</p>
+
+        <h2 id="初期化子リストで書く形">初期化子リストで書く形</h2>
+
+        <p>センサが最初から全部そろっているなら、<code>setup()</code>を使わずに書いてもよい。</p>
+
+        <figure class="code"><pre><code class="language-cpp">std::vector&lt;Sensor*&gt; sensors = {&amp;imu, &amp;gps, &amp;tof};</code></pre></figure>
+
+        <p>この形は短いが、確保がグローバル変数の初期化の時点で起きる。<code>setup()</code>の中に寄せておくと、確保の順番とタイミングが追いやすい。</p>
+
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p>どちらでも動く。実際の判断基準は「センサの構成が実行時に変わるか」である。変わらないなら次節の<code>std::array</code>のほうが素直である。</p></aside>
+
+        <h2 id="reserveを入れた理由">reserveを入れた理由</h2>
+
+        <p><code>reserve()</code>なしで3回<code>push_back()</code>すると、処理系によっては確保が複数回起きる。</p>
+
+        <figure class="diagram"><pre>reserve なし
+  push_back → 1個分 確保
+  push_back → 2個分 確保し直してコピー、1個分を解放
+  push_back → 4個分 確保し直してコピー、2個分を解放
+                    ↑ 使われない隙間がヒープに残る
+
+reserve(8) あり
+  push_back → 確保済みの場所に置くだけ
+  push_back → 置くだけ
+  push_back → 置くだけ</pre></figure>
+
+        <p>3個では実害は出ないが、<strong>「確保はsetupで1回だけ」という形を習慣にしておく</strong>と、センサが増えたときにそのまま通用する。</p>
+
+        <h2 id="std-arrayにした場合">std::arrayにした場合</h2>
+
+        <figure class="code"><pre><code class="language-cpp">#include &lt;array&gt;
+
+std::array&lt;Sensor*, 3&gt; sensors = {&amp;imu, &amp;gps, &amp;tof};
+
+void loop() {
+    for (Sensor* sensor : sensors) {
+        sensor-&gt;update();
+        sensor-&gt;print();
+    }
+}</code></pre></figure>
+
+        <p><code>loop()</code>は1文字も変わらない。変わるのは宣言と、できなくなることである。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th><code>std::vector</code></th><th><code>std::array</code></th></tr></thead>
+          <tbody>
+          <tr><td>個数の指定</td><td>書かない</td><td><code>&lt;Sensor*, 3&gt;</code>と書く</td></tr>
+          <tr><td><code>push_back()</code></td><td>使える</td><td><strong>無い</strong></td></tr>
+          <tr><td><code>reserve()</code></td><td>必要</td><td>不要（確保が起きない）</td></tr>
+          <tr><td>ヒープ</td><td>使う</td><td>使わない</td></tr>
+          <tr><td>範囲for・<code>size()</code></td><td>使える</td><td>使える</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <p>つまり<strong>センサの構成がコンパイル時に決まっているなら、この演習の正解は<code>std::array</code>である</strong>。<code>std::vector</code>が要るのは、たとえば「接続されているセンサを起動時に探索し、見つかったものだけ登録する」ように<strong>個数が実行時に決まる</strong>場合である。</p>
+
+        <figure class="code"><pre><code class="language-cpp">void setup() {
+    sensors.reserve(8);
+
+    if (imu.begin()) {
+        sensors.push_back(&amp;imu);   // 繋がっていたセンサだけ登録する
+    }
+    if (gps.begin()) {
+        sensors.push_back(&amp;gps);
+    }
+}</code></pre></figure>
+
+        <h2 id="よくある間違い">よくある間違い</h2>
+
+        <figure class="code"><pre><code class="language-cpp">// 良くない例1：vector の中身を値にしてしまう
+std::vector&lt;Sensor&gt; sensors;   // Sensorは抽象クラスなので、そもそも入れられない</code></pre></figure>
+
+        <figure class="code"><pre><code class="language-cpp">// 良くない例2：size() と int を比べて警告が出る
+for (int i = 0; i &lt; sensors.size(); i++) {   // size() は符号なし
+}
+
+// 範囲forにすれば、この比較そのものが不要になる
+for (Sensor* sensor : sensors) {
+}</code></pre></figure>
+
+        <figure class="code"><pre><code class="language-cpp">// 良くない例3：loop() の中で毎回作り直す
+void loop() {
+    std::vector&lt;Sensor*&gt; sensors = {&amp;imu, &amp;gps, &amp;tof};  // 毎周 確保と解放
+}</code></pre></figure>
+
+        <p>3番目は動くが、ヒープの確保と解放を毎周繰り返すため、断片化の原因になる。<code>std::vector</code>は<strong>寿命の長い場所に置く</strong>。</p>
+
+        <p>→ <a href="../lessons/16-stl-vector.html">第16回の本文に戻る</a></p>
+      </article>
+
+      <nav class="pager" data-pager aria-label="前後のページ"></nav>
+    </main>
+
+    <aside class="toc-column">
+      <nav class="toc" data-toc aria-label="ページ内目次"></nav>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>マイコンのためのC++講座 — 全12週間 / 全19回の教材</p>
+  </footer>
+
+  <script type="module" src="../scripts/main.ts"></script>
+</body>
+</html>

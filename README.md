@@ -13,8 +13,8 @@ C++のクラスと複数ファイルで設計・実装できるようになる�
 ├── site/                         # Webサイト（Viteのroot）
 │   ├── index.html                # 講座概要・対象・到達目標
 │   ├── guide/                    # 基本方針・開発環境・授業計画・指導上の注意・受講者の進め方
-│   ├── lessons/                  # 第0回〜第15回
-│   ├── exercises/                # 演習問題の段階（Level 1〜6）
+│   ├── lessons/                  # 第0回〜第18回
+│   ├── exercises/                # 演習問題の段階（Level 1〜7）
 │   ├── final-project/            # 最終課題
 │   ├── checklist.html            # 到達度チェック（localStorageに保存）
 │   ├── advanced.html             # 発展内容

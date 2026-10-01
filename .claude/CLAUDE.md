@@ -56,7 +56,7 @@ pio device monitor
 
 ### ナビゲーションの単一情報源は `site/scripts/data/lessons.ts`
 
-`PAGES` 配列（25件）からサイドバーと「前へ / 次へ」を実行時に生成する。
+`PAGES` 配列（30件）からサイドバーと「前へ / 次へ」を実行時に生成する。
 ページを追加・改名するときは **HTMLを置く → `PAGES` に1行足す** の2手順のみ。
 
 - 各HTMLの `<body data-page="...">` は `PAGES` の `id` と厳密に一致させる。ずれるとサイドバーの
@@ -73,7 +73,7 @@ DOMから深さを推測する実装に戻さないこと。
 
 ### ページの共通シェル
 
-25ページはすべて同一構造（skip-link → `.site-header` → `.layout`（`[data-nav]` / `.prose` /
+全ページ（`PAGES`の30件と解答例の19件）はすべて同一構造（skip-link → `.site-header` → `.layout`（`[data-nav]` / `.prose` /
 `[data-toc]`）→ `[data-pager]` → `.site-footer` → `main.ts`）。新規ページは既存ページを
 コピーして作り、`data-page` / `data-base` / `<title>` / `description` を書き換える。
 読み込むスクリプトは `scripts/main.ts` の1本だけで、そこから nav / pager / toc / codeBlock /
@@ -179,6 +179,10 @@ DevToolsから直接書ける。「受講者がうっかり講師モードに入
 - サイトの各ページは章に対応する：トップ=0章、guide=1・2・20・21・23章、lessons/00〜15=3〜18章、
   final-project=19・25章、exercises=22章、checklist=24章、advanced=26章。
   本文を直すときは、対応する章の意図（何を教えるための例か）を崩さない。
+  **lessons/16〜18（STLとstd::vector / スマートポインタ / クラス間の相互参照）に対応する章はない。**
+  2026-10-01に、元資料で26章「発展内容」に置かれていた項目のうち3つを本編に引き上げたもの
+  （`advanced.html` 側から該当項目を外してある）。12週の授業計画には入れておらず、
+  本編を終えたあとの補講・自習用という位置づけ（`guide/schedule.html` の補足に明記）。
 - C++のコード例は**開き波括弧を行末に置く**スタイル（K&R）で統一する。`code/` のサンプルも同じ。
   `else` は `} else {` と前の `}` に続ける。
   **元資料の草案はAllmanだが、サイトと`code/`は2026-09-24にK&Rに寄せた**ので、
