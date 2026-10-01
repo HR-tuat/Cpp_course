@@ -2,6 +2,7 @@
 
 #include "Motor.hpp"
 
+// モータドライバはつないでいない。結果はシリアルの出力で確かめる
 Motor motor(5);
 
 void setup() {

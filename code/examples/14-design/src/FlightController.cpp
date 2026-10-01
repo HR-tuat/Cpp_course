@@ -3,6 +3,7 @@
 #include "FlightController.hpp"
 
 FlightController::FlightController()
+    // モータはつないでいない。MotorManager は出力値をシリアルに表示する
     : pid(1.5f, 0.1f, 0.05f, 0.5f), motors(5, 18), targetRoll(0.0f) {
 }
 

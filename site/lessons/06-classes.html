@@ -152,7 +152,7 @@ private:
 
         <h2 id="動かして確かめる">動かして確かめる</h2>
 
-        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/06-led-class/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>追加の部品は要らない</strong>。光るのはボードに載っている内蔵LEDで、それ以外はシリアルモニタの出力で確かめられる。<code>code/examples/06-led-class/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（手順と、外付けのLEDなどをつなぐ場合は<a href="../guide/environment.html">開発環境</a>にまとめてある）。</p>
 
         <figure class="code"><figcaption>code/examples/06-led-class/src/main.cpp</figcaption><pre><code class="language-cpp">// 第6回：LEDクラス（1ファイル版）
 // まずは main.cpp の中だけでクラスを書く。分割は第7回で行う。
@@ -209,9 +209,9 @@ private:
     bool state;
 };
 
-// 同じクラスから複数のオブジェクトを作れる
-LED led1(2);
-LED led2(4);
+// 同じクラスから複数のオブジェクトを作れる。違うのはピン番号だけ
+LED led1(LED_BUILTIN);  // ボード上の内蔵LED。配線なしで見える
+LED led2(4);            // 何もつないでいないピン。外付けLEDを挿せば光る
 
 void setup() {
     led1.begin();
@@ -226,7 +226,7 @@ void loop() {
     delay(500);
 }</code></pre></figure>
 
-        <p>内蔵LED（<code>led1</code>）が0.5秒ごとに切り替わる。<code>led2</code>はピン4なので、ボード単体では見えない（ピン番号を変えれば確かめられる）。</p>
+        <p>内蔵LED（<code>led1</code>）が0.5秒ごとに切り替わる。<code>led2</code>はピン4に割り当ててあるが、<strong>内蔵LEDは1つしかないので2つ目の点滅は見えない</strong>。2つ同時に見たい場合は、ピン4に外付けのLEDを1つつなぐ（部品と配線は<a href="../guide/environment.html">開発環境</a>の「実物をつなぐ場合」にまとめてある）。つながなくても、この回の主題は出力ではなくコードの形なので先に進んでよい。</p>
 
         <p>確かめること。</p>
 

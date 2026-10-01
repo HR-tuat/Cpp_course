@@ -12,7 +12,7 @@
 
 IMU imu;
 GPS gps;
-ToF tof(34);
+ToF tof(34);  // センサはつないでいない。ピン番号は保持するだけ
 
 // 上位のコードは「Sensorであること」しか知らない
 Sensor* sensors[] = {&imu, &gps, &tof};
