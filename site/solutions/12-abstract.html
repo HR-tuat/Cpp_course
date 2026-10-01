@@ -55,7 +55,7 @@
 
         <h2 id="sensorを抽象クラスにする">Sensorを抽象クラスにする</h2>
 
-        <figure class="code"><figcaption>include/Sensor.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/Sensor.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
 class Sensor {
 public:
@@ -81,9 +81,9 @@ note:     virtual void Sensor::update()</code></pre></figure>
 
         <h2 id="tofを追加する">ToFを追加する</h2>
 
-        <figure class="code"><figcaption>include/ToF.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/ToF.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
-#include "Sensor.h"
+#include "Sensor.hpp"
 
 class ToF : public Sensor {
 public:
@@ -101,7 +101,7 @@ private:
 
         <figure class="code"><figcaption>src/ToF.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "ToF.h"
+#include "ToF.hpp"
 
 ToF::ToF(int pin)
     : pin(pin), distanceMm(0) {

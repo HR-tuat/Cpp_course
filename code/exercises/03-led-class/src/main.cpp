@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#include "LED.h"
+#include "LED.hpp"
 
 LED led(2);
 

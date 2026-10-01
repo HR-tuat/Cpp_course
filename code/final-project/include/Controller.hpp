@@ -1,7 +1,7 @@
 #pragma once
 
-#include "DistanceSensor.h"
-#include "Motor.h"
+#include "DistanceSensor.hpp"
+#include "Motor.hpp"
 
 enum class RobotState {
     STOP,

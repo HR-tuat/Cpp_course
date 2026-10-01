@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "LED.h"
+#include "LED.hpp"
 
 // TODO: コンストラクタをメンバ初期化リストで実装する
 

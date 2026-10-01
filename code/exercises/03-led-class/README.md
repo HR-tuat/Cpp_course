@@ -1,6 +1,6 @@
 # 演習 Level 3：LEDクラス
 
-`include/LED.h` と `src/LED.cpp` の TODO を埋めて、`main.cpp` がそのまま動くようにする。
+`include/LED.hpp` と `src/LED.cpp` の TODO を埋めて、`main.cpp` がそのまま動くようにする。
 
 ## 要件
 
