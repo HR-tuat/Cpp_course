@@ -6,14 +6,24 @@
 const int LED_PIN = 2;
 const int BLINK_MS = 300;
 
+/**
+ * @brief LEDを点灯する
+ */
 void ledOn() {
     digitalWrite(LED_PIN, HIGH);
 }
 
+/**
+ * @brief LEDを消灯する
+ */
 void ledOff() {
     digitalWrite(LED_PIN, LOW);
 }
 
+/**
+ * @brief LEDを指定回数点滅させる
+ * @param times 点滅回数
+ */
 void blink(int times) {
     for (int i = 0; i < times; i++) {
         ledOn();

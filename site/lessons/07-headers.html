@@ -140,6 +140,44 @@ void LED::off() {
 
         <p>という考え方を持たせる。利用する側は<code>.hpp</code>だけを見れば使い方が分かる、という状態が理想である。</p>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/07-led-header/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="diagram"><pre>code/examples/07-led-header/
+├── include/
+│   └── LED.hpp      宣言（何ができるか）
+└── src/
+    ├── LED.cpp      定義（どうやって実現しているか）
+    └── main.cpp     使うだけ</pre></figure>
+
+        <figure class="code"><figcaption>code/examples/07-led-header/src/main.cpp</figcaption><pre><code class="language-cpp">// 第7回：main.cpp は「使うだけ」になる
+
+#include &lt;Arduino.h&gt;
+
+#include "LED.hpp"
+
+LED led(2);
+
+void setup() {
+    led.begin();
+}
+
+void loop() {
+    led.toggle();
+    delay(500);
+}</code></pre></figure>
+
+        <p>内蔵LEDが0.5秒ごとに切り替わる。第6回のサンプルと動きは同じで、ファイルの分け方だけが違う。</p>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>main.cpp</code>に<code>LED</code>の中身が1行も書かれていない。<code>#include "LED.hpp"</code>だけで使えている</li>
+        <li><code>LED.hpp</code>を見れば使い方が分かり、<code>LED.cpp</code>に実現方法が書いてある</li>
+        <li><code>LED.cpp</code>の<code>LED::</code>を1か所消すと、メンバ関数ではない「ただの関数」になる。どんなエラーになるかを見ておく</li>
+        <li><code>LED.hpp</code>の<code>#pragma once</code>を消しても、この構成ではまだ動く。何をしているヘッダなのかを確認する</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：以下のクラスをそれぞれ.hppと.cppに分割する</h3><figure class="diagram"><pre>LED
 Motor
 Button</pre></figure><ul>

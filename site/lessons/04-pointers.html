@@ -138,6 +138,104 @@ int&amp;&amp; rref2 = 10;  // OK</code></pre></figure></aside>
 
         <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>「値を書き換えたいだけなら参照」「指す先を差し替えたい・無効を表したいならポインタ」と使い分ける<span data-for="teacher">、と伝えると判断しやすい</span>。</p></aside>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/04-pointers/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="code"><figcaption>code/examples/04-pointers/src/main.cpp（抜粋）</figcaption><pre><code class="language-cpp">/**
+ * @brief ポインタ経由で呼び出し元の変数を1増やす
+ * @param[in,out] value 増やす変数へのポインタ
+ */
+void addOne(int* value) {
+    *value = *value + 1;
+}
+
+/**
+ * @brief 参照経由で呼び出し元の変数を1増やす
+ * @param[in,out] value 増やす変数への参照
+ */
+void addOneRef(int&amp; value) {
+    value = value + 1;
+}
+
+/**
+ * @brief 値をコピーして受け取り、1増やす（呼び出し元は変わらない）
+ * @param value 増やす値
+ */
+void addOneCopy(int value) {
+    value = value + 1;
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>同じファイルの setup() より</figcaption><pre><code class="language-cpp">    Serial.println("--- アドレスと値 ---");
+    int value = 10;
+    int* ptr = &amp;value;
+
+    Serial.print("value    = ");
+    Serial.println(value);
+    Serial.print("&amp;value   = 0x");
+    Serial.println((uintptr_t)&amp;value, HEX);
+    Serial.print("ptr      = 0x");
+    Serial.println((uintptr_t)ptr, HEX);  // &amp;value と同じ
+    Serial.print("*ptr     = ");
+    Serial.println(*ptr);                // value と同じ
+
+    *ptr = 20;
+    Serial.print("*ptr = 20 のあと value = ");
+    Serial.println(value);  // 20
+
+    Serial.println("--- 参照 ---");
+    int&amp; ref = value;
+    ref = 30;
+    Serial.print("ref = 30 のあと value = ");
+    Serial.println(value);  // 30
+
+    Serial.println("--- 関数に渡す ---");
+    int n = 0;
+
+    addOneCopy(n);
+    Serial.print("addOneCopy の後 : ");
+    Serial.println(n);  // 0（コピーを増やしただけ）
+
+    addOne(&amp;n);
+    Serial.print("addOne     の後 : ");
+    Serial.println(n);  // 1
+
+    addOneRef(n);
+    Serial.print("addOneRef  の後 : ");
+    Serial.println(n);  // 2
+}
+
+void loop() {
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>--- 配列 ---
+values[0] = 120
+values[1] = 340
+values[2] = 95
+values[3] = 870
+values[4] = 410
+max = 870
+--- アドレスと値 ---
+value    = 10
+&amp;value   = 0x3FFB2004
+ptr      = 0x3FFB2004
+*ptr     = 10
+*ptr = 20 のあと value = 20
+--- 参照 ---
+ref = 30 のあと value = 30
+--- 関数に渡す ---
+addOneCopy の後 : 0
+addOne     の後 : 1
+addOneRef  の後 : 2</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>&amp;value</code>と<code>ptr</code>が同じ値を表示している。ポインタは「どこにあるか」を持っている</li>
+        <li>アドレスの数値そのものは実行ごと・環境ごとに変わる。意味があるのは「2つが一致すること」だけ</li>
+        <li><code>addOneCopy</code>では<code>n</code>が変わらない。コピーを1増やして捨てている</li>
+        <li><code>addOne</code>（ポインタ）と<code>addOneRef</code>（参照）はどちらも<code>n</code>を変える。呼び出し側に<code>&amp;</code>が要るかどうかだけが違う</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習</h3><ul>
         <li>配列の最大値を求める</li>
         <li>ポインタを使って関数から変数を変更する</li>

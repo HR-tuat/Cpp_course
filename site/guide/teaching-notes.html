@@ -75,6 +75,25 @@ private = 外から使えない</pre></figure>
 
         <aside class="callout callout-tip"><p class="callout-title">ポイント</p><p>第3回のグローバル変数の問題点を持ち出すと繋がりやすい。「どこからでも書き換えられると何が困るか」を先に経験させておく。</p></aside>
 
+        <h2 id="サンプルの使い方">サンプルの使い方</h2>
+
+        <p>各回のページの「動かして確かめる」で紹介しているサンプルは、<code>code/examples/</code>に回ごとに1つある（対応表は<code>code/README.md</code>）。<strong>授業中に一緒に動かすためのもの</strong>で、演習の答えそのものではない。</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>やること</th><th>狙い</th></tr></thead>
+          <tbody>
+          <tr><td>説明の前に動かす</td><td>「何が問題なのか」を先に見せたい回（第16〜18回）に向く</td></tr>
+          <tr><td>説明の後に動かす</td><td>仕組みの確認。多くの回はこちら</td></tr>
+          <tr><td>わざと壊す</td><td>各回の「確かめること」に、壊して見せる手順を書いてある（<code>virtual</code>を外す、<code>break</code>を消す、前方宣言を<code>#include</code>に変える、など）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <aside class="callout callout-warn"><p class="callout-title">注意</p><p>サンプルは配線なしで動くように、センサやモータの値をプログラムの中で作っている。<strong>「実機ではここから読み取る」というコメントを必ず一緒に見せる</strong>こと。これを飛ばすと、センサの値が自分で増えていくコードを本物だと思い込む受講者が出る。</p></aside>
+
+        <p>先に教員が一度書き込んでおくと、演習で手が止まった受講者に「さっき動かしたあれと同じ形」と言える。出力が出ない場合はシリアルの速度（115200）と、書き込み直後のモニタの接続を確認する。</p>
+
         <h2 id="継承を目的化しない">継承を目的化しない</h2>
 
         <p>「C++には継承があるから使う」のではなく、</p>

@@ -5,25 +5,41 @@
 
 class LED {
 public:
+    /**
+     * @brief コンストラクタ
+     * @param pin LEDを繋いだピン番号
+     */
     LED(int pin)
         : pin(pin), state(false) {
     }
 
+    /**
+     * @brief ピンを初期化して消灯状態にする
+     */
     void begin() {
         pinMode(pin, OUTPUT);
         off();
     }
 
+    /**
+     * @brief 点灯する
+     */
     void on() {
         state = true;
         digitalWrite(pin, HIGH);
     }
 
+    /**
+     * @brief 消灯する
+     */
     void off() {
         state = false;
         digitalWrite(pin, LOW);
     }
 
+    /**
+     * @brief 点灯と消灯を切り替える
+     */
     void toggle() {
         if (state) {
             off();

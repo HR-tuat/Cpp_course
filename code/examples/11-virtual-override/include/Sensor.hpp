@@ -6,7 +6,14 @@ class Sensor {
 public:
     virtual ~Sensor() = default;
 
-    // 派生クラスに実装を強制する（純粋仮想関数）
+    /**
+     * @brief センサの値を読み直す
+     * @note = 0 なので実装がない。派生クラスが必ず実装する（純粋仮想関数）。
+     */
     virtual void update() = 0;
+
+    /**
+     * @brief 現在の値をシリアルに表示する
+     */
     virtual void print() const = 0;
 };

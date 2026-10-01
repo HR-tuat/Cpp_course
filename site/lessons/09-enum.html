@@ -102,6 +102,76 @@ case Mode::ERROR:
 
         <p>のように状態を管理できる。<code>int mode = 3;</code>のような書き方と比べ、何を表しているかがコード上で明確になる。</p>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/09-robot-state/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="code"><figcaption>code/examples/09-robot-state/src/main.cpp</figcaption><pre><code class="language-cpp">// 第9回：状態を enum class で管理する
+
+#include &lt;Arduino.h&gt;
+
+enum class RobotState {
+    STOP,
+    MOVE,
+    ERROR
+};
+
+const int LED_PIN = 2;
+
+RobotState state = RobotState::STOP;
+
+/**
+ * @brief 状態を切り替える
+ * @details 切り替えをこの関数1つに通しておくと、
+ *          どこから状態が変わったのかを追いやすい。
+ * @param next 次の状態
+ */
+void setState(RobotState next) {
+    state = next;
+}
+
+/**
+ * @brief 現在の状態に応じてLEDを制御する
+ */
+void updateLed() {
+    switch (state) {
+    case RobotState::STOP:
+        digitalWrite(LED_PIN, LOW);
+        break;
+
+    case RobotState::MOVE:
+        digitalWrite(LED_PIN, HIGH);
+        break;
+
+    case RobotState::ERROR:
+        digitalWrite(LED_PIN, HIGH);
+        delay(100);
+        digitalWrite(LED_PIN, LOW);
+        delay(100);
+        break;
+    }
+}
+
+void setup() {
+    pinMode(LED_PIN, OUTPUT);
+    setState(RobotState::MOVE);
+}
+
+void loop() {
+    updateLed();
+    delay(50);
+}</code></pre></figure>
+
+        <p><code>setup()</code>で<code>MOVE</code>にしているので内蔵LEDが点灯する。<code>setState()</code>の引数を<code>STOP</code>や<code>ERROR</code>に書き換えて、見え方を比べる。</p>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>switch</code>の<code>case</code>が<code>RobotState::MOVE</code>と名前で書かれている。<code>case 1:</code>より何を表しているかが読み取れる</li>
+        <li><code>enum class</code>なので<code>state = 1;</code>とは書けない。間違った値が入らない</li>
+        <li>状態を増やすときは<code>enum class</code>に1行足す。<code>switch</code>に<code>case</code>を書き忘れると、コンパイラが警告を出すことがある</li>
+        <li>状態の切り替えを<code>setState()</code>という関数1つに通している。どこから状態が変わったのかを追いやすい</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：簡単なロボットの状態を作る</h3><figure class="code"><pre><code class="language-cpp">enum class RobotState {
     STOP,
     MOVE,

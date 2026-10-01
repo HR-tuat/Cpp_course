@@ -110,6 +110,63 @@ sensor-&gt;update();</code></pre></figure>
 
         <p>変数の型（<code>Sensor*</code>）ではなく、実際に入っているもの（<code>IMU</code>）で呼び先が決まる。これが次回以降のポリモーフィズムの土台になる。</p>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/11-virtual-override/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="diagram"><pre>code/examples/11-virtual-override/
+├── include/
+│   ├── Sensor.hpp   virtual な update() / print()
+│   ├── IMU.hpp      override する
+│   └── GPS.hpp      override する
+└── src/
+    ├── IMU.cpp
+    ├── GPS.cpp
+    └── main.cpp</pre></figure>
+
+        <figure class="code"><figcaption>code/examples/11-virtual-override/src/main.cpp</figcaption><pre><code class="language-cpp">// 第11回：親のポインタから子の実装を呼ぶ
+
+#include &lt;Arduino.h&gt;
+
+#include "GPS.hpp"
+#include "IMU.hpp"
+#include "Sensor.hpp"
+
+IMU imu;
+GPS gps;
+
+// 上位のコードは「Sensorであること」しか知らない
+Sensor* sensors[] = {&amp;imu, &amp;gps};
+const int SENSOR_COUNT = sizeof(sensors) / sizeof(sensors[0]);
+
+void setup() {
+    Serial.begin(115200);
+}
+
+void loop() {
+    for (int i = 0; i &lt; SENSOR_COUNT; i++) {
+        sensors[i]-&gt;update();
+        sensors[i]-&gt;print();
+    }
+
+    delay(1000);
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>IMU roll=0.10
+GPS lat=0.0001
+IMU roll=0.20
+GPS lat=0.0002
+IMU roll=0.30
+GPS lat=0.0003</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li>同じ<code>sensors[i]-&gt;update()</code>の行から、<code>IMU</code>の実装と<code>GPS</code>の実装が呼び分けられている</li>
+        <li><code>Sensor.hpp</code>の<code>virtual</code>を外すと、どちらも親の実装が呼ばれるようになる。試して出力の変化を見る</li>
+        <li><code>IMU.hpp</code>の<code>update()</code>を<code>updata()</code>と書き間違えると、<code>override</code>が付いているのでコンパイラが止めてくれる</li>
+        <li><code>Sensor</code>に<code>virtual ~Sensor() = default;</code>がある理由を確認する</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：IMU / GPS</h3><ul>
         <li><code>Sensor</code>に<code>virtual void update();</code>を用意する</li>
         <li><code>IMU</code>と<code>GPS</code>でそれぞれ<code>override</code>して、異なるシリアル出力をする</li>

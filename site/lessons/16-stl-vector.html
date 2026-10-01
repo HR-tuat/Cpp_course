@@ -235,6 +235,63 @@ void setup() {
 
         <aside class="callout callout-note" data-for="teacher"><p class="callout-title">講師向け</p><p><code>std::vector</code>は便利に見えるぶん「配列を使う理由が分からない」という反応が出やすい。<a href="13-polymorphism.html">第13回</a>の<code>sizeof</code>の式を板書してから<code>size()</code>を見せ、<strong>どの仕事が消えたのか</strong>を先に確認させるとよい。ヒープの話は、断片化の図を描いて「確保に失敗したらどうするか」を問い返すと伝わりやすい。</p></aside>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/16-stl-vector/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="diagram"><pre>code/examples/16-stl-vector/
+├── include/
+│   ├── Sensor.hpp
+│   ├── IMU.hpp / GPS.hpp / ToF.hpp
+└── src/
+    ├── IMU.cpp / GPS.cpp / ToF.cpp
+    └── main.cpp     繋がっていたセンサだけ登録する</pre></figure>
+
+        <figure class="code"><figcaption>code/examples/16-stl-vector/src/main.cpp（抜粋）</figcaption><pre><code class="language-cpp">void setup() {
+    Serial.begin(115200);
+    delay(1000);
+
+    // 確保をここで1回だけ済ませる。loop() では増やさない
+    sensors.reserve(8);
+
+    registerIfConnected(&amp;imu, "IMU");
+    registerIfConnected(&amp;gps, "GPS");
+    registerIfConnected(&amp;tof, "ToF");
+
+    Serial.print("sensors.size() = ");
+    Serial.println(sensors.size());
+}
+
+void loop() {
+    // 添字も境界条件も書かない
+    for (Sensor* sensor : sensors) {
+        sensor-&gt;update();
+        sensor-&gt;print();
+    }
+
+    Serial.println();
+    delay(1000);
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>registered: IMU
+not found : GPS
+registered: ToF
+sensors.size() = 2
+IMU  roll=0.50 pitch=0.20
+ToF  distance=375.00 mm
+
+IMU  roll=1.00 pitch=0.40
+ToF  distance=350.00 mm</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>GPS</code>が繋がっていないことにしてあるので、<code>sensors.size()</code>が<code>2</code>になる。<strong>個数が実行時に決まっている</strong></li>
+        <li><code>loop()</code>に添字も個数も出てこない。<code>SENSOR_COUNT</code>が要らなくなった</li>
+        <li><code>isConnected()</code>を書き換えて、3つとも登録されたときに<code>size()</code>が<code>3</code>になることを確かめる</li>
+        <li><code>reserve(8)</code>を消しても動く。何が変わるかを考える</li>
+        <li>この構成を<code>std::array</code>で書けるかを考える（個数が実行時に決まる点に注意）</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：センサをstd::vectorでまとめる</h3><ul>
         <li><a href="13-polymorphism.html">第13回</a>の<code>Sensor*</code>の配列を<code>std::vector&lt;Sensor*&gt;</code>に書き換える</li>
         <li>範囲forで<code>update()</code>と<code>print()</code>を回す</li>

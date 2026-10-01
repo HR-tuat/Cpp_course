@@ -90,6 +90,93 @@ float add(float a, float b);</code></pre></figure>
 
         <p>同じ関数名でも引数の型や数が異なれば複数定義できる。呼び出す側は型を意識せず同じ名前で呼べる。</p>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/05-cpp-basics/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="code"><figcaption>code/examples/05-cpp-basics/src/main.cpp（抜粋）</figcaption><pre><code class="language-cpp">/**
+ * @brief 整数どうしの加算
+ * @param a 左辺
+ * @param b 右辺
+ * @return 和
+ */
+int add(int a, int b) {
+    return a + b;
+}
+
+/**
+ * @brief 小数どうしの加算
+ * @param a 左辺
+ * @param b 右辺
+ * @return 和
+ */
+float add(float a, float b) {
+    return a + b;
+}
+
+/**
+ * @brief 測定結果を表示する
+ * @details const参照で受けるのでコピーが起きず、中身を書き換える心配もない。
+ * @param reading 測定結果
+ */
+void print(const Reading&amp; reading) {
+    Serial.print("temp=");
+    Serial.print(reading.temperature);
+    Serial.print(" humi=");
+    Serial.println(reading.humidity);
+}
+
+void setup() {
+    Serial.begin(115200);
+    pinMode(LED_PIN, OUTPUT);
+    delay(1000);
+
+    Serial.println("--- 名前空間 ---");
+    Sensor::begin();
+    Motor::begin();
+
+    Serial.println("--- オーバーロード ---");
+    Serial.print("add(1, 2)       = ");
+    Serial.println(add(1, 2));          // int 版が呼ばれる → 3
+    Serial.print("add(1.5f, 2.5f) = ");
+    Serial.println(add(1.5f, 2.5f));    // float 版が呼ばれる → 4.00
+
+    // TEMP_THRESHOLD = 25.0f;  // const なのでコンパイルエラーになる
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>同じファイルの loop()</figcaption><pre><code class="language-cpp">void loop() {
+    Reading reading = Sensor::read();
+    print(reading);
+
+    if (reading.temperature &gt;= TEMP_THRESHOLD) {
+        digitalWrite(LED_PIN, HIGH);
+    } else {
+        digitalWrite(LED_PIN, LOW);
+    }
+
+    delay(1000);
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>--- 名前空間 ---
+Sensor::begin()
+Motor::begin()
+--- オーバーロード ---
+add(1, 2)       = 3
+add(1.5f, 2.5f) = 4.00
+temp=29.50 humi=55.00
+temp=31.00 humi=55.00
+temp=32.50 humi=55.00
+temp=34.00 humi=55.00</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>Sensor::begin()</code>と<code>Motor::begin()</code>が別のものとして呼べている。名前空間が違えば同じ名前でも衝突しない</li>
+        <li><code>add(1, 2)</code>は<code>3</code>、<code>add(1.5f, 2.5f)</code>は<code>4.00</code>。呼ぶ側は同じ名前で書いていて、型に応じた関数が選ばれている</li>
+        <li><code>setup()</code>の最後にある<code>TEMP_THRESHOLD = 25.0f;</code>のコメントを外すとコンパイルエラーになる。<code>const</code>が書き換えを止めている</li>
+        <li><code>print()</code>は<code>const Reading&amp;</code>で受けているので、コピーも書き換えも起きない</li>
+        <li>温度が30.00を超えた周でLEDが点く。しきい値が<code>const</code>の1行にまとまっている</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：小規模プログラム</h3><ul>
         <li><code>const</code>でピン番号やしきい値を定義し、マジックナンバーを排除する</li>
         <li>名前空間にセンサ関連の関数をまとめてみる</li>

@@ -96,6 +96,107 @@ protected:
 
         <p>派生クラスから利用できる。外部には見せたくないが、子には使わせたいデータに使う。</p>
 
+        <h2 id="動かして確かめる">動かして確かめる</h2>
+
+        <p>演習に入る前に、まずこのサンプルを動かして結果を見る。<strong>配線は不要</strong>で、ボード単体で動く。<code>code/examples/10-inheritance/</code>を開き、<code>pio run -t upload</code>で書き込んでから<code>pio device monitor</code>で出力を見る（<a href="../guide/environment.html">開発環境</a>に手順をまとめてある）。</p>
+
+        <figure class="diagram"><pre>code/examples/10-inheritance/
+├── include/
+│   ├── Device.hpp   共通部分（pin / begin / getPin）
+│   ├── LED.hpp      Device を継承
+│   └── Motor.hpp    Device を継承
+└── src/
+    ├── Device.cpp
+    ├── LED.cpp
+    ├── Motor.cpp
+    └── main.cpp</pre></figure>
+
+        <figure class="code"><figcaption>code/examples/10-inheritance/include/Device.hpp</figcaption><pre><code class="language-cpp">// 第10回：共通部分を親クラスにまとめる
+
+#pragma once
+
+class Device {
+public:
+    /**
+     * @brief コンストラクタ
+     * @param pin 使用するピン番号
+     * @note explicit は「引数1つのコンストラクタを勝手な型変換に使わせない」指定。
+     *       付けておくと Device device = 5; のような書き方を防げる。
+     */
+    explicit Device(int pin);
+
+    /**
+     * @brief ピンを初期化する
+     * @details LED でもモータでも手順は同じなので、親に置ける。
+     */
+    void begin();
+
+    /**
+     * @brief ピン番号を返す
+     * @return ピン番号
+     */
+    int getPin() const;
+
+protected:
+    // 子クラスからは使わせるが、外部には見せない
+    int pin;
+};</code></pre></figure>
+
+        <figure class="code"><figcaption>code/examples/10-inheritance/src/main.cpp</figcaption><pre><code class="language-cpp">// 第10回：共通部分を親にまとめ、固有の機能を子に置く
+//
+//   Device
+//    ├── LED
+//    └── Motor
+//
+// begin() と getPin() は Device に1つだけ書いてある。
+// LED も Motor もそれを書き直していない。
+
+#include &lt;Arduino.h&gt;
+
+#include "LED.hpp"
+#include "Motor.hpp"
+
+LED led(LED_BUILTIN);
+Motor motor(5);
+
+void setup() {
+    Serial.begin(115200);
+    delay(1000);
+
+    // どちらも Device から継承した begin() を呼んでいる
+    led.begin();
+    motor.begin();
+
+    Serial.print("led   pin = ");
+    Serial.println(led.getPin());
+    Serial.print("motor pin = ");
+    Serial.println(motor.getPin());
+
+    // 固有の機能は子クラスにある
+    motor.setSpeed(60);
+    motor.setSpeed(500);  // 丸められて 100 になる
+}
+
+void loop() {
+    led.toggle();
+    delay(500);
+}</code></pre></figure>
+
+        <figure class="code"><figcaption>シリアルモニタの出力</figcaption><pre><code>Device::begin() pin=2
+Device::begin() pin=5
+led   pin = 2
+motor pin = 5
+Motor pin=5 speed=60
+Motor pin=5 speed=100</code></pre></figure>
+
+        <p>確かめること。</p>
+
+        <ul>
+        <li><code>Device::begin()</code>が2回出ている。<code>LED</code>も<code>Motor</code>も<code>begin()</code>を書き直していないのに、どちらでも呼べている</li>
+        <li><code>LED.cpp</code>から<code>digitalWrite(pin, HIGH)</code>と書けるのは、<code>pin</code>が<code>protected</code>だから。<code>private</code>に変えるとコンパイルエラーになる</li>
+        <li><code>setSpeed(500)</code>が<code>100</code>に丸められている。これは<code>Motor</code>固有の機能で、<code>Device</code>には置けない</li>
+        <li><code>Robot</code>も<code>Device</code>を継承すべきか、「Robot is a Device」と声に出して確かめる</li>
+      </ul>
         <section class="exercise"><h3 class="exercise-title">演習：クラス構造を考える</h3><figure class="diagram"><pre>Device
 ├── LED
 ├── Motor

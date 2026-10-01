@@ -12,10 +12,19 @@ const int LED_PIN = 2;
 
 RobotState state = RobotState::STOP;
 
+/**
+ * @brief 状態を切り替える
+ * @details 切り替えをこの関数1つに通しておくと、
+ *          どこから状態が変わったのかを追いやすい。
+ * @param next 次の状態
+ */
 void setState(RobotState next) {
     state = next;
 }
 
+/**
+ * @brief 現在の状態に応じてLEDを制御する
+ */
 void updateLed() {
     switch (state) {
     case RobotState::STOP:
