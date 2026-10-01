@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "Robot.h"
+#include "Robot.hpp"
 
 namespace {
 const int MOTOR_PIN = 5;

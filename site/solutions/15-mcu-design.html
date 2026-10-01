@@ -56,11 +56,11 @@
         <h2 id="ファイル構成">ファイル構成</h2>
 
         <figure class="diagram"><pre>include/
-├── Sensor.h          抽象クラス（約束ごと）
-├── IMU.h             Sensorを継承
-├── LED.h
-├── Motor.h
-└── FlightMode.h      enum class
+├── Sensor.hpp          抽象クラス（約束ごと）
+├── IMU.hpp             Sensorを継承
+├── LED.hpp
+├── Motor.hpp
+└── FlightMode.hpp      enum class
 
 src/
 ├── IMU.cpp
@@ -68,11 +68,11 @@ src/
 ├── Motor.cpp
 └── main.cpp</pre></figure>
 
-        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>Sensor.h</code>に対応する<code>Sensor.cpp</code>がないのは、純粋仮想関数だけを持つためである。<code>FlightMode.h</code>も同様に、enumの定義だけなら<code>.cpp</code>は不要。</p></aside>
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>Sensor.hpp</code>に対応する<code>Sensor.cpp</code>がないのは、純粋仮想関数だけを持つためである。<code>FlightMode.hpp</code>も同様に、enumの定義だけなら<code>.cpp</code>は不要。</p></aside>
 
         <h2 id="sensor-flightmode">Sensor / FlightMode</h2>
 
-        <figure class="code"><figcaption>include/Sensor.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/Sensor.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
 class Sensor {
 public:
@@ -81,7 +81,7 @@ public:
     virtual void update() = 0;
 };</code></pre></figure>
 
-        <figure class="code"><figcaption>include/FlightMode.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/FlightMode.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
 enum class FlightMode {
     MANUAL,
@@ -91,9 +91,9 @@ enum class FlightMode {
 
         <h2 id="imu">IMU</h2>
 
-        <figure class="code"><figcaption>include/IMU.h</figcaption><pre><code class="language-cpp">#pragma once
+        <figure class="code"><figcaption>include/IMU.hpp</figcaption><pre><code class="language-cpp">#pragma once
 
-#include "Sensor.h"
+#include "Sensor.hpp"
 
 class IMU : public Sensor {
 public:
@@ -111,7 +111,7 @@ private:
     float yaw;
 };</code></pre></figure>
 
-        <figure class="code"><figcaption>src/IMU.cpp</figcaption><pre><code class="language-cpp">#include "IMU.h"
+        <figure class="code"><figcaption>src/IMU.cpp</figcaption><pre><code class="language-cpp">#include "IMU.hpp"
 
 IMU::IMU()
     : roll(0.0f), pitch(0.0f), yaw(0.0f) {
@@ -137,11 +137,11 @@ float IMU::getYaw() const {
 
         <figure class="code"><figcaption>src/main.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "FlightMode.h"
-#include "IMU.h"
-#include "LED.h"
-#include "Motor.h"
-#include "Sensor.h"
+#include "FlightMode.hpp"
+#include "IMU.hpp"
+#include "LED.hpp"
+#include "Motor.hpp"
+#include "Sensor.hpp"
 
 LED led(2);
 Motor motor(5);
@@ -187,7 +187,7 @@ void loop() {
 
         <p>上の<code>main.cpp</code>には、まだ「モードごとの制御判断」が残っている。これを<code>Controller</code>クラスに移し、さらに全体を<code>Robot</code>がまとめると、<code>main.cpp</code>は次の形まで短くなる。</p>
 
-        <figure class="code"><pre><code class="language-cpp">#include "Robot.h"
+        <figure class="code"><pre><code class="language-cpp">#include "Robot.hpp"
 
 Robot robot;
 
@@ -207,7 +207,7 @@ void loop() {
         <table>
           <thead><tr><th>要素</th><th>使っている機能</th><th>学んだ回</th></tr></thead>
           <tbody>
-          <tr><td><code>LED</code> / <code>Motor</code></td><td>クラス・カプセル化・<code>.h</code> / <code>.cpp</code>分割</td><td>第6〜8回</td></tr>
+          <tr><td><code>LED</code> / <code>Motor</code></td><td>クラス・カプセル化・<code>.hpp</code> / <code>.cpp</code>分割</td><td>第6〜8回</td></tr>
           <tr><td><code>Sensor</code></td><td>抽象クラス・純粋仮想関数</td><td>第12回</td></tr>
           <tr><td><code>IMU</code></td><td>継承・<code>override</code></td><td>第10〜11回</td></tr>
           <tr><td><code>sensors[]</code></td><td>ポリモーフィズム</td><td>第13回</td></tr>

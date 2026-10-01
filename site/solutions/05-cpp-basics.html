@@ -76,7 +76,7 @@ if (analogRead(SENSOR_PIN) &gt; SENSOR_THRESHOLD) {
 
         <h2 id="2-名前空間にまとめる">2. 名前空間にまとめる</h2>
 
-        <figure class="code"><figcaption>Sensor.h</figcaption><pre><code class="language-cpp">namespace Sensor {
+        <figure class="code"><figcaption>Sensor.hpp</figcaption><pre><code class="language-cpp">namespace Sensor {
 const int PIN = 34;
 const int THRESHOLD = 2000;
 
@@ -87,7 +87,7 @@ bool isNear();
 
         <figure class="code"><figcaption>Sensor.cpp</figcaption><pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 
-#include "Sensor.h"
+#include "Sensor.hpp"
 
 namespace Sensor {
 void begin() {

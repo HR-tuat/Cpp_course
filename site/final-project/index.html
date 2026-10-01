@@ -92,14 +92,14 @@
 └── DistanceSensor.cpp
 
 include/
-├── Robot.h
-├── Motor.h
-├── Controller.h
-├── Sensor.h
-├── IMU.h
-└── DistanceSensor.h</pre></figure>
+├── Robot.hpp
+├── Motor.hpp
+├── Controller.hpp
+├── Sensor.hpp
+├── IMU.hpp
+└── DistanceSensor.hpp</pre></figure>
 
-        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>Sensor.h</code>に対応する<code>Sensor.cpp</code>がないのは、<code>Sensor</code>が純粋仮想関数だけを持つ抽象クラスだからである。</p></aside>
+        <aside class="callout callout-note"><p class="callout-title">補足</p><p><code>Sensor.hpp</code>に対応する<code>Sensor.cpp</code>がないのは、<code>Sensor</code>が純粋仮想関数だけを持つ抽象クラスだからである。</p></aside>
 
         <h2 id="必須要件">必須要件</h2>
 
@@ -143,7 +143,7 @@ public:
 
         <p>最終的に、受講者が以下のようなコードを「写経」ではなく、自分で設計して書けることを目指す。</p>
 
-        <figure class="code"><figcaption>main.cpp</figcaption><pre><code class="language-cpp">#include "Robot.h"
+        <figure class="code"><figcaption>main.cpp</figcaption><pre><code class="language-cpp">#include "Robot.hpp"
 
 Robot robot;
 
@@ -188,7 +188,7 @@ void loop() {
           <tr><td>継承</td><td><code>Sensor</code>を継承する意味を説明できるか</td></tr>
           <tr><td>ポリモーフィズム</td><td><code>Sensor*</code>で扱えているか</td></tr>
           <tr><td>状態管理</td><td>状態が<code>enum class</code>で表現されているか</td></tr>
-          <tr><td>ファイル分割</td><td><code>.h</code>と<code>.cpp</code>が適切に分かれているか</td></tr>
+          <tr><td>ファイル分割</td><td><code>.hpp</code>と<code>.cpp</code>が適切に分かれているか</td></tr>
           <tr><td><code>main.cpp</code></td><td>短く保たれているか</td></tr>
           </tbody>
         </table>

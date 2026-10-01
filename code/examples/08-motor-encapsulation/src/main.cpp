@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "Motor.h"
+#include "Motor.hpp"
 
 Motor motor(5);
 

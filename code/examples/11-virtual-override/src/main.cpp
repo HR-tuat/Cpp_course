@@ -2,9 +2,9 @@
 
 #include <Arduino.h>
 
-#include "GPS.h"
-#include "IMU.h"
-#include "Sensor.h"
+#include "GPS.hpp"
+#include "IMU.hpp"
+#include "Sensor.hpp"
 
 IMU imu;
 GPS gps;

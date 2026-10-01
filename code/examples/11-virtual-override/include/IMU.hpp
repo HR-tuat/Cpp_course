@@ -1,16 +1,13 @@
 #pragma once
 
-#include "Sensor.h"
+#include "Sensor.hpp"
 
 class IMU : public Sensor {
 public:
     IMU();
 
     void update() override;
-
-    float getRoll() const;
-    float getPitch() const;
-    float getYaw() const;
+    void print() const override;
 
 private:
     float roll;

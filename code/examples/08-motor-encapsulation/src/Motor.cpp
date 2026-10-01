@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "Motor.h"
+#include "Motor.hpp"
 
 namespace {
 const int MIN_SPEED = 0;

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "DistanceSensor.h"
+#include "DistanceSensor.hpp"
 
 DistanceSensor::DistanceSensor(int pin)
     : pin(pin), distanceMm(0) {
